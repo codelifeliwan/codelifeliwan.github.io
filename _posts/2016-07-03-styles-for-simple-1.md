@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "旧文章链接（共千篇）-Old Posts links(about 1000 posts)"
-category: Old Posts
-description: 所有原来博客的文章链接，请查询...
+title:  Styles at a glance
+category: jekyll 
+description: Simple is a beautiful but functional jekyll theme. The font-type setting looks really good when writers use CJK mixed with English.
 ---
 
 Simple is a beautiful but functional jekyll theme. The font-type setting looks really good when writers use CJK mixed with English.
