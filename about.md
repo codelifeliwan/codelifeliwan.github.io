@@ -1,25 +1,11 @@
 ---
-layout: default
-title: "关于：About"
+layout: page
+title: About
+permalink: /about/
 ---
 
-## 个人简介：
+This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
 
-* 万力
-* 原程序员,现产品经理
-* 来自安徽，现居成都
+You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
 
-## 联系方式
-
-<p class="contact">
- <a href="http://weibo.com/wanosli" title="微博联系我"><img src="http://www.sinaimg.cn/blog/developer/wiki/LOGO_32x32.png" width="24" height="24" style="display:inline-block;vertical-align:middle"></a><br/>
-        <a href="https://www.zhihu.com/people/codelifeliwan" title="知乎联系我"><img src="http://www.zhihu.com/favicon.ico" width="24" height="24" style="display:inline-block;vertical-align:middle"></a><br/>
-邮箱: qdtecwanli@sina.com
-</p>
-
-### 关于本站：
-
-* 本站文章欢迎转载，转载请注明出处
-
-## 其他流言
-* 无
+You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
