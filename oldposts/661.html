@@ -1,0 +1,759 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-661 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-661" class="post-661 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-进程管理（五、内核中的互斥操作）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=661" title="下午 4:35" rel="bookmark"><time class="entry-date" datetime="2012-10-19T16:35:55+00:00" pubdate>19 十月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=661#respond" title="Comment on Linux内核-进程管理（五、内核中的互斥操作）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p><span style="font-family: 'DejaVu Sans';">在前面的代码中经常会出现一些锁，这些锁一般是用于互斥操作等，在此就说明一下。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">一种是信号量机制，关于信号量机制请参考《计算机操作系统》一书，信号量数据结构的定义是在</span>include/asm-i386/semaphore.h<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=661&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6611"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td> 
+             <td class="code" id="p661code1"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> semaphore <span style="color: #009900;">{</span> 
+	atomic_t count<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">int</span> sleepers<span style="color: #339933;">;</span> 
+	wait_queue_head_t wait<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+	<span style="color: #993333;">long</span> __magic<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">其中，</span>count<span style="font-family: 'DejaVu Sans';">表示资源数，</span>sleepers<span style="font-family: 'DejaVu Sans';">表示等待进程数，</span>wait<span style="font-family: 'DejaVu Sans';">表示等待队列。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">最简单的就是</span>down()<span style="font-family: 'DejaVu Sans';">和</span>up()<span style="font-family: 'DejaVu Sans';">操作，对应操作系统课上的</span>PV<span style="font-family: 'DejaVu Sans';">操作，先看看</span>down()<span style="font-family: 'DejaVu Sans';">操作，定义在</span>semaphore.h<span style="font-family: 'DejaVu Sans';">中如下：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=661&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6612"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td> 
+             <td class="code" id="p661code2"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> down<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> semaphore <span style="color: #339933;">*</span> sem<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+	CHECK_MAGIC<span style="color: #009900;">(</span>sem<span style="color: #339933;">-&gt;</span>__magic<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+&nbsp;
+	__asm__ __volatile__<span style="color: #009900;">(</span> 
+		<span style="color: #ff0000;">"# atomic down operation<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+		LOCK <span style="color: #ff0000;">"decl %0<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>     <span style="color: #808080; font-style: italic;">/* --sem-&gt;count */</span> 
+		<span style="color: #ff0000;">"js 2f<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">"1:<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">".section .text.lock,<span style="color: #000099; font-weight: bold;">\"</span>ax<span style="color: #000099; font-weight: bold;">\"</span><span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">"2:<span style="color: #000099; font-weight: bold;">\t</span>call __down_failed<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+		<span style="color: #ff0000;">"jmp 1b<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">".previous"</span> 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span>sem<span style="color: #339933;">-&gt;</span>count<span style="color: #009900;">)</span> 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"c"</span> <span style="color: #009900;">(</span>sem<span style="color: #009900;">)</span> 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"memory"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">这里可以看到，开始是递减</span>count<span style="font-family: 'DejaVu Sans';">，注意这个</span>count<span style="font-family: 'DejaVu Sans';">前面用了一个</span>LOCK<span style="font-family: 'DejaVu Sans';">是为了锁住总线，因为</span>decl<span style="font-family: 'DejaVu Sans';">是几个指令集合起来的指令，这样是为了保证</span>decl<span style="font-family: 'DejaVu Sans';">指令的原子性。如果减</span>1<span style="font-family: 'DejaVu Sans';">后结果小于</span>0<span style="font-family: 'DejaVu Sans';">，要跳转到</span>2<span style="font-family: 'DejaVu Sans';">处执行，否则的话说明资源不短缺，操作成功，在</span>1<span style="font-family: 'DejaVu Sans';">处就结束了。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">当减</span>1<span style="font-family: 'DejaVu Sans';">后小于</span>0<span style="font-family: 'DejaVu Sans';">时在</span>2<span style="font-family: 'DejaVu Sans';">处调用</span>__down_failed<span style="font-family: 'DejaVu Sans';">执行进入临界区，</span>__down_failed<span style="font-family: 'DejaVu Sans';">定义在</span>arch/i386/kernel/semaphore.c<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=661&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6613"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td> 
+             <td class="code" id="p661code3"><pre class="c" style="font-family:monospace;">asm<span style="color: #009900;">(</span> 
+<span style="color: #ff0000;">".align 4<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+<span style="color: #ff0000;">".globl __down_failed<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+<span style="color: #ff0000;">"__down_failed:<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"pushl %eax<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"pushl %edx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"pushl %ecx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"call __down<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"popl %ecx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"popl %edx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"popl %eax<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"ret"</span> 
+<span style="color: #009900;">)</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">这里除了保存一些寄存器以外就是调用</span>__down()<span style="font-family: 'DejaVu Sans';">函数了，这个函数也是在</span>semaphore.c<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=661&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6614"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td> 
+             <td class="code" id="p661code4"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">void</span> __down<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> semaphore <span style="color: #339933;">*</span> sem<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>tsk <span style="color: #339933;">=</span> current<span style="color: #339933;">;</span> 
+	DECLARE_WAITQUEUE<span style="color: #009900;">(</span>wait<span style="color: #339933;">,</span> tsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	tsk<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_UNINTERRUPTIBLE<span style="color: #339933;">;</span> 
+	add_wait_queue_exclusive<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sem<span style="color: #339933;">-&gt;</span>wait<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>semaphore_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	sem<span style="color: #339933;">-&gt;</span>sleepers<span style="color: #339933;">++;</span> 
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span><span style="color: #339933;">;;</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #993333;">int</span> sleepers <span style="color: #339933;">=</span> sem<span style="color: #339933;">-&gt;</span>sleepers<span style="color: #339933;">;</span> 
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* 
+		 * Add "everybody else" into it. They aren't 
+		 * playing, because we own the spinlock. 
+		 */</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>atomic_add_negative<span style="color: #009900;">(</span>sleepers <span style="color: #339933;">-</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sem<span style="color: #339933;">-&gt;</span>count<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			sem<span style="color: #339933;">-&gt;</span>sleepers <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> 
+			<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> 
+		sem<span style="color: #339933;">-&gt;</span>sleepers <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* us - see -1 above */</span> 
+		spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>semaphore_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+		schedule<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		tsk<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_UNINTERRUPTIBLE<span style="color: #339933;">;</span> 
+		spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>semaphore_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+	spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>semaphore_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	remove_wait_queue<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sem<span style="color: #339933;">-&gt;</span>wait<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	tsk<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_RUNNING<span style="color: #339933;">;</span> 
+	wake_up<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sem<span style="color: #339933;">-&gt;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">这里让</span>sleepers<span style="font-family: 'DejaVu Sans';">加</span>1<span style="font-family: 'DejaVu Sans';">，表示临界区中又多了一项。在</span>for<span style="font-family: 'DejaVu Sans';">循环中有个</span>atomic_add_negative<span style="font-family: 'DejaVu Sans';">检查，这个检查将</span>sleepers<span style="font-family: 'DejaVu Sans';">减</span>1<span style="font-family: 'DejaVu Sans';">加到</span>count<span style="font-family: 'DejaVu Sans';">中，使得</span>count<span style="font-family: 'DejaVu Sans';">的最小值为</span>-1.<span style="font-family: 'DejaVu Sans';">然后如果这样的话</span>count<span style="font-family: 'DejaVu Sans';">为</span>0<span style="font-family: 'DejaVu Sans';">的话就表示可用，做相关处理然后</span>break<span style="font-family: 'DejaVu Sans';">。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">这里我们模拟一下信号处理过程：</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">比如在执行</span>__down()<span style="font-family: 'DejaVu Sans';">之前</span>count<span style="font-family: 'DejaVu Sans';">为</span>-1<span style="font-family: 'DejaVu Sans';">，那么在进入</span>__down()<span style="font-family: 'DejaVu Sans';">的时候将</span>sleepers<span style="font-family: 'DejaVu Sans';">加</span>1<span style="font-family: 'DejaVu Sans';">，</span>sleepers<span style="font-family: 'DejaVu Sans';">为</span>1.<span style="font-family: 'DejaVu Sans';">在</span>for<span style="font-family: 'DejaVu Sans';">循环中：</span></p> 
+         <p>count=1-1+(-1)=-1<span style="font-family: 'DejaVu Sans';">不为</span>0<span style="font-family: 'DejaVu Sans';">，将</span>sleepers<span style="font-family: 'DejaVu Sans';">置为</span>1<span style="font-family: 'DejaVu Sans';">，执行调度程序，将本进程设置为</span>TASK_UNINTERRUPTIBLE<span style="font-family: 'DejaVu Sans';">不可打扰状态。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">第二个等待进程进入</span>__down()<span style="font-family: 'DejaVu Sans';">之前，</span>count<span style="font-family: 'DejaVu Sans';">为</span>-2<span style="font-family: 'DejaVu Sans';">，</span>sleepers<span style="font-family: 'DejaVu Sans';">为</span>1<span style="font-family: 'DejaVu Sans';">，然后将</span>sleepers<span style="font-family: 'DejaVu Sans';">加</span>1<span style="font-family: 'DejaVu Sans';">，现在</span>sleepers<span style="font-family: 'DejaVu Sans';">为</span>2<span style="font-family: 'DejaVu Sans';">，在</span>for<span style="font-family: 'DejaVu Sans';">循环中：</span></p> 
+         <p>count=2-1+(-2)=-1<span style="font-family: 'DejaVu Sans';">不为</span>0<span style="font-family: 'DejaVu Sans';">，将</span>sleepers<span style="font-family: 'DejaVu Sans';">置为</span>1<span style="font-family: 'DejaVu Sans';">，执行调度程序，将本进程设置为</span>TASK_UNINTERRUPTIBLE<span style="font-family: 'DejaVu Sans';">不可打扰状态。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">然后当占用此资源的进程释放一个资源，执行了一次</span>up<span style="font-family: 'DejaVu Sans';">操作，</span>count<span style="font-family: 'DejaVu Sans';">加</span>1<span style="font-family: 'DejaVu Sans';">，唤醒了前面的第一个进程，继续执行</span>for<span style="font-family: 'DejaVu Sans';">循环，这时发现</span>count<span style="font-family: 'DejaVu Sans';">为</span>0<span style="font-family: 'DejaVu Sans';">，</span>sleepers<span style="font-family: 'DejaVu Sans';">为</span>1<span style="font-family: 'DejaVu Sans';">，这时：</span></p> 
+         <p>count=1-1+0=0<span style="font-family: 'DejaVu Sans';">为</span>0<span style="font-family: 'DejaVu Sans';">，执行</span>if<span style="font-family: 'DejaVu Sans';">条件下的语句将</span>sleepers<span style="font-family: 'DejaVu Sans';">置为</span>0<span style="font-family: 'DejaVu Sans';">，然后</span>break<span style="font-family: 'DejaVu Sans';">，之后进行一些处理后唤醒第二个进程。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">第二个进程发现</span>count=0-1+0=-1<span style="font-family: 'DejaVu Sans';">不为</span>0<span style="font-family: 'DejaVu Sans';">，继续睡眠，然后等到唤醒。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">就这么循环下去。</span></p> 
+         <p>&nbsp;</p> 
+         <p><span style="font-family: 'DejaVu Sans';">至于</span>up<span style="font-family: 'DejaVu Sans';">操作和其他的锁等都类似，这里不再详述，只给出代码，需要说明的是在</span>2.4<span style="font-family: 'DejaVu Sans';">内核中并无死锁的相关处理。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">代码如下：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=661&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6615"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+</pre></td> 
+             <td class="code" id="p661code5"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> up<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> semaphore <span style="color: #339933;">*</span> sem<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+	CHECK_MAGIC<span style="color: #009900;">(</span>sem<span style="color: #339933;">-&gt;</span>__magic<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+	__asm__ __volatile__<span style="color: #009900;">(</span> 
+		<span style="color: #ff0000;">"# atomic up operation<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+		LOCK <span style="color: #ff0000;">"incl %0<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>     <span style="color: #808080; font-style: italic;">/* ++sem-&gt;count */</span> 
+		<span style="color: #ff0000;">"jle 2f<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">"1:<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">".section .text.lock,<span style="color: #000099; font-weight: bold;">\"</span>ax<span style="color: #000099; font-weight: bold;">\"</span><span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">"2:<span style="color: #000099; font-weight: bold;">\t</span>call __up_wakeup<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+		<span style="color: #ff0000;">"jmp 1b<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+		<span style="color: #ff0000;">".previous"</span> 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span>sem<span style="color: #339933;">-&gt;</span>count<span style="color: #009900;">)</span> 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"c"</span> <span style="color: #009900;">(</span>sem<span style="color: #009900;">)</span> 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"memory"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+asm<span style="color: #009900;">(</span> 
+<span style="color: #ff0000;">".align 4<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+<span style="color: #ff0000;">".globl __up_wakeup<span style="color: #000099; font-weight: bold;">\n</span>"</span> 
+<span style="color: #ff0000;">"__up_wakeup:<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"pushl %eax<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"pushl %edx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"pushl %ecx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"call __up<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"popl %ecx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"popl %edx<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"popl %eax<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> 
+	<span style="color: #ff0000;">"ret"</span> 
+<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">void</span> __up<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> semaphore <span style="color: #339933;">*</span>sem<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	wake_up<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sem<span style="color: #339933;">-&gt;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #339933;">#define wake_up(x)			__wake_up((x),TASK_UNINTERRUPTIBLE | TASK_INTERRUPTIBLE,WQ_FLAG_EXCLUSIVE) </span>
+<span style="color: #339933;">#define wake_up_all(x)			__wake_up((x),TASK_UNINTERRUPTIBLE | TASK_INTERRUPTIBLE,0) </span>
+<span style="color: #339933;">#define wake_up_sync(x)			__wake_up_sync((x),TASK_UNINTERRUPTIBLE | TASK_INTERRUPTIBLE,WQ_FLAG_EXCLUSIVE) </span>
+<span style="color: #339933;">#define wake_up_interruptible(x)	__wake_up((x),TASK_INTERRUPTIBLE,WQ_FLAG_EXCLUSIVE) </span>
+<span style="color: #339933;">#define wake_up_interruptible_all(x)	__wake_up((x),TASK_INTERRUPTIBLE,0) </span>
+<span style="color: #339933;">#define wake_up_interruptible_sync(x)	__wake_up_sync((x),TASK_INTERRUPTIBLE,WQ_FLAG_EXCLUSIVE)</span>
+&nbsp;
+<span style="color: #993333;">void</span> __wake_up<span style="color: #009900;">(</span>wait_queue_head_t <span style="color: #339933;">*</span>q<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> mode<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> wq_mode<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	__wake_up_common<span style="color: #009900;">(</span>q<span style="color: #339933;">,</span> mode<span style="color: #339933;">,</span> wq_mode<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> __wake_up_common <span style="color: #009900;">(</span>wait_queue_head_t <span style="color: #339933;">*</span>q<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> mode<span style="color: #339933;">,</span> 
+				     <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> wq_mode<span style="color: #339933;">,</span> <span style="color: #993333;">const</span> <span style="color: #993333;">int</span> sync<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">struct</span> list_head <span style="color: #339933;">*</span>tmp<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>head<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>best_exclusive<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">int</span> best_cpu<span style="color: #339933;">,</span> irq<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>q<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span> 
+&nbsp;
+	best_cpu <span style="color: #339933;">=</span> smp_processor_id<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	irq <span style="color: #339933;">=</span> in_interrupt<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	best_exclusive <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span> 
+	wq_write_lock_irqsave<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>q<span style="color: #339933;">-&gt;</span>lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+	CHECK_MAGIC_WQHEAD<span style="color: #009900;">(</span>q<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+&nbsp;
+	head <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>q<span style="color: #339933;">-&gt;</span>task_list<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+        <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>head<span style="color: #339933;">-&gt;</span>next <span style="color: #339933;">||</span> <span style="color: #339933;">!</span>head<span style="color: #339933;">-&gt;</span>prev<span style="color: #009900;">)</span> 
+                WQ_BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+	tmp <span style="color: #339933;">=</span> head<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">while</span> <span style="color: #009900;">(</span>tmp <span style="color: #339933;">!=</span> head<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> state<span style="color: #339933;">;</span> 
+                wait_queue_t <span style="color: #339933;">*</span>curr <span style="color: #339933;">=</span> list_entry<span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> wait_queue_t<span style="color: #339933;">,</span> task_list<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+		tmp <span style="color: #339933;">=</span> tmp<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span> 
+&nbsp;
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+		CHECK_MAGIC<span style="color: #009900;">(</span>curr<span style="color: #339933;">-&gt;</span>__magic<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+		p <span style="color: #339933;">=</span> curr<span style="color: #339933;">-&gt;</span>task<span style="color: #339933;">;</span> 
+		state <span style="color: #339933;">=</span> p<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>state <span style="color: #339933;">&amp;</span> mode<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if WAITQUEUE_DEBUG </span>
+			curr<span style="color: #339933;">-&gt;</span>__waker <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">long</span><span style="color: #009900;">)</span>__builtin_return_address<span style="color: #009900;">(</span><span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+			<span style="color: #808080; font-style: italic;">/* 
+			 * If waking up from an interrupt context then 
+			 * prefer processes which are affine to this 
+			 * CPU. 
+			 */</span> 
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>irq <span style="color: #339933;">&amp;&amp;</span> <span style="color: #009900;">(</span>curr<span style="color: #339933;">-&gt;</span>flags <span style="color: #339933;">&amp;</span> wq_mode <span style="color: #339933;">&amp;</span> WQ_FLAG_EXCLUSIVE<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>best_exclusive<span style="color: #009900;">)</span> 
+					best_exclusive <span style="color: #339933;">=</span> p<span style="color: #339933;">;</span> 
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>processor <span style="color: #339933;">==</span> best_cpu<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+					best_exclusive <span style="color: #339933;">=</span> p<span style="color: #339933;">;</span> 
+					<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span> 
+				<span style="color: #009900;">}</span> 
+			<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span> 
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sync<span style="color: #009900;">)</span> 
+					wake_up_process_synchronous<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+				<span style="color: #b1b100;">else</span> 
+					wake_up_process<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>curr<span style="color: #339933;">-&gt;</span>flags <span style="color: #339933;">&amp;</span> wq_mode <span style="color: #339933;">&amp;</span> WQ_FLAG_EXCLUSIVE<span style="color: #009900;">)</span> 
+					<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span> 
+			<span style="color: #009900;">}</span> 
+		<span style="color: #009900;">}</span> 
+	<span style="color: #009900;">}</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>best_exclusive<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sync<span style="color: #009900;">)</span> 
+			wake_up_process_synchronous<span style="color: #009900;">(</span>best_exclusive<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">else</span> 
+			wake_up_process<span style="color: #009900;">(</span>best_exclusive<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+	wq_write_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>q<span style="color: #339933;">-&gt;</span>lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+out<span style="color: #339933;">:</span> 
+	<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #339933;">#define spin_lock_irqsave(lock, flags)		do { local_irq_save(flags);       spin_lock(lock); } while (0) </span>
+<span style="color: #339933;">#define spin_lock_irq(lock)			do { local_irq_disable();         spin_lock(lock); } while (0) </span>
+<span style="color: #339933;">#define spin_lock_bh(lock)			do { local_bh_disable();          spin_lock(lock); } while (0) </span>
+&nbsp;
+<span style="color: #339933;">#define read_lock_irqsave(lock, flags)		do { local_irq_save(flags);       read_lock(lock); } while (0) </span>
+<span style="color: #339933;">#define read_lock_irq(lock)			do { local_irq_disable();         read_lock(lock); } while (0) </span>
+<span style="color: #339933;">#define read_lock_bh(lock)			do { local_bh_disable();          read_lock(lock); } while (0) </span>
+&nbsp;
+<span style="color: #339933;">#define write_lock_irqsave(lock, flags)		do { local_irq_save(flags);      write_lock(lock); } while (0) </span>
+<span style="color: #339933;">#define write_lock_irq(lock)			do { local_irq_disable();        write_lock(lock); } while (0) </span>
+<span style="color: #339933;">#define write_lock_bh(lock)			do { local_bh_disable();         write_lock(lock); } while (0) </span>
+&nbsp;
+<span style="color: #339933;">#define spin_unlock_irqrestore(lock, flags)	do { spin_unlock(lock);  local_irq_restore(flags); } while (0) </span>
+<span style="color: #339933;">#define spin_unlock_irq(lock)			do { spin_unlock(lock);  local_irq_enable();       } while (0) </span>
+<span style="color: #339933;">#define spin_unlock_bh(lock)			do { spin_unlock(lock);  local_bh_enable();        } while (0) </span>
+&nbsp;
+<span style="color: #339933;">#define read_unlock_irqrestore(lock, flags)	do { read_unlock(lock);  local_irq_restore(flags); } while (0) </span>
+<span style="color: #339933;">#define read_unlock_irq(lock)			do { read_unlock(lock);  local_irq_enable();       } while (0) </span>
+<span style="color: #339933;">#define read_unlock_bh(lock)			do { read_unlock(lock);  local_bh_enable();        } while (0) </span>
+&nbsp;
+<span style="color: #339933;">#define write_unlock_irqrestore(lock, flags)	do { write_unlock(lock); local_irq_restore(flags); } while (0) </span>
+<span style="color: #339933;">#define write_unlock_irq(lock)			do { write_unlock(lock); local_irq_enable();       } while (0) </span>
+<span style="color: #339933;">#define write_unlock_bh(lock)			do { write_unlock(lock); local_bh_enable();        } while (0)</span>
+&nbsp;
+<span style="color: #339933;">#define local_irq_save(x)	__asm__ __volatile__("pushfl ; popl %0 ; cli":"=g" (x): /* no input */ :"memory") </span>
+<span style="color: #339933;">#define local_irq_restore(x)	__restore_flags(x) </span>
+<span style="color: #339933;">#define local_irq_disable()	__cli() </span>
+<span style="color: #339933;">#define local_irq_enable()	__sti()</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> spin_lock<span style="color: #009900;">(</span>spinlock_t <span style="color: #339933;">*</span>lock<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if SPINLOCK_DEBUG </span>
+	__label__ here<span style="color: #339933;">;</span> 
+here<span style="color: #339933;">:</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>lock<span style="color: #339933;">-&gt;</span>magic <span style="color: #339933;">!=</span> SPINLOCK_MAGIC<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"eip: %p<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;&amp;</span>here<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+<span style="color: #339933;">#endif </span>
+	__asm__ __volatile__<span style="color: #009900;">(</span> 
+		spin_lock_string 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span>lock<span style="color: #339933;">-&gt;</span>lock<span style="color: #009900;">)</span> <span style="color: #339933;">:</span> <span style="color: #339933;">:</span> <span style="color: #ff0000;">"memory"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/* 
+ * Your basic SMP spinlocks, allowing only a single CPU anywhere 
+ */</span> 
+&nbsp;
+<span style="color: #993333;">typedef</span> <span style="color: #993333;">struct</span> <span style="color: #009900;">{</span> 
+	<span style="color: #993333;">volatile</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> lock<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#if SPINLOCK_DEBUG </span>
+	<span style="color: #993333;">unsigned</span> magic<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+<span style="color: #009900;">}</span> spinlock_t<span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #339933;">#define spin_lock_string \ </span>
+	<span style="color: #ff0000;">"<span style="color: #000099; font-weight: bold;">\n</span>1:<span style="color: #000099; font-weight: bold;">\t</span>"</span> \ 
+	<span style="color: #ff0000;">"lock ; decb %0<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> \ 
+	<span style="color: #ff0000;">"js 2f<span style="color: #000099; font-weight: bold;">\n</span>"</span> \ 
+	<span style="color: #ff0000;">".section .text.lock,<span style="color: #000099; font-weight: bold;">\"</span>ax<span style="color: #000099; font-weight: bold;">\"</span><span style="color: #000099; font-weight: bold;">\n</span>"</span> \ 
+	<span style="color: #ff0000;">"2:<span style="color: #000099; font-weight: bold;">\t</span>"</span> \ 
+	<span style="color: #ff0000;">"cmpb $0,%0<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> \ 
+	<span style="color: #ff0000;">"rep;nop<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> \ 
+	<span style="color: #ff0000;">"jle 2b<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span> \ 
+	<span style="color: #ff0000;">"jmp 1b<span style="color: #000099; font-weight: bold;">\n</span>"</span> \ 
+	<span style="color: #ff0000;">".previous"</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> spin_unlock<span style="color: #009900;">(</span>spinlock_t <span style="color: #339933;">*</span>lock<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if SPINLOCK_DEBUG </span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>lock<span style="color: #339933;">-&gt;</span>magic <span style="color: #339933;">!=</span> SPINLOCK_MAGIC<span style="color: #009900;">)</span> 
+		BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>spin_is_locked<span style="color: #009900;">(</span>lock<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+	__asm__ __volatile__<span style="color: #009900;">(</span> 
+		spin_unlock_string 
+		<span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span>lock<span style="color: #339933;">-&gt;</span>lock<span style="color: #009900;">)</span> <span style="color: #339933;">:</span> <span style="color: #339933;">:</span> <span style="color: #ff0000;">"memory"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #339933;">#define spin_unlock_string \ </span>
+	<span style="color: #ff0000;">"movb $1,%0"</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> read_lock<span style="color: #009900;">(</span>rwlock_t <span style="color: #339933;">*</span>rw<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if SPINLOCK_DEBUG </span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>rw<span style="color: #339933;">-&gt;</span>magic <span style="color: #339933;">!=</span> RWLOCK_MAGIC<span style="color: #009900;">)</span> 
+		BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+	__build_read_lock<span style="color: #009900;">(</span>rw<span style="color: #339933;">,</span> <span style="color: #ff0000;">"__read_lock_failed"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> write_lock<span style="color: #009900;">(</span>rwlock_t <span style="color: #339933;">*</span>rw<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#if SPINLOCK_DEBUG </span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>rw<span style="color: #339933;">-&gt;</span>magic <span style="color: #339933;">!=</span> RWLOCK_MAGIC<span style="color: #009900;">)</span> 
+		BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+	__build_write_lock<span style="color: #009900;">(</span>rw<span style="color: #339933;">,</span> <span style="color: #ff0000;">"__write_lock_failed"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #339933;">#define read_unlock(rw)		asm volatile("lock ; incl %0" :"=m" ((rw)-&gt;lock) : : "memory") </span>
+<span style="color: #339933;">#define write_unlock(rw)	asm volatile("lock ; addl $" RW_LOCK_BIAS_STR ",%0":"=m" ((rw)-&gt;lock) : : "memory")</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>The End .</p> 
+         <p><span style="font-family: 'DejaVu Sans';">进程管理完～</span></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-661 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

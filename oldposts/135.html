@@ -1,0 +1,232 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-135 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-135" class="post-135 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10192&nbsp;–&nbsp;Vacation&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=135" title="上午 11:17" rel="bookmark"><time class="entry-date" datetime="2011-08-10T11:17:22+00:00" pubdate>10 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=135#comments" title="Comment on UVA&nbsp;10192&nbsp;–&nbsp;Vacation&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 最长公共子序列，DP（LCS），开始用char型数组WA，改成string的了AC了，郁闷。。。。。</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font color="#C0FFFF" size="5">Problem E: Vacation</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <h2><a name="SECTION0001002000000000000000"><font color="#0070E8">The<br> Problem</font></a></h2> 
+          <p>You are planning to take some rest and to go out on vacation,<br> but you really don’t know which cities you should visit. So, you<br> ask your parents for help. Your mother says <i>“My son, you MUST<br> visit Paris, Madrid, Lisboa and London. But it’s only fun in this<br> order.”</i> Then your father says: <i>“Son, if you’re planning to<br> travel, go first to Paris, then to Lisboa, then to London and then,<br> at last, go to Madrid. I know what I’m talking about.”</i></p> 
+          <p>Now you’re a bit confused, as you didn’t expected this<br> situation. You’re afraid that you’ll hurt your mother if you follow<br> your father’s suggestion. But you’re also afraid to hurt your<br> father if you follow you mother’s suggestion. But it can get worse,<br> because you can hurt both of them if you simply ignore their<br> suggestions!</p> 
+          <p>Thus, you decide that you’ll try to follow their suggestions in<br> the better way that you can. So, you realize that the<br> “Paris-Lisboa-London” order is the one which better satisfies both<br> your mother and your father. Afterwards you can say that you could<br> not visit Madrid, even though you would’ve liked it very much.</p> 
+          <p>If your father have suggested the “London-Paris-Lisboa-Madrid”<br> order, then you would have two orders, “Paris-Lisboa” and<br> “Paris-Madrid”, that would better satisfy both of your parent’s<br> suggestions. In this case, you could only visit 2 cities.</p> 
+          <p>You want to avoid problems like this one in the future. And what<br> if their travel suggestions were bigger? Probably you would not<br> find the better way very easy. So, you decided to write a program<br> to help you in this task. You’ll represent each city by one<br> character, using uppercase letters, lowercase letters, digits and<br> the space. Thus, you can have at most 63 different cities to visit.<br> But it’s possible that you’ll visit some city more than once.</p> 
+          <p>If you represent Paris with “a”, Madrid with “b”, Lisboa with<br> “c” and London with “d”, then your mother’s suggestion would be<br> “abcd” and you father’s suggestion would be “acdb” (or “dacb”, in<br> the second example).</p> 
+          <p>The program will read two travel sequences and it must answer<br> how many cities you can travel to such that you’ll satisfy both of<br> your parents and it’s maximum.</p> 
+          <h2><a name="SECTION0001003000000000000000"><font color="#0070E8">The<br> Input</font></a></h2> 
+          <p>The input will consist on an arbitrary number of city sequence<br> pairs. The end of input occurs when the first sequence starts with<br> an “#”character (without the quotes). Your program should not<br> process this case. Each travel sequence will be on a line alone and<br> will be formed by legal characters (as defined above). All travel<br> sequences will appear in a single line and will have at most 100<br> cities.</p> 
+          <h2><a name="SECTION0001004000000000000000"><font color="#0070E8">The<br> Output</font></a></h2> 
+          <p>For each sequence pair, you must print the following message in<br> a line alone:</p> 
+          <pre>
+Case #d: you can visit at most K cities.
+</pre> 
+          <p>Where d stands for the test case number (starting from 1) and K is<br> the maximum number of cities you can visit such that you’ll satisfy<br> both you father’s suggestion and you mother’s suggestion.</p> 
+          <h2><a name="SECTION0001005000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <pre>
+abcd&nbsp;<wbr>
+</pre> 
+          <pre>
+acdb&nbsp;<wbr>
+</pre> 
+          <pre>
+abcd&nbsp;<wbr>
+</pre> 
+          <pre>
+dacb&nbsp;<wbr>
+</pre> 
+          <pre>
+#
+</pre> 
+          <h2><a name="SECTION0001006000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <pre>
+Case #1: you can visit at most 3 cities.&nbsp;<wbr>
+</pre> 
+          <pre>
+Case #2: you can visit at most 2 cities.&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;string&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+#define maxn 107
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+string S1,S2;
+</pre> 
+          <pre>
+int m[maxn][maxn];
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ncase=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(getline(cin,S1)){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(S1[0]=='#')break;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>ncase++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>getline(cin,S2);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int len1=S1.length();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int len2=S2.length();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(m,0,sizeof(m));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int re=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;=len1;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=1;j&lt;=len2;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(S1[i-1]==S2[j-1])m[i][j]=m[i-1][j-1]+1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else m[i][j]=max(m[i][j-1],m[i-1][j]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(m[i][j]&gt;re)re=m[i][j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;"Case #"&lt;&lt;ncase&lt;&lt;": you can visit at most "&lt;&lt;re&lt;&lt;" cities."&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-135 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

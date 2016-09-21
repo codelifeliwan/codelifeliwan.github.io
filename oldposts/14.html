@@ -1,0 +1,646 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-14 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-14" class="post-14 post type-post status-publish format-standard hentry category-acm tag-zatan"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;748&nbsp;Exponentiation解题报告【大小数乘方】</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=14" title="下午 3:52" rel="bookmark"><time class="entry-date" datetime="2011-05-15T15:52:46+00:00" pubdate>15 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=14#comments" title="Comment on UVA&nbsp;748&nbsp;Exponentiation解题报告【大小数乘方】">4 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题意就是求出小数的乘方，上一个题AC了这个也就很Easy了，就是不断的大数相乘，然后输出的时候直接数小数点就行了，在乘之前也要对小数进行处理，比如忽略前导0什么的。。。。。</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font size="5" color="#C0FFFF"><a name="SECTION0001000000000000000000">Exponentiation</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> Problems involving the computation of exact values of very large<br> magnitude and precision are common. For example, the computation of<br> the national debt is a taxing experience for many computer<br> systems.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> This problem requires that you write a program to compute the exact<br> value<br> of&nbsp;<wbr><i>R</i><sup><i>n</i></sup>&nbsp;<wbr>where&nbsp;<wbr><i>R</i>&nbsp;<wbr>is<br> a real number (0.0<br> &lt;&nbsp;<wbr><i>R</i>&nbsp;<wbr>&lt;<br> 99.999) and&nbsp;<wbr><i>n</i>&nbsp;<wbr>is an<br> integer such that&nbsp;<wbr><img width="88" height="30" align="middle" border="0" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/7/748img1.gif" alt="$0 < n le 25$" title="UVA&nbsp;<wbr>748&nbsp;<wbr>Exponentiation解题报告【大小数乘方】"><wbr>748&nbsp;<wbr>Exponentiation解题报告【大小数乘方】” /&gt;.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001001000000000000000">Input</a>&nbsp;<wbr></font></h2> 
+          <p><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">The<br> input will consist of a set of pairs of values<br> for</span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"><i>R</i></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">and</span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"><i>n</i></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">.<br> The</span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"><i>R</i></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">value<br> will occupy columns 1 through 6, and the</span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"><i>n</i></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">value<br> will be in columns 8 and 9.</span></p> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001002000000000000000">Output</a>&nbsp;<wbr></font></h2> 
+          <p><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">The<br> output will consist of one line for each line of input giving the<br> exact value of</span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"><i>R</i></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"><sup><i>n</i></sup></span><span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">.<br> Leading zeros and insignificant trailing zeros should be suppressed<br> in the output.</span></p> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;<wbr></font></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<span style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">95.123 12&nbsp;<wbr></span>
+</pre> 
+          <pre>
+0.4321 20&nbsp;<wbr>
+</pre> 
+          <pre>
+5.1234 15&nbsp;<wbr>
+</pre> 
+          <pre>
+6.7592  9&nbsp;<wbr>
+</pre> 
+          <pre>
+98.999 10&nbsp;<wbr>
+</pre> 
+          <pre>
+1.0100 12
+</pre> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+548815620517731830194541<wbr>.899025343415715973535967<wbr>221869852721
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+&nbsp;<wbr>.000000051485546410769561<wbr>219945112767671548384817<wbr>602007263512038354297630<wbr>13462401
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+&nbsp;<wbr>43992025569.928573701266488041146654<wbr>993318703707511666295476<wbr>720493953024
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+&nbsp;<wbr>29448126.764121021618164430206909<wbr>037173276672
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+&nbsp;<wbr>90429072743629540498.107596019456651774561044<wbr>010001&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+1.126825030131969720661201<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+<br>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;">
+代码：
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;iostream&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;cstring&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;string&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;cstdio&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;fstream&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#define maxn 10010</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">using namespace std;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int n;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">char m[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int mmm=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">void add(char *n1,char *n2,char *re)<span style="white-space:pre"> </span>//两数相加，结果存在re里面</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len1=strlen(n1);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len2=strlen(n2);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len11=strlen(re);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;len11;i++)re[i]=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int tmp=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int i=0,j=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(i=max(len1,len2)-1,j=0;i&gt;=0;i--,len1--,len2--,j++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(len1&gt;=1)re[j]+=(n1[len1-1]-'0');</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(len2&gt;=1)re[j]+=(n2[len2-1]-'0');</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j]+=tmp;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp=re[j]/10;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j]=re[j]+'0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(tmp!=0)re[j++]=tmp+'0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>char c1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(i=0;i&lt;(j/2);i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>c1=re[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[i]=re[j-i-1];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j-i-1]=c1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">void one_mul(char *n,int a,char *re)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(0==a){re[0]='0';re[1]=' ';return;}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len=strlen(n);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int j=0,tmp=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(;len&gt;=1;len--,j++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j]=(n[len-1]-'0')*a+tmp;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp=re[j]/10;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j]=re[j]+'0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(tmp!=0)re[j++]=tmp+'0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j]=' ';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>char c1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;(j/2);i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>c1=re[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[i]=re[j-i-1];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re[j-i-1]=c1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">void mul(char *n1,char *n2,char *re)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>char tmp[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>char tmp1[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>int len1=strlen(re);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>for(int i=0;i&lt;len1;i++)re[i]=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len2=strlen(n2);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=len2-1;i&gt;=0;i--)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>one_mul(n1,n2[i]-'0',tmp);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int j=strlen(tmp);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int k1=j+(len2-i)-1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(;j&lt;k1;j++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp[j]='0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp[j]=' ';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>memcpy(tmp1,re,sizeof(tmp1));</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>add(tmp1,tmp,re);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int chuli(char *c)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>char tmp[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len=strlen(c);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int po=len;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int mark11=len;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int len1=len-1;len1&gt;=0;len1--)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(c[len1]=='.')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>po=len1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>break;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=len-1;i&gt;=0;i--)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(i&gt;po&amp;&amp;c[i]!='0')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>mark11=i;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>break;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int k=0,j=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int mark=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(k=0;k&lt;=mark11;k++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(mark==0&amp;&amp;c[k]!='0'&amp;&amp;c[k]!='.')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>mark=1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(1==mark&amp;&amp;c[k]!='.')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp[j++]=c[k];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(j==0)tmp[j++]='0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp[j]=' ';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>memcpy(c,tmp,sizeof(tmp));</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>mmm=len-mark11-1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return po;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">char mtmp[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">char notchange[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">void output(char *s,int a)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>char tmpp[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len=strlen(s);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(len&lt;=a)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;".";</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;a-len;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;"0";</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;s&lt;&lt;endl;;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>else</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;len;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(i==len-a)cout&lt;&lt;".";</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;s[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int main()</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>while(cin&gt;&gt;m&gt;&gt;n)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>mmm=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>memset(mtmp,0,sizeof(mtmp));</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int leeen=strlen(m);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int point_position=chuli(m);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>memcpy(notchange,m,sizeof(m));</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=1;i&lt;n;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>memcpy(mtmp,m,sizeof(m));</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>memset(m,0,sizeof(m));</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>mul(notchange,mtmp,m);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>output(m,(leeen-point_position-1-mmm)*n);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>cout&lt;&lt;m&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return 0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <div style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium;"> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-14 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

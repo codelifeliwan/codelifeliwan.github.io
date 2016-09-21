@@ -1,0 +1,715 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-2 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-2" class="post-2 post type-post status-publish format-standard hentry category-professional_exchanges tag-zatan"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">C++学习笔记</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=2" title="下午 11:17" rel="bookmark"><time class="entry-date" datetime="2010-11-27T23:17:56+00:00" pubdate>27 十一月, 2010</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=2#comments" title="Comment on C++学习笔记">2 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 昨天下午去书城看了半天C++的书，基本上把C++学完了，本来想昨天就趁热打铁写点东西加深印象的，我一直认为先认真看，再自己满满回忆是比较好的办法，所以就想写个笔记什么的，可是昨天记忆比较清晰的时候写到不到一半电脑没电了，纠结！今天补上了点，可是效果不好，又忘得差不多了。。。。。现在发上来一部分，后续部分会继续补上的！！！</p> 
+         <div> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">在学完<font face="Times New Roman">C++</font><font face="宋体">之后写篇文章增加印象。在此说的是有</font><font face="Times New Roman">C</font><font face="宋体">基础的人。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">首先，<font face="Times New Roman">C++</font><font face="宋体">里面的头文件一般输入流用</font></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">#include&lt;iostream&gt;</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">但是在在这个后面要使用命名空间来声明里面的标准输入输出函数。用</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">using&nbsp;<wbr>namespase&nbsp;<wbr>std;</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">关于命名空间在后面讲。在<font face="Times New Roman">C++</font><font face="宋体">里面输入和输出使用</font></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">cout</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">和<font face="Times New Roman">cin</font><font face="宋体">例如下面一段代码：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">#include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">{</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">int&nbsp;<wbr>a=1,b=2;</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">char&nbsp;<wbr>c=’S’,d;</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">cin&gt;&gt;d;</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">cout&lt;&lt;“a=”&lt;&lt;a&lt;&lt;endl&lt;&lt;“b=”&lt;&lt;b&lt;&lt;endl;</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">//endl<font face="宋体">是换行标志，相当</font><font face="Times New Roman">//</font><font face="宋体">于</font><font face="Times New Roman">C</font><font face="宋体">里面的</font><font face="Times New Roman">‘n’</font></span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">cout&lt;&lt;“c=”&lt;&lt;c&lt;&lt;endl&lt;&lt;“d=”&lt;&lt;d&lt;&lt;endl;</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">运行结果如下：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s14.sinaimg.cn/orignal/6730a3aag960a6f83b82d" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s14.sinaimg.cn/middle/6730a3aag960a6f83b82d&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">其次，在<font face="Times New Roman">C++</font><font face="宋体">里面的数据类型也跟</font><font face="Times New Roman">C</font><font face="宋体">有很多相似之处，有</font><font face="Times New Roman">int,long,double</font><font face="宋体">等与</font><font face="Times New Roman">C</font><font face="宋体">相同的类型，还有一些独特的类型入</font><font face="Times New Roman">string</font><font face="宋体">类型，就是字符串类型，可以使用加法，使用</font></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">#include&lt;string&gt;</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">比如：</span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> &nbsp;<wbr>#</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> #include&lt;string&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> string&nbsp;<wbr>S1=”hello”,S2=”&nbsp;<wbr>World!”;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> string&nbsp;<wbr>S3,S4;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> cin&gt;&gt;S3&gt;&gt;S4;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> cout&lt;&lt;S1+S2&lt;&lt;endl&lt;&lt;S3&lt;&lt;endl&lt;&lt;S4&lt;&lt;endl;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> <a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s4.sinaimg.cn/orignal/6730a3aag960a75dea8d3" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s4.sinaimg.cn/bmiddle/6730a3aag960a75dea8d3&amp;690" title="" name="" alt="C++学习笔记"></a></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> &nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">说明一点，有的同学习惯使用</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">.h</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">文件，跟<font face="Times New Roman">C</font><font face="宋体">语言一样，这时候就不用加命名空间了。如下：</font></span></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">#include&lt;iostream.h&gt;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">int&nbsp;<wbr>a=2,b;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">cin&gt;&gt;b;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">cout&lt;&lt;a&lt;&lt;endl&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">运行结果如下：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s9.sinaimg.cn/orignal/6730a3aag960a78c14b68" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s9.sinaimg.cn/middle/6730a3aag960a78c14b68&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">其他的基本和<font face="Times New Roman">C</font><font face="宋体">相同，下面讲函数：</font></span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> C++<font face="宋体">里面的函数基本也是跟</font><font face="Times New Roman">C</font><font face="宋体">一样，不过在</font><font face="Times New Roman">C++</font><font face="宋体">里面加了几个而已，在</font><font face="Times New Roman">C++</font><font face="宋体">里面讲函数的时候需要讲一个传值的方式：传引用。</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 什么是引用呢？？引用就是给变量起了个别名，用符号<font face="Times New Roman">&amp;</font><font face="宋体">表示，其实在同一函数里面和变量没有什么区别，但是在调用函数的时候在</font><font face="Times New Roman">C</font><font face="宋体">里面是用指针改变变量的值，在</font><font face="Times New Roman">C++</font><font face="宋体">里面不用传地址，传引用就可以，引用自己不占内存空间，就像变量的本身一样，不过就是给变量本身又多起了个名字。看下面交换变量值的例子：</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>swap(int&nbsp;<wbr>&amp;a,int&nbsp;<wbr>&amp;b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> c=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> a=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> b=c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>a=2,b=3;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>&amp;c=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> swap(a,b);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> c=100;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s3.sinaimg.cn/orignal/6730a3aag960a7badb4e2" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s3.sinaimg.cn/middle/6730a3aag960a7badb4e2&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">注：引用申请的时候必须初始化。</span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> C++<font face="宋体">里面还有一类函数：内联函数，就是使用关键字</font><font face="Times New Roman">inline</font><font face="宋体">加在定义函数之前，在</font><font face="Times New Roman">C</font><font face="宋体">里面，调用函数的时候是先把程序执行的当前信息保存到一块特定的内存区域，然后为函数的执行申请内存，函数执行完毕后释放函数的内存空间，返回函数执行信息，接着下面的程序继续执行，这样明显是耗费了一定时间和内存空间保存信息什么的，但是内联函数就省去了这一项，就是不把它当</font><font face="Times New Roman">C</font><font face="宋体">语言里面的函数处理，不需要保存函数信息什么的，但是内联函数不能含有循环、分支等语句，也不能进行异常处理。（我试了，这些在编译器里面编译都能通过，但是好像就不把它当内联函数处理了，赵聪学长说的）看下面例子：</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> inline&nbsp;<wbr>void&nbsp;<wbr>swap(int&nbsp;<wbr>&amp;a,int&nbsp;<wbr>&amp;b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> c=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> a=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> b=c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>a=2,b=3;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> swap(a,b);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s12.sinaimg.cn/orignal/6730a3aag960a7e4c0f7b" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s12.sinaimg.cn/middle/6730a3aag960a7e4c0f7b&amp;690" width="290" height="114" alt="C++学习笔记" title="C++学习笔记"></a><br></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">C++<font face="宋体">里面还有一个很重要的东西：函数的重载。</font></span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 在<font face="Times New Roman">C</font><font face="宋体">语言里面，函数的定义是不能重名的，一旦重名编译的时候编译器报错，但是在</font><font face="Times New Roman">C++</font><font face="宋体">里面却不同了，</font><font face="Times New Roman">C++</font><font face="宋体">里面的函数能实现重载，你可以把功能相同的函数取同一个名字，然后调用的时候系统根据函数变量进行区分，如下：</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>swap(int&nbsp;<wbr>&amp;a,int&nbsp;<wbr>&amp;b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> c=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> a=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> b=c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>swap(float&nbsp;<wbr>&amp;a,float&nbsp;<wbr>&amp;b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> float&nbsp;<wbr>c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> c=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> a=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> b=c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>a=2,b=3;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> float&nbsp;<wbr>c=1.1,d=2.2;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> swap(a,b);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> swap(c,d);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;c&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;d&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s8.sinaimg.cn/orignal/6730a3aag960a81b38a27" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s8.sinaimg.cn/middle/6730a3aag960a81b38a27&amp;690" width="250" height="98" alt="C++学习笔记" title="C++学习笔记"></a><br></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">还有一类函数缺省参数的，就是在定义函数的时候给形参一个默认值，在调用函数的时候有时候可以不用传进去参数，这时候就使用定义函数的时候给的默认参数值。比如定义函数的时候可以这样：</span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>add(int&nbsp;<wbr>a=1,int&nbsp;<wbr>b=2)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> return&nbsp;<wbr>a+b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 调用的时候可以这样调用：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>a=add();</span> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> //a</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">的值为<font face="Times New Roman">1+2=3</font><font face="宋体">；</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>a=add(</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">5</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">);</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> //</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">a<font face="宋体">的值为</font><font face="Times New Roman">5+2=7</font><font face="宋体">；</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>a=add(2,3)</span> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> //a</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">的值为<font face="Times New Roman">2+3=5</font><font face="宋体">；</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 当然，还可以这样定义：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>add(int&nbsp;<wbr>a,int&nbsp;<wbr>b=1)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> return&nbsp;<wbr>a+b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 这时候记住，有默认值的一定在后面，想想也知道，调用的时候只传一个变量的话肯定先把值赋给前面的，如果定义在后面的参数没有默认值的话那后面的就传不进来参数，不就乱了吗。但是在调用的时候一定要给没有默认值的参数传值！！！看下面例子：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>add(int&nbsp;<wbr>a,int&nbsp;<wbr>b=2,int&nbsp;<wbr>c=3)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>a+b+c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>a=10,b=20,c=30,d;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> d=add(a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;d&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> d=add(a,b);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;d&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> d=add(a,b,c);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;d&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s6.sinaimg.cn/orignal/6730a3aag960a858fbff5" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s6.sinaimg.cn/middle/6730a3aag960a858fbff5&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">至于运算符什么的跟<font face="Times New Roman">C</font><font face="宋体">一样。</font></span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 下面讲面向对象：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 在<font face="Times New Roman">C++</font><font face="宋体">里面最重要的就是面向对象。也就是类的定义和使用，也就是把所有有统一特性的对象集合起来组成一个类，在</font><font face="Times New Roman">C</font><font face="宋体">语言里面我们可以使用结构体来定义相同属性的变量，比如我想定义一个点，我们就用</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> struct&nbsp;<wbr>point</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> float&nbsp;<wbr>x;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> float&nbsp;<wbr>y;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 想定义线段我们就用</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> struct&nbsp;<wbr>line</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> float&nbsp;<wbr>x1;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> float&nbsp;<wbr>x2;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> float&nbsp;<wbr>y1;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> float&nbsp;<wbr>y2;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 但是在<font face="Times New Roman">C++</font><font face="宋体">里面一般不这么用，在</font><font face="Times New Roman">C++</font><font face="宋体">里面使用</font><font face="Times New Roman">class</font><font face="宋体">关键字定义“类”</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 比如</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> class&nbsp;<wbr>person</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 在类里面可以定义函数、变量等成员。我们把这些对象分成三个访问级别，分别为私有型（</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">private</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">）</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">,</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">C++<font face="宋体">里面的默认都是私有型，保护型（</font><font face="Times New Roman">protected</font><font face="宋体">）</font><font face="Times New Roman">,</font><font face="宋体">和公有型（</font><font face="Times New Roman">public</font><font face="宋体">），</font><font face="Times New Roman">private</font><font face="宋体">类型的只有本类的成员能访问，</font><font face="Times New Roman">protected</font><font face="宋体">暂时不讲，</font><font face="Times New Roman">public</font><font face="宋体">是任何成员均能访问。</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 比如我申请一个学生类</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> string&nbsp;<wbr>name;</span> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> //</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">默认访问级别为<font face="Times New Roman">paivate</font></span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">int&nbsp;<wbr>age;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">int&nbsp;<wbr>num;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">public:</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">//public<font face="宋体">访问级别</font></span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">void&nbsp;<wbr>getname(string&nbsp;<wbr>S)</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">//<font face="宋体">定义成员函数</font></span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-left: 21pt; text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">name</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">=S;</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">}</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> void&nbsp;<wbr>printname()</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> cout&lt;&lt;name&lt;&lt;endl;</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">//<font face="宋体">定义成员函数</font></span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 那么如何调用呢？</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 在<font face="Times New Roman">main</font><font face="宋体">函数里面我们定义这样的一个变量并且实现相应操作即可例如：</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students&nbsp;<wbr>stu;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.getname(“wanli”);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printname();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> //////////////////////////////////////////////////////////////////////////////////////////////////////////</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 完整代码如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;string&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>getname(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printname()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students&nbsp;<wbr>stu;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.getname(“wanli”);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printname();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s13.sinaimg.cn/orignal/6730a3aag960a89a55cac" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s13.sinaimg.cn/middle/6730a3aag960a89a55cac&amp;690" alt="C++学习笔记" title="C++学习笔记"></a> </p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 注意：默认的<font face="Times New Roman">private</font><font face="宋体">访问权限的变量不能通过非本类成员访问！！！</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 比如你如果在<font face="Times New Roman">main</font><font face="宋体">函数里面写了句</font><font face="Times New Roman">stu</font></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">.name=”wanli”</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">编译器就报错！！！</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 但是大家都看的出来，在使用的时候我如果没有<font face="Times New Roman">stu.getname(“wanli”);</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 这一行，这个显然是错误的，这个就需要对类进行初始化，在<font face="Times New Roman">C++</font><font face="宋体">里面就叫构造函数，就是定义一个函数用于初始化类的成员，这个函数的名字跟类名相同，在使用的时候是由系统调用的，此函数无返回参数。比如上面例子：修改如下：</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>getname(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printname()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="text-indent: 21pt; margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">students()</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> //&nbsp;<wbr></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">前面不要加返回值类型！！！<font face="Times New Roman">void</font><font face="宋体">也不行！！！</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=””;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> num=0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 这样在使用的时候系统自动将自动将其初始化为<font face="Times New Roman">name</font><font face="宋体">为空，</font><font face="Times New Roman">age=0</font><font face="宋体">，</font><font face="Times New Roman">num=0</font><font face="宋体">。</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 但是有时候想在定义的时候手动初始化，这个时候就需要为构造函数传递参数，比如上面例子：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>getname(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printname()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students(</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">string&nbsp;<wbr>S,int&nbsp;<wbr>a,int&nbsp;<wbr>b</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">)</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">//&nbsp;<wbr></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">前面不要加返回值类型！！！</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> num=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 这样在使用的时候可以使用：<font face="Times New Roman">students&nbsp;<wbr>stu(“hello”,2,3);</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 就是将其初始化为上面值！请看下面例子：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;string&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>getname(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printname()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printage()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;age&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printnum()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;num&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students(string&nbsp;<wbr>S,int&nbsp;<wbr>a,int&nbsp;<wbr>b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> num=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students&nbsp;<wbr>stu(“hello”,2,3);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.getname(“wanli”);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printname();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printage();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printnum();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果为：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s10.sinaimg.cn/orignal/6730a3aag960a8e0c22b9" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s10.sinaimg.cn/middle/6730a3aag960a8e0c22b9&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">还有一个比较重要的析构函数，就是在使用对象之后将内存清空的函数，这个函数比构造函数还简单，它没有参数传递，由系统调用，格式就是在类名前面加上<font face="Times New Roman">~</font><font face="宋体">符号，比如：</font></span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> ~students()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 为了看清其执行顺序我们把上面例子改一下看看：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;string&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>getname(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printname()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printage()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;age&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printnum()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;num&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students(string&nbsp;<wbr>S,int&nbsp;<wbr>a,int&nbsp;<wbr>b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;“Welcome”&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> num=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> ~students()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;“Goodbye”&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students&nbsp;<wbr>stu(“hello”,2,3);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.getname(“wanli”);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printname();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printage();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printnum();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s12.sinaimg.cn/orignal/6730a3aag960a91fbbb8b" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s12.sinaimg.cn/middle/6730a3aag960a91fbbb8b&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">大家可以看到在一开始调用构造函数，在结束调用析构函数。</span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 在类中的函数可以先在类里面声明，在类外定义，但是前面要加上类名以表明它属于哪个类，中间用</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">::</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">分开，例如上面的改动一下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;string&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>getname(string&nbsp;<wbr>S);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printname();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printage();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>printnum();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students(string&nbsp;<wbr>S,int&nbsp;<wbr>a,int&nbsp;<wbr>b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;“Welcome”&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> num=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> ~students()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;“Goodbye”&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::getname(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::printname()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::printage()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;age&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::printnum()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;num&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students&nbsp;<wbr>stu(“hello”,2,3);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.getname(“wanli”);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printname();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printage();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.printnum();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 运行结果与上面一样。</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 但是在实际应用中可能会有很多类，比如有汽车类，飞机类等，我们在实际的应用中可以申请很多类来实现不同的功能，比如下面例子：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;string&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>students</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>name;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>age;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>number;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students(string&nbsp;<wbr>S,int&nbsp;<wbr>a,int&nbsp;<wbr>b);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_name(string&nbsp;<wbr>S);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_age(int&nbsp;<wbr>a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_number(int&nbsp;<wbr>a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_name();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_number();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_age();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> ~students(){}</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>car</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> float&nbsp;<wbr>length;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> float&nbsp;<wbr>height;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> float&nbsp;<wbr>width;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> string&nbsp;<wbr>color;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> car(float&nbsp;<wbr>a,float&nbsp;<wbr>b,float&nbsp;<wbr>c,string&nbsp;<wbr>d);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_length(float&nbsp;<wbr>a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_height(float&nbsp;<wbr>a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_width(float&nbsp;<wbr>a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get_color(string&nbsp;<wbr>a);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_length();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_height();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_width();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put_color();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> ~car(){}</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;">&nbsp;<wbr></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students::students(string&nbsp;<wbr>S,int&nbsp;<wbr>a,int&nbsp;<wbr>b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> number=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::get_name(string&nbsp;<wbr>S)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> name=S;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::get_age(int&nbsp;<wbr>a)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> age=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::get_number(int&nbsp;<wbr>num)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> number=num;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::put_name()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;name&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::put_age()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;age&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>students::put_number()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;number&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> car::car(float&nbsp;<wbr>a,float&nbsp;<wbr>b,float&nbsp;<wbr>c,string&nbsp;<wbr>d)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> length=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> height=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> width=c;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> color=d;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::get_height(float&nbsp;<wbr>a)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> height=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::get_length(float&nbsp;<wbr>a)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> length=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::get_width(float&nbsp;<wbr>a)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> width=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::get_color(string&nbsp;<wbr>a)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> color=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::put_height()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;height&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::put_length()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;length&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::put_width()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;width&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>car::put_color()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;color&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;">&nbsp;<wbr></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;">&nbsp;<wbr></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> students&nbsp;<wbr>stu(“Tom”,0,0);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> car&nbsp;<wbr>Toyota(2.1,1.8,1.0,”red”);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.put_age();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.put_name();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> stu.put_number();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Toyota.put_color();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Toyota.put_height();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Toyota.put_length();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Toyota.put_width();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 拷贝函数：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 就是声明类<font face="Times New Roman">A</font><font face="宋体">，然后用类</font><font face="Times New Roman">A</font><font face="宋体">做模板声明类</font><font face="Times New Roman">B</font><font face="宋体">，此时，类</font><font face="Times New Roman">B</font><font face="宋体">的当前值跟</font><font face="Times New Roman">A</font><font face="宋体">一样，相当于复制，但是比复制的效率要高！格式为现在类里面声明函数，</font><font face="Times New Roman">&lt;</font><font face="宋体">类名</font></span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';">&gt;</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">（类名<font face="Times New Roman">&amp;</font><font face="宋体">形参名）。例如：</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>Point</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> float&nbsp;<wbr>x,y;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Point(float&nbsp;<wbr>a=0,float&nbsp;<wbr>b=0)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> x=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> y=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Point(Point&amp;&nbsp;<wbr>P);</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'Times new roman';"><br> //</span><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">声明拷贝函数</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get(float&nbsp;<wbr>a,float&nbsp;<wbr>b)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> x=a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> y=b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>show()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;x&lt;&lt;”&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>“&lt;&lt;y&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Point::Point(Point&amp;&nbsp;<wbr>P)</span><br> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">//<font face="宋体">定义拷贝函数</font></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> x=P.x;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> y=P.y;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;“Yes!”;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Point&nbsp;<wbr>P1(1,1);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> P1.get(1.3,2.4);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Point&nbsp;<wbr>P2(P1);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> P1.show();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> P2.show();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 执行结果如下：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s8.sinaimg.cn/orignal/6730a3aag960a96200cf7" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s8.sinaimg.cn/middle/6730a3aag960a96200cf7&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">在声明函数时候如果形参是类的对象，那么系统自动调用拷贝函数。</span></span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 比如：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> #include&lt;iostream&gt;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> using&nbsp;<wbr>namespace&nbsp;<wbr>std;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> class&nbsp;<wbr>Point</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>a,b;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> public:</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>get(int&nbsp;<wbr>A,int&nbsp;<wbr>B)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> a=A;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> b=B;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> void&nbsp;<wbr>put()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;a&lt;&lt;endl&lt;&lt;b&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>PP()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>a;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>temp(Point&nbsp;<wbr>p)</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>p.PP();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>main()</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> Point&nbsp;<wbr>P;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> P.get(1,3);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> int&nbsp;<wbr>c=temp(P);</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> P.put();</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> cout&lt;&lt;c&lt;&lt;endl;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> return&nbsp;<wbr>0;</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';"><br> 执行结果为：</span></p> 
+          <p style="margin-bottom: 0pt; margin-top: 0pt;"> <span style="font-size: 14pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100mltn&amp;url=http://s3.sinaimg.cn/orignal/6730a3aag960a9919baf2" target="_blank" style="font-family: 宋体;"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s3.sinaimg.cn/middle/6730a3aag960a9919baf2&amp;690" alt="C++学习笔记" title="C++学习笔记"></a><br> </span></p> 
+          <div> 
+           <p style="margin-bottom: 0pt; margin-top: 0pt; font-family: 宋体;"> <span style="font-size: 14pt;"><span style="mso-spacerun:'yes'; font-size:14.0000pt; font-family:'宋体';">如果程序员没有写拷贝函数则编译器自动生成拷贝函数。</span></span></p> 
+           <p style="margin-bottom: 0pt; margin-top: 0pt;"> <font face="宋体">未完待续…</font></p> 
+          </div> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-2 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

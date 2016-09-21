@@ -1,0 +1,1031 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-157 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-157" class="post-157 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10986&nbsp;–&nbsp;Sending&nbsp;email</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=157" title="下午 5:14" rel="bookmark"><time class="entry-date" datetime="2011-08-29T17:14:00+00:00" pubdate>29 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=157#comments" title="Comment on UVA&nbsp;10986&nbsp;–&nbsp;Sending&nbsp;email">3 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 话说这几天真是前无古人后无来者的倒霉，放屁都砸脚后跟，喝水都塞牙，突然开学了有点不适应，只感觉暑假之短，短于上青天。。。。。</p> 
+         <div>
+           外加开学，所以人也就容易浮躁，再看看课程表，就更浮躁了。。。。。 
+         </div> 
+         <div>
+           就这个题，就是一个Dijkstra+优先队列的算法，可是我写的代码就是不对，网上一兄弟的代码我看了也没什么差别，不过就是他的是用链表，我的直接使用STL的vector了，还希望明眼人能看看到底是哪里错了，贡献了那么多天的WA，纠结郁闷的茶不思饭不想，还请各位帮忙指出错误，小弟在此感激不尽。 
+         </div> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <center> 
+           <font size="6"><b>Problem E</b></font> 
+           <br> 
+           <font size="5"><b>Sending email</b></font> 
+           <br> 
+           <font size="4">Time Limit: 3 seconds</font> 
+          </center> 
+          <p></p> 
+          <p align="right">&nbsp;<wbr></p> 
+          <table border="0"> 
+           <tbody> 
+            <tr> 
+             <td><small><i>“A new internet watchdog is creating a stir in<br> Springfield. Mr. X, if that is his real name, has<br> come up with a sensational scoop.”</i></small></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p><tt>Kent Brockman</tt></p> 
+          <p>There are <b>n</b> SMTP servers connected by network cables.<br> Each of the <b>m</b> cables connects two computers and has a<br> certain latency measured in milliseconds required to send an email<br> message. What is the shortest time required to send a message from<br> server <b>S</b> to server <b>T</b> along a sequence of cables?<br> Assume that there is no delay incurred at any of the servers.</p> 
+          <p><font size="5"><b>Input</b></font><br> The first line of input gives the number of cases, <b>N</b>.<br> <b>N</b> test cases follow. Each one starts with a line containing<br> <b>n</b> (2&lt;=<b>n</b>&lt;20000),<br> <b>m</b> (0&lt;=<b>m</b>&lt;50000),<br> <b>S</b> (0&lt;=<b>S</b>&lt;<b>n</b>) and<br> <b>T</b> (0&lt;=<b>T</b>&lt;<b>n</b>).<br> <b>S</b>!=<b>T</b>. The next <b>m</b> lines will each contain 3<br> integers: 2 different servers (in the range [0, <b>n</b>-1]) that<br> are connected by a bidirectional cable and the latency, <b>w</b>,<br> along this cable<br> (0&lt;=<b>w</b>&lt;=10000).</p> 
+          <p><font size="5"><b>Output</b></font><br> For each test case, output the line “Case #<b>x</b>:” followed by<br> the number of milliseconds required to send a message from <b>S</b><br> to <b>T</b>. Print “unreachable” if there is no route from <b>S</b><br> to <b>T</b>.</p> 
+          <table border="1" bordercolor="black" cellpadding="5" cellspacing="0" width="100%"> 
+           <tbody> 
+            <tr valign="top"> 
+             <td><font size="5"><b>Sample Input</b></font></td> 
+             <td><font size="5"><b>Sample Output</b></font></td> 
+            </tr> 
+            <tr bgcolor="#D0D0D0" valign="top"> 
+             <td> <pre>
+10
+</pre> <pre>
+2 1 0 1
+</pre> <pre>
+0 1 100
+</pre> <pre>
+3 3 2 0
+</pre> <pre>
+0 1 100
+</pre> <pre>
+0 2 200
+</pre> <pre>
+1 2 50
+</pre> <pre>
+2 0 0 1
+</pre> <pre>
+2 1 0 1
+</pre> <pre>
+0 1 100
+</pre> <pre>
+3 3 2 0
+</pre> <pre>
+0 1 100
+</pre> <pre>
+0 2 200
+</pre> <pre>
+1 2 50
+</pre> <pre>
+2 0 0 1
+</pre> <pre>
+2 1 0 1
+</pre> <pre>
+0 1 100
+</pre> <pre>
+3 3 2 0
+</pre> <pre>
+0 1 100
+</pre> <pre>
+0 2 200
+</pre> <pre>
+1 2 50
+</pre> <pre>
+2 0 0 1
+</pre> <pre>
+5 8 0 4
+</pre> <pre>
+0 3 10
+</pre> <pre>
+0 2 23
+</pre> <pre>
+0 4 1000
+</pre> <pre>
+3 1 55
+</pre> <pre>
+1 2 30
+</pre> <pre>
+1 4 82
+</pre> <pre>
+2 4 46
+</pre> <pre>
+3 2 10
+</pre> </td> 
+             <td> <pre>
+Case #1: 100
+</pre> <pre>
+Case #2: 150
+</pre> <pre>
+Case #3: unreachable
+</pre> <pre>
+Case #4: 100
+</pre> <pre>
+Case #5: 150
+</pre> <pre>
+Case #6: unreachable
+</pre> <pre>
+Case #7: 100
+</pre> <pre>
+Case #8: 150
+</pre> <pre>
+Case #9: unreachable
+</pre> <pre>
+Case #10: 66
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> <pre>
+<br>
+</pre> 
+              <div></div> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p></p> 
+         </div> 
+         <div></div> 
+         <div>
+           AC代码： 
+         </div> 
+         <div> 
+          <div></div> 
+          <div>
+            #include &lt;stdio.h&gt; 
+          </div> 
+          <div>
+            #include &lt;string.h&gt; 
+          </div> 
+          <div>
+            #include &lt;queue&gt; 
+          </div> 
+          <div></div> 
+          <div>
+            #define N 20005 
+          </div> 
+          <div>
+            #define M 100005 
+          </div> 
+          <div>
+            #define INF 1 &lt;&lt; 28 
+          </div> 
+          <div></div> 
+          <div>
+            struct node 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> int id, dis; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> node (){} 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> node(int id, int dis): 
+           <br> id(id), dis(dis) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> bool operator 
+           <br> &lt; (const node &amp;it) const 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> return dis &gt; it.dis; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            }; 
+          </div> 
+          <div></div> 
+          <div>
+            struct edge 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> int ed, cost; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> edge *next; 
+          </div> 
+          <div>
+            }*head[N], table[M]; 
+          </div> 
+          <div></div> 
+          <div>
+            int pos, dis[N], mk[N]; 
+          </div> 
+          <div></div> 
+          <div>
+            void Init(int n) 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> pos = 0; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> memset(head, 0, 
+           <br> sizeof(head)); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div></div> 
+          <div>
+            void Add(int a, int b, int c) 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> edge *p = 
+           <br> &amp;table[pos++]; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> p-&gt;ed = 
+           <br> b; p-&gt;cost = c; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> p-&gt;next = 
+           <br> head[a]; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> head[a] = p; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div></div> 
+          <div>
+            int Dijkstra(int st, int ed, int n) 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> for(int i = 0; i 
+           <br> &lt; n; i++) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> mk[i] = 0; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> dis[i] = INF; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> dis[st] = 0; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> std::priority_queue&lt;node&gt; Q; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> Q.push(node(st, 
+           <br> 0)); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> node t; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> while(!Q.empty()) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> t = Q.top(); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> Q.pop(); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> if(mk[t.id]) continue; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> if(t.id == ed) return t.dis; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> mk[t.id] = 1; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> for(edge *p = head[t.id]; p; p = 
+           <br> p-&gt;next) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> if(!mk[p-&gt;ed] &amp;&amp; 
+           <br> p-&gt;cost + dis[t.id] &lt; 
+           <br> dis[p-&gt;ed]) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> dis[p-&gt;ed] = 
+           <br> p-&gt;cost + dis[t.id]; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> Q.push(node(p-&gt;ed, 
+           <br> dis[p-&gt;ed])); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> return INF; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div></div> 
+          <div>
+            int main() 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            // &nbsp; 
+           <wbr> &nbsp; 
+           <wbr>freopen(“test.txt”, 
+           <br> “r”, stdin); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> int cas = 1; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> int t, n, m, st, 
+           <br> ed; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> scanf(“%d”, 
+           <br> &amp;t); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> while(t–) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> scanf(“%d %d %d %d”, &amp;n, 
+           <br> &amp;m, &amp;st, 
+           <br> &amp;ed); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> Init(n); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> for(int i = 0; i &lt; m; i++) 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> { 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> int a, b, 
+           <br> c; 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> scanf(“%d 
+           <br> %d %d”, &amp;a, &amp;b, 
+           <br> &amp;c); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> Add(a, b, 
+           <br> c); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> Add(b, a, 
+           <br> c); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> int ans = Dijkstra(st, ed, n); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> printf(“Case #%d: “, cas++); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> if(ans == INF) puts(“unreachable”); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> else printf(“%dn”, ans); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> return 0; 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div></div> 
+         <div>
+           WA代码： 
+         </div> 
+         <div> 
+          <div></div> 
+          <div>
+            #include&lt;iostream&gt; 
+          </div> 
+          <div>
+            #include&lt;cstring&gt; 
+          </div> 
+          <div>
+            #include&lt;algorithm&gt; 
+          </div> 
+          <div>
+            #include&lt;fstream&gt; 
+          </div> 
+          <div>
+            #include&lt;queue&gt; 
+          </div> 
+          <div>
+            #include&lt;vector&gt; 
+          </div> 
+          <div>
+            #define INF 100000000 
+          </div> 
+          <div>
+            #define maxn 20005 
+          </div> 
+          <div>
+            #define maxm 50005 
+          </div> 
+          <div>
+            using namespace std; 
+          </div> 
+          <div>
+            int n,m,S,T; 
+          </div> 
+          <div>
+            typedef struct edge{ 
+          </div> 
+          <div>
+            int x,w; 
+          </div> 
+          <div>
+            }edge; 
+          </div> 
+          <div>
+            typedef struct node{ 
+          </div> 
+          <div>
+            int v; 
+          </div> 
+          <div>
+            int w; 
+          </div> 
+          <div>
+            friend bool operator &lt; (struct node a1,struct 
+           <br> node a2){ 
+          </div> 
+          <div>
+            return a1.w&gt;a2.w; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            }node; 
+          </div> 
+          <div>
+            vector&lt;edge&gt;G[maxn]; 
+          </div> 
+          <div>
+            int d[maxn]; 
+          </div> 
+          <div>
+            int vis[maxn]; 
+          </div> 
+          <div></div> 
+          <div>
+            int main() 
+          </div> 
+          <div>
+            { 
+          </div> 
+          <div>
+            // freopen(“test.txt”,”r”,stdin); 
+          </div> 
+          <div>
+            int ncase; 
+          </div> 
+          <div>
+            cin&gt;&gt;ncase; 
+          </div> 
+          <div>
+            for(int ncase1=1;ncase1&lt;=ncase;ncase1++){ 
+          </div> 
+          <div>
+            cout&lt;&lt;“Case 
+           <br> #”&lt;&lt;ncase1&lt;&lt;“: 
+           <br> “; 
+          </div> 
+          <div>
+            cin&gt;&gt;n&gt;&gt;m&gt;&gt;S&gt;&gt;T; 
+          </div> 
+          <div>
+            int aa,bb,cc; 
+          </div> 
+          <div>
+            for(int i=0;i&lt;n;i++){ 
+          </div> 
+          <div>
+            G[i].clear(); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            for(int i=0;i&lt;m;i++){ 
+          </div> 
+          <div>
+            edge tmp; 
+          </div> 
+          <div>
+            edge tmp1; 
+          </div> 
+          <div>
+            cin&gt;&gt;aa&gt;&gt;bb&gt;&gt;cc; 
+          </div> 
+          <div>
+            tmp.w=tmp1.w=cc; 
+          </div> 
+          <div>
+            tmp.x=bb; 
+          </div> 
+          <div>
+            tmp1.x=aa; 
+          </div> 
+          <div>
+            G[aa].push_back(tmp); 
+          </div> 
+          <div>
+            G[bb].push_back(tmp1); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            for(int i=0;i&lt;n;i++)d[i]=INF; 
+          </div> 
+          <div>
+            d[S]=0; 
+          </div> 
+          <div>
+            memset(vis,0,sizeof(vis)); 
+          </div> 
+          <div>
+            priority_queue&lt;node&gt;qu; 
+          </div> 
+          <div>
+            node n_tmp; 
+          </div> 
+          <div>
+            n_tmp.v=S; 
+          </div> 
+          <div>
+            n_tmp.w=0; 
+          </div> 
+          <div>
+            qu.push(n_tmp); 
+          </div> 
+          <div>
+            while(!qu.empty()){ 
+          </div> 
+          <div>
+            node tmp=qu.top(); 
+          </div> 
+          <div>
+            qu.pop(); 
+          </div> 
+          <div>
+            if(vis[tmp.v])continue; 
+          </div> 
+          <div>
+            vis[tmp.v]=1; 
+          </div> 
+          <div>
+            if(tmp.v==T)break; 
+          </div> 
+          <div>
+            for(vector&lt;edge&gt;::iterator 
+           <br> iter=G[tmp.v].begin();iter!=G[tmp.v].end();iter++){ 
+          </div> 
+          <div>
+            int Mw=iter-&gt;w; 
+          </div> 
+          <div>
+            int Me=iter-&gt;x; 
+          </div> 
+          <div>
+            if(!vis[Me]&amp;&amp;d[Me]&gt;d[tmp.v]+Mw){ 
+          </div> 
+          <div>
+            d[Me]=d[tmp.v]+Mw; 
+          </div> 
+          <div>
+            node node1_tmp; 
+          </div> 
+          <div>
+            node1_tmp.v=Me; 
+          </div> 
+          <div>
+            node1_tmp.w=Mw; 
+          </div> 
+          <div>
+            qu.push(node1_tmp); 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> } 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            if(d[T]&lt;INF)cout&lt;&lt;d[T]&lt;&lt;endl; 
+          </div> 
+          <div>
+            else 
+           <br> cout&lt;&lt;“unreachable”&lt;&lt;endl; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            return 0; 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div></div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-157 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

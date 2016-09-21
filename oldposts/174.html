@@ -1,0 +1,190 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-174 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-174" class="post-174 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java&nbsp;包及访问控制权限</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=174" title="下午 3:29" rel="bookmark"><time class="entry-date" datetime="2011-09-21T15:29:35+00:00" pubdate>21 九月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=174#respond" title="Comment on Java&nbsp;包及访问控制权限">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="layout-grid:15.6000pt;"> 
+          <h1 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:22.0000pt; font-family:'宋体';"><br> 包及访问控制权限</span></h1> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> 包的建立：</span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">看如下代码：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">package&nbsp;<wbr>org.wl.demo01;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">class&nbsp;<wbr>Demo</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>fun(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“Hello&nbsp;<wbr>Wolrld!!!”);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>PackageDemo01{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Demo.fun();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">这里，第一行是定义一个包，那么编译的时候命令为<font face="Times New Roman">:</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">javac&nbsp;<wbr>-d&nbsp;<wbr>.&nbsp;<wbr>PackageDemo01.java</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(255,0,0); font-size:10.5000pt; font-family:'宋体';"><br> 注意：这里有参数：&nbsp;<wbr><font face="Times New Roman">-d&nbsp;</font><wbr>.&nbsp;<wbr><font face="宋体">不要忘了“</font><font face="Times New Roman">.</font><font face="宋体">”，表示在当前所在的目录建包。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(255,0,0); font-size:10.5000pt; font-family:'宋体';"><br> 如果想在其他地方建包编译，只需要把“<font face="Times New Roman">.</font><font face="宋体">”改成该目录即可例如想在</font><font face="Times New Roman">D:JavaCode</font><font face="宋体">中建包那么：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(255,0,0); font-size:10.5000pt; font-family:'宋体';"><br> javac&nbsp;<wbr>-d&nbsp;<wbr>D:JavaCode&nbsp;<wbr>PackageDemo01.java</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">执行的时候不需要<font face="Times New Roman">cd</font><font face="宋体">到目录，直接执行：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">java&nbsp;<wbr>org.wl.demo01.PackageDemo01</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> 包的导入：</span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">如果一个类想被外包所访问的时候必须得将其定义成<font face="Times New Roman">public</font><font face="宋体">权限！</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">看如下代码：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">package&nbsp;<wbr>wl.demo01;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>Demo01</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>fun(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“Hello&nbsp;<wbr>World!!!”);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">编译：<font face="Times New Roman">javac&nbsp;<wbr>-d&nbsp;<wbr>.&nbsp;<wbr>Demo01.java</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">再看下面代码：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">import&nbsp;<wbr>wl.demo01.Demo01;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>Demotest</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Demo01.fun();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">编译：<font face="Times New Roman">javac&nbsp;<wbr>Demotest.java</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">执行：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">java&nbsp;<wbr>Demotest</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">下面则正常输出<font face="Times New Roman">Hello&nbsp;<wbr>World!!!</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">如果想导入一个包中的所有类，那么直接使用“<font face="Times New Roman">*</font><font face="宋体">”即可例如：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">port&nbsp;<wbr>wl.demo01.*;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">如果不同包中的类名有冲突（类名一样），那么调用时直接使用类的完整名称：报名<font face="Times New Roman">.</font><font face="宋体">类名。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> 静态导入：</span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">当一个包中全部是静态方法的时候可以进行静态导入包，格式为：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">import&nbsp;<wbr>static&nbsp;<wbr><font face="宋体">包</font><font face="Times New Roman">;</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么在本类中使用静态导入包中的静态方法的时候不需要&nbsp;<wbr>&nbsp;<wbr>类名<font face="Times New Roman">.</font><font face="宋体">方法</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">而是直接&nbsp;<wbr>方法&nbsp;<wbr>&nbsp;<wbr>即可。</span></p> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"></h2> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> jar<font face="黑体">命令：</font></span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">在<font face="Times New Roman">cmd</font><font face="宋体">中输入</font><font face="Times New Roman">jar</font><font face="宋体">会出现如下</font><font face="Times New Roman">;</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">E:JavaCode&gt;jar</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">用法<font face="Times New Roman">:&nbsp;<wbr>jar&nbsp;<wbr>{ctxui}[vfm0Me]&nbsp;<wbr>[jar-file]&nbsp;<wbr>[manifest-file]&nbsp;<wbr>[entry-point]&nbsp;<wbr>[-C&nbsp;<wbr>dir]&nbsp;<wbr>fil</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">s&nbsp;<wbr>…</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">选项包括<font face="Times New Roman">:</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-c&nbsp;<wbr>&nbsp;<wbr><font face="宋体">创建新的归档文件</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-t&nbsp;<wbr>&nbsp;<wbr><font face="宋体">列出归档目录</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-x&nbsp;<wbr>&nbsp;<wbr><font face="宋体">从档案中提取指定的&nbsp;</font><wbr><font face="Times New Roman">(</font><font face="宋体">或所有</font><font face="Times New Roman">)&nbsp;</font><wbr><font face="宋体">文件</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-u&nbsp;<wbr>&nbsp;<wbr><font face="宋体">更新现有的归档文件</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-v&nbsp;<wbr>&nbsp;<wbr><font face="宋体">在标准输出中生成详细输出</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-f&nbsp;<wbr>&nbsp;<wbr><font face="宋体">指定归档文件名</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-m&nbsp;<wbr>&nbsp;<wbr><font face="宋体">包含指定清单文件中的清单信息</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-e&nbsp;<wbr>&nbsp;<wbr><font face="宋体">为捆绑到可执行&nbsp;</font><wbr><font face="Times New Roman">jar&nbsp;</font><wbr><font face="宋体">文件的独立应用程序</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>指定应用程序入口点</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-0&nbsp;<wbr>&nbsp;<wbr><font face="宋体">仅存储</font><font face="Times New Roman">;&nbsp;</font><wbr><font face="宋体">不使用情况任何&nbsp;</font><wbr><font face="Times New Roman">ZIP&nbsp;</font><wbr><font face="宋体">压缩</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-M&nbsp;<wbr>&nbsp;<wbr><font face="宋体">不创建条目的清单文件</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-i&nbsp;<wbr>&nbsp;<wbr><font face="宋体">为指定的&nbsp;</font><wbr><font face="Times New Roman">jar&nbsp;</font><wbr><font face="宋体">文件生成索引信息</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>-C&nbsp;<wbr>&nbsp;<wbr><font face="宋体">更改为指定的目录并包含其中的文件</font></span></p> 
+          <p style="margin-left:21.0000pt; text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">如果有任何目录文件<font face="Times New Roman">,&nbsp;<wbr></font><font face="宋体">则对其进行递归处理。</font></span></p> 
+          <p style="margin-left:21.0000pt; text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">清单文件名<font face="Times New Roman">,&nbsp;<wbr></font><font face="宋体">归档文件名和入口点名称的指定顺序</font></span></p> 
+          <p style="margin-left:21.0000pt; text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">与&nbsp;<wbr><font face="Times New Roman">‘m’,&nbsp;</font><wbr>‘f’&nbsp;<wbr><font face="宋体">和&nbsp;</font><wbr><font face="Times New Roman">‘e’&nbsp;</font><wbr><font face="宋体">标记的指定顺序相同。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">示例&nbsp;<wbr><font face="Times New Roman">1:&nbsp;</font><wbr><font face="宋体">将两个类文件归档到一个名为&nbsp;</font><wbr><font face="Times New Roman">classes.jar&nbsp;</font><wbr><font face="宋体">的归档文件中</font><font face="Times New Roman">:</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>jar&nbsp;<wbr>cvf&nbsp;<wbr>classes.jar&nbsp;<wbr>Foo.class&nbsp;<wbr>Bar.class</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">示例&nbsp;<wbr><font face="Times New Roman">2:&nbsp;</font><wbr><font face="宋体">使用现有的清单文件&nbsp;</font><wbr><font face="Times New Roman">‘mymanifest’&nbsp;</font><wbr><font face="宋体">并</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>将&nbsp;<wbr><font face="Times New Roman">foo/&nbsp;</font><wbr><font face="宋体">目录中的所有文件归档到&nbsp;</font><wbr><font face="Times New Roman">‘classes.jar’&nbsp;</font><wbr><font face="宋体">中</font><font face="Times New Roman">:</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>jar&nbsp;<wbr>cvfm&nbsp;<wbr>classes.jar&nbsp;<wbr>mymanifest&nbsp;<wbr>-C&nbsp;<wbr>foo/<font face="宋体">。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么最常使用的几个参数介绍：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">‘C’&nbsp;<wbr><font face="宋体">：创建新的文档</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">‘V’&nbsp;<wbr><font face="宋体">：生成详细的输出信息</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">‘F’&nbsp;<wbr><font face="宋体">：指定存档的文件名</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">如果想将一个文件夹中的类打包重命名那么：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">jar&nbsp;<wbr>-cvf&nbsp;<wbr>NEWNAME.jar&nbsp;<wbr>FOLDER</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">例如：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">E:JavaCode&gt;jar&nbsp;<wbr>-cvf&nbsp;<wbr>test.jar&nbsp;<wbr>wl</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">已添加清单</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">正在添加<font face="Times New Roman">:&nbsp;<wbr>wl/(</font><font face="宋体">输入&nbsp;<wbr></font><font face="Times New Roman">=&nbsp;<wbr>0)&nbsp;<wbr>(</font><font face="宋体">输出&nbsp;<wbr></font><font face="Times New Roman">=&nbsp;<wbr>0)(</font><font face="宋体">存储了&nbsp;<wbr></font><font face="Times New Roman">0%)</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">正在添加<font face="Times New Roman">:&nbsp;<wbr>wl/demo01/(</font><font face="宋体">输入&nbsp;<wbr></font><font face="Times New Roman">=&nbsp;<wbr>0)&nbsp;<wbr>(</font><font face="宋体">输出&nbsp;<wbr></font><font face="Times New Roman">=&nbsp;<wbr>0)(</font><font face="宋体">存储了&nbsp;<wbr></font><font face="Times New Roman">0%)</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">正在添加<font face="Times New Roman">:&nbsp;<wbr>wl/demo01/Demo01.class(</font><font face="宋体">输入&nbsp;<wbr></font><font face="Times New Roman">=&nbsp;<wbr>404)&nbsp;<wbr>(</font><font face="宋体">输出&nbsp;<wbr></font><font face="Times New Roman">=&nbsp;<wbr>290)(</font><font face="宋体">压缩了&nbsp;<wbr></font><font face="Times New Roman">28%)</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么使用的时候必须得添加<font face="Times New Roman">classpath</font><font face="宋体">。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">例如：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">set&nbsp;<wbr>classpath=.;E:JavaCodetest.jar</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么使用和不打包的时候是一样的：</span><span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';"><br> </span><span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">import&nbsp;<wbr>wl.demo01.Demo01;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>Testjar</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Demo01.fun();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt; text-align:left;">&nbsp;<wbr></p> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> 访问控制权限：</span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">private<font face="宋体">权限：只限本类访问。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">默认权限：本包的类可以访问。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">protected<font face="宋体">权限：在默认权限上加上本类的子类可以访问。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public<font face="宋体">权限：所有类都可访问。、</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-174 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

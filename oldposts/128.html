@@ -1,0 +1,466 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-128 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-128" class="post-128 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;103&nbsp;–&nbsp;Stacking&nbsp;Boxes&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=128" title="下午 2:46" rel="bookmark"><time class="entry-date" datetime="2011-08-08T14:46:48+00:00" pubdate>8 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=128#comments" title="Comment on UVA&nbsp;103&nbsp;–&nbsp;Stacking&nbsp;Boxes&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 矩形嵌套，DP。</p> 
+         <div>
+           感觉自己做的有点麻烦，先对多维矩形的各边排序，建立图，然后就是DP，然后还用DFS打印路径。。。。。 
+         </div> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font color="#C0FFFF" size="5">Stacking Boxes</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <h2><a name="SECTION0001001000000000000000"><font color="#0070E8">Background</font></a></h2> 
+          <p>Some concepts in Mathematics and Computer Science are simple in<br> one or two dimensions but become more complex when extended to<br> arbitrary dimensions. Consider solving differential equations in<br> several dimensions and analyzing the topology of an<br> <i>n</i>-dimensional hypercube. The former is much more complicated<br> than its one dimensional relative while the latter bears a<br> remarkable resemblance to its “lower-class” cousin.</p> 
+          <h2><a name="SECTION0001002000000000000000"><font color="#0070E8">The<br> Problem</font></a></h2> 
+          <p>Consider an <i>n</i>-dimensional “box” given by its<br> dimensions. In two dimensions the box (2,3) might represent a box<br> with length 2 units and width 3 units. In three dimensions the box<br> (4,8,9) can represent a box <img alt="tex2html_wrap_inline40" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img1.gif" height="24" width="68" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; (length, width, and height). In 6<br> dimensions it is, perhaps, unclear what the box (4,5,6,7,8,9)<br> represents; but we can analyze properties of the box such as the<br> sum of its dimensions.</p> 
+          <p>In this problem you will analyze a property of a group of<br> <i>n</i>-dimensional boxes. You are to determine the longest<br> <em>nesting string</em> of boxes, that is a sequence of boxes<br> <img alt="tex2html_wrap_inline44" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img2.gif" height="25" width="91" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; such that each box <img alt="tex2html_wrap_inline46" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img3.gif" height="25" width="11" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; nests in box <img alt="tex2html_wrap_inline48" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img4.gif" height="26" width="28" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ( <img alt="tex2html_wrap_inline50" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img5.gif" height="27" width="75" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; .</p> 
+          <p>A box D = ( <img alt="tex2html_wrap_inline52" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img6.gif" height="25" width="96" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) nests in a box E = ( <img alt="tex2html_wrap_inline54" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img7.gif" height="17" width="93" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) if there is some rearrangement of<br> the <img alt="tex2html_wrap_inline56" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img8.gif" height="25" width="13" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; such that when rearranged each<br> dimension is less than the corresponding dimension in box E. This<br> loosely corresponds to turning box D to see if it will fit in box<br> E. However, since any rearrangement suffices, box D can be<br> contorted, not just turned (see examples below).</p> 
+          <p>For example, the box D = (2,6) nests in the box E = (7,3) since<br> D can be rearranged as (6,2) so that each dimension is less than<br> the corresponding dimension in E. The box D = (9,5,7,3) does NOT<br> nest in the box E = (2,10,6,8) since no rearrangement of D results<br> in a box that satisfies the nesting property, but F = (9,5,7,1)<br> does nest in box E since F can be rearranged as (1,9,5,7) which<br> nests in E.</p> 
+          <p>Formally, we define nesting as follows: box D = ( <img alt="tex2html_wrap_inline52" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img6.gif" height="25" width="96" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) <em>nests</em> in box E = (<br> <img alt="tex2html_wrap_inline54" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img7.gif" height="17" width="93" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) if there is a permutation <img alt="tex2html_wrap_inline62" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img9.gif" height="8" width="8" align="bottom" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; of <img alt="tex2html_wrap_inline64" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img10.gif" height="12" width="44" align="bottom" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; such that ( <img alt="tex2html_wrap_inline66" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img11.gif" height="26" width="151" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) “fits” in ( <img alt="tex2html_wrap_inline54" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img7.gif" height="17" width="93" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) i.e., if <img alt="tex2html_wrap_inline70" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img12.gif" height="26" width="68" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; for all <img alt="tex2html_wrap_inline72" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img13.gif" height="25" width="70" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; .</p> 
+          <h2><a name="SECTION0001003000000000000000"><font color="#0070E8">The<br> Input</font></a></h2> 
+          <p>The input consists of a series of box sequences. Each box<br> sequence begins with a line consisting of the the number of boxes<br> <i>k</i> in the sequence followed by the dimensionality of the<br> boxes, <i>n</i> (on the same line.)</p> 
+          <p>This line is followed by <i>k</i> lines, one line per box with<br> the <i>n</i> measurements of each box on one line separated by one<br> or more spaces. The <img alt="tex2html_wrap_inline82" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img14.gif" height="15" width="18" align="bottom" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; line in the sequence ( <img alt="tex2html_wrap_inline84" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img15.gif" height="26" width="69" align="middle" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; ) gives the measurements for the<br> <img alt="tex2html_wrap_inline82" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/103img14.gif" height="15" width="18" align="bottom" title="UVA&nbsp;<wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告"><wbr>103&nbsp;<wbr>-&nbsp;<wbr>Stacking&nbsp;<wbr>Boxes&nbsp;<wbr>解题报告” /&gt; box.</p> 
+          <p>There may be several box sequences in the input file. Your<br> program should process all of them and determine, for each<br> sequence, which of the <i>k</i> boxes determine the longest nesting<br> string and the length of that nesting string (the number of boxes<br> in the string).</p> 
+          <p>In this problem the maximum dimensionality is 10 and the minimum<br> dimensionality is 1. The maximum number of boxes in a sequence is<br> 30.</p> 
+          <h2><a name="SECTION0001004000000000000000"><font color="#0070E8">The<br> Output</font></a></h2> 
+          <p>For each box sequence in the input file, output the length of<br> the longest nesting string on one line followed on the next line by<br> a list of the boxes that comprise this string in order. The<br> “smallest” or “innermost” box of the nesting string should be<br> listed first, the next box (if there is one) should be listed<br> second, etc.</p> 
+          <p>The boxes should be numbered according to the order in which<br> they appeared in the input file (first box is box 1, etc.).</p> 
+          <p>If there is more than one longest nesting string then any one of<br> them can be output.</p> 
+          <h2><a name="SECTION0001005000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <pre>
+5 2
+</pre> 
+          <pre>
+3 7
+</pre> 
+          <pre>
+8 10
+</pre> 
+          <pre>
+5 2
+</pre> 
+          <pre>
+9 11
+</pre> 
+          <pre>
+21 18
+</pre> 
+          <pre>
+8 6
+</pre> 
+          <pre>
+5 2 20 1 30 10
+</pre> 
+          <pre>
+23 15 7 9 11 3
+</pre> 
+          <pre>
+40 50 34 24 14 4
+</pre> 
+          <pre>
+9 10 11 12 13 14
+</pre> 
+          <pre>
+31 4 18 8 27 17
+</pre> 
+          <pre>
+44 32 13 19 41 19
+</pre> 
+          <pre>
+1 2 3 4 5 6
+</pre> 
+          <pre>
+80 37 47 18 21 9
+</pre> 
+          <pre>
+5 1
+</pre> 
+          <pre>
+3
+</pre> 
+          <pre>
+8
+</pre> 
+          <pre>
+2
+</pre> 
+          <pre>
+9
+</pre> 
+          <pre>
+3
+</pre> 
+          <pre>
+<span style="color: rgb(0, 112, 232); font-family: 宋体, Verdana, Arial, Helvetica, sans-serif; font-size: 21px; font-weight: bold; line-height: 31px;"><a name="SECTION0001006000000000000000">Sample Output</a></span>
+</pre> 
+          <pre>
+5
+</pre> 
+          <pre>
+3 1 2 4 5
+</pre> 
+          <pre>
+4
+</pre> 
+          <pre>
+7 2 5 6
+</pre> 
+          <pre>
+4
+</pre> 
+          <pre>
+3 1 2 4
+</pre> 
+          <div></div> 
+          <div></div> 
+          <div>
+            代码： 
+          </div> 
+          <div> 
+           <div></div> 
+           <div>
+             #include&lt;iostream&gt; 
+           </div> 
+           <div>
+             #include&lt;algorithm&gt; 
+           </div> 
+           <div>
+             #include&lt;cstring&gt; 
+           </div> 
+           <div>
+             #include&lt;fstream&gt; 
+           </div> 
+           <div>
+             using namespace std; 
+           </div> 
+           <div>
+             int box[30][10]; 
+           </div> 
+           <div>
+             int map[30][30]; 
+           </div> 
+           <div>
+             int vis[30]; 
+           </div> 
+           <div>
+             int path[30]; 
+           </div> 
+           <div>
+             int num,d; 
+           </div> 
+           <div>
+             bool found; 
+           </div> 
+           <div>
+             int number; 
+           </div> 
+           <div>
+             int maxn; 
+           </div> 
+           <div></div> 
+           <div>
+             bool mycmp(int a,int b){ 
+           </div> 
+           <div>
+             return a&gt;b; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div></div> 
+           <div>
+             bool Judge(int m,int n,int dia){ 
+           </div> 
+           <div>
+             for(int i=0;i&lt;dia;i++){ 
+           </div> 
+           <div>
+             if(box[m][i]&lt;=box[n][i]) 
+           </div> 
+           <div>
+             return false; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             return true; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div></div> 
+           <div>
+             int dp(int m){ 
+           </div> 
+           <div>
+             int &amp;ans=vis[m]; 
+           </div> 
+           <div>
+             if(ans&gt;0)return ans; 
+           </div> 
+           <div>
+             ans=1; 
+           </div> 
+           <div>
+             for(int i=0;i&lt;num;i++){ 
+           </div> 
+           <div>
+             if(map[m][i]){ 
+           </div> 
+           <div>
+             int tmp=dp(i)+1; 
+           </div> 
+           <div>
+             if(ans&lt;tmp)ans=tmp; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             return ans; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div></div> 
+           <div>
+             void print_path(){ 
+           </div> 
+           <div>
+             for(int i=maxn-1;i&gt;=0;i–){ 
+           </div> 
+           <div>
+             cout&lt;&lt;path[i]; 
+           </div> 
+           <div>
+             if(i!=0)cout&lt;&lt;” “; 
+           </div> 
+           <div>
+             else cout&lt;&lt;endl; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div></div> 
+           <div>
+             void dfs(int step,int p){ 
+           </div> 
+           <div>
+             if(found)return; 
+           </div> 
+           <div>
+             if(step==maxn-1){ 
+           </div> 
+           <div>
+             print_path(); 
+           </div> 
+           <div>
+             found=true; 
+           </div> 
+           <div>
+             return; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             for(int i=0;i&lt;num;i++){ 
+           </div> 
+           <div>
+             if(map[p][i]){ 
+           </div> 
+           <div>
+             path[step+1]=i+1; 
+           </div> 
+           <div>
+             dfs(step+1,i); 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div></div> 
+           <div>
+             int main() 
+           </div> 
+           <div>
+             { 
+           </div> 
+           <div>
+             // freopen(“test.txt”,”r”,stdin); 
+           </div> 
+           <div>
+             while(cin&gt;&gt;num&gt;&gt;d){ 
+           </div> 
+           <div>
+             for(int i=0;i&lt;num;i++){ 
+           </div> 
+           <div>
+             for(int j=0;j&lt;d;j++){ 
+           </div> 
+           <div>
+             cin&gt;&gt;box[i][j]; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             memset(map,0,sizeof(map)); 
+           </div> 
+           <div>
+             for(int 
+            <br> i=0;i&lt;num;i++)sort(box[i],box[i]+d,mycmp); 
+           </div> 
+           <div>
+             for(int i=0;i&lt;num;i++){ 
+           </div> 
+           <div>
+             for(int j=0;j&lt;num;j++){ 
+           </div> 
+           <div>
+             if(Judge(i,j,d))map[i][j]=1; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             maxn=0; 
+           </div> 
+           <div>
+             for(int i=0;i&lt;num;i++){ 
+           </div> 
+           <div>
+             memset(vis,0,sizeof(vis)); 
+           </div> 
+           <div>
+             int tmp=dp(i); 
+           </div> 
+           <div>
+             if(maxn&lt;tmp){ 
+           </div> 
+           <div>
+             maxn=tmp; 
+           </div> 
+           <div>
+             number=i; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             cout&lt;&lt;maxn&lt;&lt;endl; 
+           </div> 
+           <div>
+             found=false; 
+           </div> 
+           <div>
+             path[0]=number+1; 
+           </div> 
+           <div>
+             dfs(0,number); 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             return 0; 
+           </div> 
+           <div>
+             } 
+           </div> 
+          </div> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-128 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

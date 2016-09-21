@@ -1,0 +1,187 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-862 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-862" class="post-862 post type-post status-publish format-standard hentry category-professional_exchanges"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">C语言回调函数</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=862" title="下午 3:57" rel="bookmark"><time class="entry-date" datetime="2014-02-22T15:57:24+00:00" pubdate>22 二月, 2014</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=862#respond" title="Comment on C语言回调函数">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p>以前在某公司实习的时候还说过C语言的回调函数，现在在这说一下。</p> 
+         <p>本代码和语言参考 李先静《系统程序员成长计划》。</p> 
+         <p>回调函数就是由内部实现统一接口，由调用者来决定调用哪一个函数，是对C语言函数指针的一个高级应用。比如我们在Linux内核里面，在设备驱动里面，例如有两个不一样的字符设备。那么对这个设备执行刷新操作（不管是否有刷新操作，这里只举例）需要调用一定的函数，这两个设备所执行的函数一定是不同的。但是，上层的管理数据结构是一样的，在管理数据结构里面分别存入两个刷新操作的函数指针，那么在调用的时候就可以直接用统一接口来执行刷新操作即可。这就是回调函数的一个例子，他实现了传说中的Write Once,Run Anywhere.同时维护起来跟其他的相比更简单。</p> 
+         <p>那么就看看书上的例子：实现一个双向链表（通用链表），它有遍历链表、统计链表中最大值和链表值求和的功能。这三个功能可以写成三个不同也不相关的函数，但是我们可以想到，这三个函数都有着相同的操作，那就是依次遍历。那么就可以将这个遍历抽出来（代码中的dlist_foreach函数），然后根据这三个函数的各自的功能来实现较少重复的代码。 具体代码请看下面：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=862&amp;download=d_list.c">d_list.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p8621"> 
+             <td class="code" id="p862code1"><pre class="c" style="font-family:monospace;"><span style="color: #339933;">#include&lt;stdio.h&gt;</span>
+<span style="color: #339933;">#include&lt;stdlib.h&gt;</span>
+<span style="color: #339933;">#include&lt;malloc.h&gt;</span>
+&nbsp;
+<span style="color: #993333;">typedef</span> <span style="color: #993333;">struct</span> _DListNode<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> _DListNode <span style="color: #339933;">*</span>prev<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> _DListNode <span style="color: #339933;">*</span>next<span style="color: #339933;">;</span>
+	<span style="color: #993333;">void</span> <span style="color: #339933;">*</span>data<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>DListNode<span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">typedef</span> <span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>DListFunc<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span>ctx<span style="color: #339933;">,</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span>data<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+<span style="color: #993333;">void</span> add_dlist_node_int<span style="color: #009900;">(</span>DListNode <span style="color: #339933;">*</span>root<span style="color: #339933;">,</span>DListNode <span style="color: #339933;">*</span>p<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>root<span style="color: #339933;">==</span>NULL<span style="color: #009900;">)</span><span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>p<span style="color: #339933;">==</span>NULL<span style="color: #009900;">)</span><span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+	p<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">=</span>root<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+	p<span style="color: #339933;">-&gt;</span>prev<span style="color: #339933;">=</span>root<span style="color: #339933;">;</span>
+	root<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">=</span>p<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> delete_dlist_node<span style="color: #009900;">(</span>DListNode <span style="color: #339933;">*</span>d<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>NULL<span style="color: #339933;">==</span>d<span style="color: #009900;">)</span><span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+	print_int<span style="color: #009900;">(</span>NULL<span style="color: #339933;">,</span>d<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	d<span style="color: #339933;">-&gt;</span>prev<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">=</span>d<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+	d<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">-&gt;</span>prev<span style="color: #339933;">=</span>d<span style="color: #339933;">-&gt;</span>prev<span style="color: #339933;">;</span>
+	free<span style="color: #009900;">(</span>d<span style="color: #339933;">-&gt;</span>data<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	free<span style="color: #009900;">(</span>d<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	d<span style="color: #339933;">=</span>NULL<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> init<span style="color: #009900;">(</span>DListNode <span style="color: #339933;">**</span>root<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> i<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #339933;">*</span>tmp<span style="color: #339933;">=</span>NULL<span style="color: #339933;">;</span>
+	<span style="color: #339933;">*</span>root<span style="color: #339933;">=</span><span style="color: #009900;">(</span>DListNode<span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>malloc<span style="color: #009900;">(</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>DListNode<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">(</span><span style="color: #339933;">*</span>root<span style="color: #009900;">)</span><span style="color: #339933;">-&gt;</span>data<span style="color: #339933;">=</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>malloc<span style="color: #009900;">(</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #339933;">*</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>root<span style="color: #009900;">)</span><span style="color: #339933;">-&gt;</span>data<span style="color: #009900;">)</span><span style="color: #339933;">=-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">(</span><span style="color: #339933;">*</span>root<span style="color: #009900;">)</span><span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">=</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>root<span style="color: #009900;">)</span><span style="color: #339933;">-&gt;</span>prev<span style="color: #339933;">=*</span>root<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">for</span><span style="color: #009900;">(</span>i<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>i<span style="color: #339933;">&lt;</span><span style="color: #0000dd;">10</span><span style="color: #339933;">;</span>i<span style="color: #339933;">++</span><span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+		DListNode <span style="color: #339933;">*</span>p<span style="color: #339933;">=</span><span style="color: #009900;">(</span>DListNode <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>malloc<span style="color: #009900;">(</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>DListNode<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		tmp<span style="color: #339933;">=</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>malloc<span style="color: #009900;">(</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #339933;">*</span>tmp<span style="color: #339933;">=</span>i<span style="color: #339933;">;</span>
+		p<span style="color: #339933;">-&gt;</span>data<span style="color: #339933;">=</span>tmp<span style="color: #339933;">;</span>
+		add_dlist_node_int<span style="color: #009900;">(</span><span style="color: #339933;">*</span>root<span style="color: #339933;">,</span>p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> dlist_foreach<span style="color: #009900;">(</span>DListNode <span style="color: #339933;">*</span>thiz<span style="color: #339933;">,</span>DListFunc visit<span style="color: #339933;">,</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span>context<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	DListNode <span style="color: #339933;">*</span>iter<span style="color: #339933;">=</span>NULL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>NULL<span style="color: #339933;">==</span>thiz<span style="color: #009900;">)</span><span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+	iter<span style="color: #339933;">=</span>thiz<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">while</span><span style="color: #009900;">(</span>iter<span style="color: #339933;">!=</span>NULL<span style="color: #339933;">&amp;&amp;</span>iter<span style="color: #339933;">!=</span>thiz<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+		visit<span style="color: #009900;">(</span>context<span style="color: #339933;">,</span>iter<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		iter<span style="color: #339933;">=</span>iter<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> print_int<span style="color: #009900;">(</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span>thiz<span style="color: #339933;">,</span>DListNode <span style="color: #339933;">*</span>d<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	<a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span style="color: #000066;">printf</span></a><span style="color: #009900;">(</span><span style="color: #ff0000;">"======%d<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,*</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>d<span style="color: #339933;">-&gt;</span>data<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> sum_cb<span style="color: #009900;">(</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span>thiz<span style="color: #339933;">,</span>DListNode <span style="color: #339933;">*</span>d<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	<span style="color: #009900;">(</span><span style="color: #339933;">*</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>thiz<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">+=*</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>d<span style="color: #339933;">-&gt;</span>data<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> find_max<span style="color: #009900;">(</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span>thiz<span style="color: #339933;">,</span>DListNode <span style="color: #339933;">*</span>d<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> a1<span style="color: #339933;">=*</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>thiz<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> a2<span style="color: #339933;">=*</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>d<span style="color: #339933;">-&gt;</span>data<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>a1<span style="color: #339933;">&lt;</span>a2<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+		<span style="color: #339933;">*</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span>thiz<span style="color: #009900;">)</span><span style="color: #339933;">=</span>a2<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">void</span> destroy<span style="color: #009900;">(</span>DListNode <span style="color: #339933;">**</span>root<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+	DListNode <span style="color: #339933;">*</span>iter1<span style="color: #339933;">=</span>NULL<span style="color: #339933;">,*</span>iter2<span style="color: #339933;">=</span>NULL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>NULL<span style="color: #339933;">==</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>root<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+	iter1<span style="color: #339933;">=*</span>root<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">while</span><span style="color: #009900;">(</span>iter1<span style="color: #339933;">!=</span>NULL<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+		iter2<span style="color: #339933;">=</span>iter1<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>iter2<span style="color: #339933;">==</span>iter1<span style="color: #009900;">)</span>iter2<span style="color: #339933;">=</span>NULL<span style="color: #339933;">;</span>
+		delete_dlist_node<span style="color: #009900;">(</span>iter1<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		iter1<span style="color: #339933;">=</span>iter2<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #993333;">int</span> main<span style="color: #009900;">(</span><span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	DListNode <span style="color: #339933;">*</span>root<span style="color: #339933;">=</span>NULL<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> tmp<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	init<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>root<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>root<span style="color: #339933;">==</span>NULL<span style="color: #009900;">)</span><span style="color: #009900;">{</span>
+		<a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span style="color: #000066;">printf</span></a><span style="color: #009900;">(</span><span style="color: #ff0000;">"Root id NULL!<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	dlist_foreach<span style="color: #009900;">(</span>root<span style="color: #339933;">,</span>print_int<span style="color: #339933;">,&amp;</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	tmp<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	dlist_foreach<span style="color: #009900;">(</span>root<span style="color: #339933;">,</span>sum_cb<span style="color: #339933;">,&amp;</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span style="color: #000066;">printf</span></a><span style="color: #009900;">(</span><span style="color: #ff0000;">"SUB IS: %d<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	tmp<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	dlist_foreach<span style="color: #009900;">(</span>root<span style="color: #339933;">,</span>find_max<span style="color: #339933;">,&amp;</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span style="color: #000066;">printf</span></a><span style="color: #009900;">(</span><span style="color: #ff0000;">"MAX IS: %d<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	destroy<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>root<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-862 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

@@ -1,0 +1,227 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-22 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-22" class="post-22 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;&nbsp;10025&nbsp;–&nbsp;The&nbsp;?&nbsp;1&nbsp;?&nbsp;2&nbsp;?&nbsp;…&nbsp;?&nbsp;n&nbsp;=&nbsp;k&nbsp;problem&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=22" title="下午 5:58" rel="bookmark"><time class="entry-date" datetime="2011-05-17T17:58:52+00:00" pubdate>17 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=22#respond" title="Comment on UVA&nbsp;&nbsp;10025&nbsp;–&nbsp;The&nbsp;?&nbsp;1&nbsp;?&nbsp;2&nbsp;?&nbsp;…&nbsp;?&nbsp;n&nbsp;=&nbsp;k&nbsp;problem&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 看到这个题我无语了。。。。。</p> 
+         <div>
+           得感谢 
+          <a href="http://hi.baidu.com/knowledgetime/blog/item/225ebb3620367f1c91ef395d.html" target="_blank">Knowledgetime的博客</a>讲的很详细。 
+         </div> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font color="#C0FFFF" size="5">The<br> ? 1 ? 2 ? … ? n = k problem</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001002000000000000000"><font color="#0070E8">The<br> problem</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Given the following formula, one can set operators ‘+’ or ‘-‘<br> instead of each ‘?’, in order to obtain a given k<br> <font size="+1">? 1 ? 2 ? … ? n = k</font></p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> For example: to obtain&nbsp;<wbr><b>k =<br> 12&nbsp;</b><wbr>, the expression to be used will be:<br> <b>- 1 + 2 + 3 + 4 + 5 + 6 – 7 = 12</b>&nbsp;<wbr><br> with&nbsp;<wbr><b>n = 7</b></p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001003000000000000000"><font color="#0070E8">The<br> Input</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> The first line is the number of test cases, followed by a blank<br> line.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Each test case of the input contains integer k<br> (0&lt;=|k|&lt;=1000000000).</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Each test case will be separated by a single line.</p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001004000000000000000"><font color="#0070E8">The<br> Output</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> For each test case, your program should print the minimal possible<br> n (1&lt;=n) to obtain k with the above formula.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Print a blank line between the outputs for two consecutive test<br> cases.</p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001005000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">2&nbsp;<wbr></span>
+</pre> 
+          <pre>
+&nbsp;<wbr>12&nbsp;<wbr>
+</pre> 
+          <pre>
+&nbsp;<wbr>-3646397
+</pre> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001006000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+7&nbsp;<wbr>
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+&nbsp;<wbr>2701
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+<br>
+</pre> 
+          <pre style="font-family: simsun; font-weight: bold; line-height: normal; font-size: medium;">
+代码：
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;iostream&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;fstream&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;cmath&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">using namespace std;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">int main()</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int ncase;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cin&gt;&gt;ncase;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>while(ncase--)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>long k=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cin&gt;&gt;k;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(k==0){</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;"3"&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(k&lt;0)k=-k;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>long tmp=(sqrt(1+8*k)-1)/2;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>long sum=(1+tmp)*tmp/2;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>while(1)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(sum&gt;=k&amp;&amp;(sum-k)%2==0)break;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp++;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>sum+=tmp;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(0!=k)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;tmp&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(ncase)cout&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return 0;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <div style="font-family: simsun; font-weight: bold; line-height: normal; font-size: medium;"> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-22 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

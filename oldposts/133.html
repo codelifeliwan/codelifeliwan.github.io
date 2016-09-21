@@ -1,0 +1,353 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-133 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-133" class="post-133 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10131&nbsp;–&nbsp;Is&nbsp;Bigger&nbsp;Smarter?&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=133" title="上午 9:58" rel="bookmark"><time class="entry-date" datetime="2011-08-10T09:58:52+00:00" pubdate>10 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=133#respond" title="Comment on UVA&nbsp;10131&nbsp;–&nbsp;Is&nbsp;Bigger&nbsp;Smarter?&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 记忆化搜索递归，保存路径，DP，（也可使用最长公共子序列做）。</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <h1>Question 1: Is Bigger Smarter?</h1> 
+          <h2>The Problem</h2> 
+          <p>Some people think that the bigger an elephant is, the smarter it<br> is. To disprove this, you want to take the data on a collection of<br> elephants and put as large a subset of this data as possible into a<br> sequence so that the weights are increasing, but the IQ’s are<br> decreasing.</p> 
+          <p>The input will consist of data for a bunch of elephants, one<br> elephant per line, terminated by the end-of-file. The data for a<br> particular elephant will consist of a pair of integers: the first<br> representing its size in kilograms and the second representing its<br> IQ in hundredths of IQ points. Both integers are between 1 and<br> 10000. The data will contain information for at most 1000<br> elephants. Two elephants may have the same weight, the same IQ, or<br> even the same weight and IQ.</p> 
+          <p>Say that the numbers on the i-th data line are <tt>W[i]</tt> and<br> <tt>S[i]</tt>. Your program should output a sequence of lines of<br> data; the first line should contain a number <tt>n</tt>; the<br> remaining <tt>n</tt> lines should each contain a single positive<br> integer (each one representing an elephant). If these <tt>n</tt><br> integers are <tt>a[1]</tt>, <tt>a[2]</tt>,…, <tt>a[n]</tt> then<br> it must be the case that</p> 
+          <pre>
+   W[a[1]] &lt; W[a[2]] &lt; ... &lt; W[a[n]]
+</pre> 
+          <p>and</p> 
+          <pre>
+   S[a[1]] &gt; S[a[2]] &gt; ... &gt; S[a[n]]
+</pre> 
+          <p>In order for the answer to be correct, <tt>n</tt> should be as<br> large as possible. All inequalities are strict: weights must be<br> strictly increasing, and IQs must be strictly decreasing. There may<br> be many correct outputs for a given input, your program only needs<br> to find one.</p> 
+          <h2>Sample Input</h2> 
+          <pre>
+6008 1300&nbsp;<wbr>
+</pre> 
+          <pre>
+6000 2100&nbsp;<wbr>
+</pre> 
+          <pre>
+500 2000&nbsp;<wbr>
+</pre> 
+          <pre>
+1000 4000&nbsp;<wbr>
+</pre> 
+          <pre>
+1100 3000&nbsp;<wbr>
+</pre> 
+          <pre>
+6000 2000&nbsp;<wbr>
+</pre> 
+          <pre>
+8000 1400&nbsp;<wbr>
+</pre> 
+          <pre>
+6000 1200&nbsp;<wbr>
+</pre> 
+          <pre>
+2000 1900
+</pre> 
+          <h2>Sample Output</h2> 
+          <pre>
+4&nbsp;<wbr>
+</pre> 
+          <pre>
+4&nbsp;<wbr>
+</pre> 
+          <pre>
+5&nbsp;<wbr>
+</pre> 
+          <pre>
+9&nbsp;<wbr>
+</pre> 
+          <pre>
+7
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<font face="monospace"><br></font>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+typedef struct node{
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int w,s;</font>
+</pre> 
+          <pre>
+}node;
+</pre> 
+          <pre>
+node N[1005];
+</pre> 
+          <pre>
+int tmpmark[1005];
+</pre> 
+          <pre>
+int mark[1005];
+</pre> 
+          <pre>
+int vis[1005];
+</pre> 
+          <pre>
+int map[1005][1005];
+</pre> 
+          <pre>
+int num;
+</pre> 
+          <pre>
+<font face="monospace"><br></font>
+</pre> 
+          <pre>
+int Judge(int i,int j){
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>if(N[i].w&lt;N[j].w&amp;&amp;N[i].s&gt;N[j].s)return 1;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>else if(N[i].w&gt;N[j].w&amp;&amp;N[i].s&lt;N[j].s)return -1;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>return 0;</font>
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<font face="monospace"><br></font>
+</pre> 
+          <pre>
+int dp(int x){
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>if(vis[x])return vis[x];</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>vis[x]=1;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>for(int i=0;i&lt;num;i++){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>if(map[x][i]){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int tmp=dp(i)+1;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>if(tmp&gt;vis[x]){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>vis[x]=tmp;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>tmpmark[x]=i;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>return vis[x];</font>
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<font face="monospace"><br></font>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+<font face="monospace">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>num=0;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>while(cin&gt;&gt;N[num].w&gt;&gt;N[num].s)num++;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>memset(map,0,sizeof(map));</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>for(int i=0;i&lt;num-1;i++){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>for(int j=i+1;j&lt;num;j++){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int tmp=Judge(i,j);</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>if(tmp==1)map[i][j]=1;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>else if(tmp==-1)map[j][i]=1;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int maxn=0;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int head;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>for(int i=0;i&lt;num;i++){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int tmp=dp(i);</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>if(tmp&gt;maxn){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>head=i;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>maxn=tmp;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>memcpy(mark,tmpmark,sizeof(mark));</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>cout&lt;&lt;maxn&lt;&lt;endl;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>cout&lt;&lt;head+1&lt;&lt;endl;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>int next=mark[head];</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>for(int i=0;i&lt;maxn-1;i++){</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>cout&lt;&lt;next+1&lt;&lt;endl;</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>next=mark[next];</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>}</font>
+</pre> 
+          <pre>
+<font face="monospace"><span style="white-space:pre"> </span>return 0;</font>
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+&nbsp;<wbr>
+</pre> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-133 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

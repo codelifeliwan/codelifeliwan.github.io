@@ -1,0 +1,119 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-230 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-230" class="post-230 post type-post status-publish format-standard hentry category-my_operating_system tag-gcc"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">C语言注意事项和显示问题</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=230" title="下午 9:39" rel="bookmark"><time class="entry-date" datetime="2012-03-30T21:39:14+00:00" pubdate>30 三月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=230#respond" title="Comment on C语言注意事项和显示问题">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="text-indent:2em;">
+           在宿舍憋了两天，调了两天程序，终于调试好了，操作系统不好调试啊，一个小问题就得调试N天。。。。。 
+          <p></p> 
+          <div>
+            关于C语言指针的使用，我们知道指针其实就是一个变量，一般是long型的变量，而指针里面存的地址就是这个long型的值，那么在我们的操作系统的保护下你的指针不能随便指，如果你这样用： 
+          </div> 
+          <div>
+            unsigned int * pointer=(unsigned int *)0x874ff; 
+          </div> 
+          <div>
+            那么在访问的时候一般会出错，在没有操作系统的情况下就可以了，那么这里发现一个问题，也是我这两天一直调试一直纠结的问题就是，指针在外面申请的时候不能初始化，或者说可以初始化为0，0就是NULL的值，在没有头文件的情况下是没有NULL的，就可以直接写0. 
+          </div> 
+          <div>
+            那么如果这样用： 
+          </div> 
+          <div>
+            unsigned int * pointer =&nbsp; 
+           <wbr> 
+           <span style="line-height: 21px;">(unsigned int *)</span>0x00100000; 
+          </div> 
+          <div>
+            在以后的函数里面对0x00100000这块地方操作的时候就会出错，那么可以这样使用，就是先申请，再赋值： 
+          </div> 
+          <div>
+            unsigned int * pointer = 0; 
+          </div> 
+          <div>
+            在后面的函数里面使用的话再赋值指明指向内存哪块地方： 
+          </div> 
+          <div>
+            pointer = 
+           <span style="line-height: 21px;">(unsigned int<br> *)0x00100000;</span> 
+          </div> 
+          <div>
+            这里就是指向内存的1MB处，这样在函数里面就可以操作了。否则就容易出错。 
+          </div> 
+          <div></div> 
+          <div>
+            那么关于显示，内存的1MB里面有一块为显存区，尽量不要去动它，以后调试还用得着，比如现在我想在屏幕显示字符串，那么可以这样（这里用的是gcc内嵌AT&amp;T汇编，这个汇编貌似挺恶心的，建议还是看看）： 
+          </div> 
+          <div> 
+           <div> 
+            <div> 
+             <a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0101148u&amp;url=http://s13.sinaimg.cn/orignal/6730a3aahbc7630b10e2c" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s13.sinaimg.cn/middle/6730a3aahbc7630b10e2c&amp;690" width="307" height="353" alt="C语言注意事项和显示问题" title="C语言注意事项和显示问题"></a> 
+             <p></p> 
+            </div> 
+           </div> 
+          </div> 
+          <div>
+            用这个函数显示，那么在操作系统最开始的时候调试就简单了，oh~yeah! 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-230 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

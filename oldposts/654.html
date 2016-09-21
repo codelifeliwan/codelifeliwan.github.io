@@ -1,0 +1,1489 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-654 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-654" class="post-654 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-进程管理（四、进程调度）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=654" title="下午 3:40" rel="bookmark"><time class="entry-date" datetime="2012-10-17T15:40:44+00:00" pubdate>17 十月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=654#comments" title="Comment on Linux内核-进程管理（四、进程调度）">4 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p><span style="font-family: 'DejaVu Sans';">关于</span>Linux<span style="font-family: 'DejaVu Sans';">进程调度有两种，一种是普通的通用的调度</span>schedule()<span style="font-family: 'DejaVu Sans';">，另一种是强制调度。</span>Linux<span style="font-family: 'DejaVu Sans';">进程调度的时候是依据以下来进行调度的：</span></p> 
+         <p>1<span style="font-family: 'DejaVu Sans';">、进程优先级；</span></p> 
+         <p>2<span style="font-family: 'DejaVu Sans';">、进程实时性（进程调度策略）；</span></p> 
+         <p>3<span style="font-family: 'DejaVu Sans';">、进程是否申请调度，也就是</span>task_struct<span style="font-family: 'DejaVu Sans';">结构中的</span>need_resched<span style="font-family: 'DejaVu Sans';">标志是否位</span>1<span style="font-family: 'DejaVu Sans';">；</span></p> 
+         <p>4<span style="font-family: 'DejaVu Sans';">、进程是否自动让出。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">进程的优先级就是进程</span>task_struct<span style="font-family: 'DejaVu Sans';">中的</span>nice<span style="font-family: 'DejaVu Sans';">字段，每次进程调度的时候根据此字段来计算出进程的当前权值，选择权值较大的进程进行调度。</span></p> 
+         <p>Linux<span style="font-family: 'DejaVu Sans';">进程的调度策略有三种，分别位</span>SCHED_OTHER<span style="font-family: 'DejaVu Sans';">、</span>SCHED_RR<span style="font-family: 'DejaVu Sans';">和</span>SCHED_FIFO<span style="font-family: 'DejaVu Sans';">，这三种策略中</span>SCHED_OTHER<span style="font-family: 'DejaVu Sans';">就是简单的类似时间片轮转调度，而</span>SCHED_RR<span style="font-family: 'DejaVu Sans';">和</span>SCHED_FIFO<span style="font-family: 'DejaVu Sans';">就具有实时性，在下面会讲到。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">在每个</span>task_struct<span style="font-family: 'DejaVu Sans';">结构中都有个</span>need_resched<span style="font-family: 'DejaVu Sans';">标志，这个标志决定是否需要进行一次进程调度，比如从中断返回用户空间前夕，在</span>entry.S<span style="font-family: 'DejaVu Sans';">中有如下代码：</span></p> 
+         <p>ret_from_exception:</p> 
+         <p>#ifdef CONFIG_SMP</p> 
+         <p>GET_CURRENT(%ebx)</p> 
+         <p>movl processor(%ebx),%eax</p> 
+         <p>shll $CONFIG_X86_L1_CACHE_SHIFT,%eax</p> 
+         <p>movl SYMBOL_NAME(irq_stat)(,%eax),%ecx # softirq_active</p> 
+         <p>testl SYMBOL_NAME(irq_stat)+4(,%eax),%ecx # softirq_mask</p> 
+         <p>#else</p> 
+         <p>movl SYMBOL_NAME(irq_stat),%ecx # softirq_active</p> 
+         <p>testl SYMBOL_NAME(irq_stat)+4,%ecx # softirq_mask</p> 
+         <p>#endif</p> 
+         <p>jne handle_softirq</p> 
+         <p>&nbsp;</p> 
+         <p>ENTRY(ret_from_intr)</p> 
+         <p>GET_CURRENT(%ebx)</p> 
+         <p>movl EFLAGS(%esp),%eax # mix EFLAGS and CS</p> 
+         <p>movb CS(%esp),%al</p> 
+         <p>testl $(VM_MASK | 3),%eax # return to VM86 mode or non-supervisor?</p> 
+         <p>jne ret_with_reschedule</p> 
+         <p>jmp restore_all</p> 
+         <p><span style="font-family: 'DejaVu Sans';">可以看到，</span>eax<span style="font-family: 'DejaVu Sans';">寄存器的低字节保存的是进入中断前夕</span>CS<span style="font-family: 'DejaVu Sans';">的内容，如果</span>CS<span style="font-family: 'DejaVu Sans';">的级别为</span>3<span style="font-family: 'DejaVu Sans';">也就是中断发生在用户空间，那么就转到</span>ret_with_reschedule<span style="font-family: 'DejaVu Sans';">执行，看</span>ret_with_reschedule<span style="font-family: 'DejaVu Sans';">代码：</span></p> 
+         <p>ret_with_reschedule:</p> 
+         <p>cmpl $0,need_resched(%ebx)</p> 
+         <p>jne reschedule</p> 
+         <p>cmpl $0,sigpending(%ebx)</p> 
+         <p>jne signal_return</p> 
+         <p><span style="font-family: 'DejaVu Sans';">如果当前进程的</span>need_resched<span style="font-family: 'DejaVu Sans';">标志为</span>1<span style="font-family: 'DejaVu Sans';">时转到</span>reschedule<span style="font-family: 'DejaVu Sans';">来执行调度</span>:</p> 
+         <p>reschedule:</p> 
+         <p>call SYMBOL_NAME(schedule) # test</p> 
+         <p>jmp ret_from_sys_call</p> 
+         <p>&nbsp;</p> 
+         <p><span style="font-family: 'DejaVu Sans';">下面就来具体讲讲进程的调度函数：</span></p> 
+         <h2><span style="font-family: 'DejaVu Sans';">一、通用调度</span></h2> 
+         <p><span style="font-family: 'DejaVu Sans';">进程的通用调度函数是</span>schedule()<span style="font-family: 'DejaVu Sans';">函数，这个函数在前面也是多次提到过，那么这个函数是定义在</span>kernel/sched.c<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6541"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+</pre></td> 
+             <td class="code" id="p654code1"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">void</span> schedule<span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">struct</span> schedule_data <span style="color: #339933;">*</span> sched_data<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>prev<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>next<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>p<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> list_head <span style="color: #339933;">*</span>tmp<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">int</span> this_cpu<span style="color: #339933;">,</span> c<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>current<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #009900;">)</span> BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//不管是进程还是内核线程，其active_mm都不应该为空</span>
+need_resched_back<span style="color: #339933;">:</span> 
+	prev <span style="color: #339933;">=</span> current<span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//当前进程是即将切换出去的进程，所以为prev</span>
+	this_cpu <span style="color: #339933;">=</span> prev<span style="color: #339933;">-&gt;</span>processor<span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//cpu号</span>
+	<span style="color: #808080; font-style: italic;">/*
+	 *调度只能由进程在内核中主动调用或者当前进程由系统空间返回用户空间前夕
+	 *不能发生在中断中。
+	 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>in_interrupt<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> scheduling_in_interrupt<span style="color: #339933;">;</span> 
+&nbsp;
+	release_kernel_lock<span style="color: #009900;">(</span>prev<span style="color: #339933;">,</span> this_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 *Do "administrative" work here while we don't hold any locks
+	 *检查是否有内核软中断请求在等待，若有，则执行
+	  */</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>softirq_active<span style="color: #009900;">(</span>this_cpu<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;</span> softirq_mask<span style="color: #009900;">(</span>this_cpu<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> handle_softirq<span style="color: #339933;">;</span> 
+handle_softirq_back<span style="color: #339933;">:</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * 'sched_data' is protected by the fact that we can run 
+	 * only one process per CPU. 
+	 */</span> 
+	sched_data <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span> aligned_data<span style="color: #009900;">[</span>this_cpu<span style="color: #009900;">]</span>.<span style="color: #202020;">schedule_data</span><span style="color: #339933;">;</span> 
+&nbsp;
+	spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//锁住可执行队列</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 *如果调度策略为RR那么需要进行一定处理
+	 */</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>policy <span style="color: #339933;">==</span> SCHED_RR<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> move_rr_last<span style="color: #339933;">;</span> 
+move_rr_back<span style="color: #339933;">:</span> 
+&nbsp;
+	<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>state<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #808080; font-style: italic;">/*
+		 *若进程状态为TASK_INTERRUPTIBLE，那么就检查是否有信号要处理
+		 *有的话就转到可执行队列，若进程状态为可执行，那么就什么也不做，否则的话
+		 *就从可执行队列中删除（比如exit后进程将自身设置为TASK_ZOMBIE）。
+		 */</span>
+		<span style="color: #b1b100;">case</span> TASK_INTERRUPTIBLE<span style="color: #339933;">:</span> 
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>signal_pending<span style="color: #009900;">(</span>prev<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+				prev<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_RUNNING<span style="color: #339933;">;</span> 
+				<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span> 
+			<span style="color: #009900;">}</span> 
+		<span style="color: #b1b100;">default</span><span style="color: #339933;">:</span> 
+			del_from_runqueue<span style="color: #009900;">(</span>prev<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">case</span> TASK_RUNNING<span style="color: #339933;">:</span> 
+	<span style="color: #009900;">}</span> 
+	<span style="color: #808080; font-style: italic;">/*
+	 *进程已经在调度，所以将需要一次调度的标志置0
+	 */</span>
+	prev<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 *以下就是挑选进程来执行了，首先将c也就是暂时的权值设置位-1000，这个是0号进程的权值
+	 *当没有进程可调度的时候就是调度0号进程，其余进程权值一般都比-1000大。
+	 *还有就是如果当前进程的状态为TASK_RUNNING，也就是想继续运行，那么就从当前进程
+	 *开始搜索权值，也就是如果权值相同的话，当前进程优先运行
+	 *接下来就是搜索权值了，选择权值最大的运行
+	 */</span> 
+&nbsp;
+repeat_schedule<span style="color: #339933;">:</span> 
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Default process to select.. 
+	 */</span> 
+	next <span style="color: #339933;">=</span> idle_task<span style="color: #009900;">(</span>this_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	c <span style="color: #339933;">=</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1000</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">==</span> TASK_RUNNING<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> still_running<span style="color: #339933;">;</span> 
+&nbsp;
+still_running_back<span style="color: #339933;">:</span> 
+	<span style="color: #808080; font-style: italic;">/*
+	 *list_for_each定义如下（include/linux/list.h），目的就是从当前开始遍历链表：
+	 *#define list_for_each(pos, head) \ 
+	 *for (pos = (head)-&gt;next; pos != (head); pos = pos-&gt;next)
+	 */</span>
+	list_for_each<span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>runqueue_head<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		p <span style="color: #339933;">=</span> list_entry<span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct<span style="color: #339933;">,</span> run_list<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>can_schedule<span style="color: #009900;">(</span>p<span style="color: #339933;">,</span> this_cpu<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			<span style="color: #808080; font-style: italic;">/*goodness用来计算权值，在后面讲*/</span>
+			<span style="color: #993333;">int</span> weight <span style="color: #339933;">=</span> goodness<span style="color: #009900;">(</span>p<span style="color: #339933;">,</span> this_cpu<span style="color: #339933;">,</span> prev<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>weight <span style="color: #339933;">&gt;</span> c<span style="color: #009900;">)</span> 
+				c <span style="color: #339933;">=</span> weight<span style="color: #339933;">,</span> next <span style="color: #339933;">=</span> p<span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//选择权值最大的运行</span>
+		<span style="color: #009900;">}</span> 
+	<span style="color: #009900;">}</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Do we need to re-calculate counters? */</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>c<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> recalculate<span style="color: #339933;">;</span> 		<span style="color: #666666; font-style: italic;">//权值为0，就是没有就绪的实时进程，</span>
+							<span style="color: #666666; font-style: italic;">//而且已经持续了一段时间，则需要重新计算时间配额</span>
+	<span style="color: #808080; font-style: italic;">/* 
+	 * from this point on nothing can prevent us from 
+	 * switching to the next task, save this fact in 
+	 * sched_data. 
+	 */</span> 
+	sched_data<span style="color: #339933;">-&gt;</span>curr <span style="color: #339933;">=</span> next<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#ifdef CONFIG_SMP </span>
+ 	next<span style="color: #339933;">-&gt;</span>has_cpu <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+	next<span style="color: #339933;">-&gt;</span>processor <span style="color: #339933;">=</span> this_cpu<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+	spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>prev <span style="color: #339933;">==</span> next<span style="color: #009900;">)</span> 	<span style="color: #666666; font-style: italic;">//不需要切换进程</span>
+		<span style="color: #b1b100;">goto</span> same_process<span style="color: #339933;">;</span> 
+&nbsp;
+<span style="color: #339933;">#ifdef CONFIG_SMP </span>
+ 	<span style="color: #808080; font-style: italic;">/* 
+ 	 * maintain the per-process 'last schedule' value. 
+ 	 * (this has to be recalculated even if we reschedule to 
+ 	 * the same process) Currently this is only used on SMP, 
+	 * and it's approximate, so we do not have to maintain 
+	 * it while holding the runqueue spinlock. 
+ 	 */</span> 
+ 	sched_data<span style="color: #339933;">-&gt;</span>last_schedule <span style="color: #339933;">=</span> get_cycles<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * We drop the scheduler lock early (it's a global spinlock), 
+	 * thus we have to lock the previous process from getting 
+	 * rescheduled during switch_to(). 
+	 */</span> 
+&nbsp;
+<span style="color: #339933;">#endif /* CONFIG_SMP */ </span>
+&nbsp;
+	kstat.<span style="color: #202020;">context_swtch</span><span style="color: #339933;">++;</span> 
+	<span style="color: #808080; font-style: italic;">/* 
+	 * there are 3 processes which are affected by a context switch: 
+	 * 
+	 * prev == .... ==&gt; (last =&gt; next) 
+	 * 
+	 * It's the 'much more previous' 'prev' that is on next's stack, 
+	 * but prev is set to (the just run) 'last' process by switch_to(). 
+	 * This might sound slightly confusing but makes tons of sense. 
+	 */</span> 
+	prepare_to_switch<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//可以先不管</span>
+	<span style="color: #808080; font-style: italic;">/*
+	 *下面就是切换了，首先切换内存，然后切换堆栈来实现进程切换
+	 */</span>
+	<span style="color: #009900;">{</span> 
+		<span style="color: #993333;">struct</span> mm_struct <span style="color: #339933;">*</span>mm <span style="color: #339933;">=</span> next<span style="color: #339933;">-&gt;</span>mm<span style="color: #339933;">;</span> 
+		<span style="color: #993333;">struct</span> mm_struct <span style="color: #339933;">*</span>oldmm <span style="color: #339933;">=</span> prev<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>mm<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 	<span style="color: #666666; font-style: italic;">//mm为空说明没有用户空间，是内核线程</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>next<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #009900;">)</span> BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//active_mm必须为空</span>
+			<span style="color: #808080; font-style: italic;">/*
+			 *因为各个进程的系统空间都是一样的，所以可以共享，也就是“借用”
+			 *在下面if (!prev-&gt;mm) 中会“归还”
+			 */</span>
+			next<span style="color: #339933;">-&gt;</span>active_mm <span style="color: #339933;">=</span> oldmm<span style="color: #339933;">;</span> 
+			atomic_inc<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>oldmm<span style="color: #339933;">-&gt;</span>mm_count<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+			enter_lazy_tlb<span style="color: #009900;">(</span>oldmm<span style="color: #339933;">,</span> next<span style="color: #339933;">,</span> this_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span> 	<span style="color: #666666; font-style: italic;">//不是内核线程</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>next<span style="color: #339933;">-&gt;</span>active_mm <span style="color: #339933;">!=</span> mm<span style="color: #009900;">)</span> BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+			<span style="color: #808080; font-style: italic;">/*
+			 *switch_mm是定义在include/asm_i386/mmu_context.h中：
+			 static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next, struct 					task_struct *tsk, unsigned cpu) 
+			{ 
+			if (prev != next) { 
+			clear_bit(cpu, &amp;prev-&gt;cpu_vm_mask); 
+			if (p	rev-&gt;context.segments != next-&gt;context.segments) 
+				load_LDT(next); 
+			#ifdef CONFIG_SMP 
+					cpu_tlbstate[cpu].state = TLBSTATE_OK; 
+					cpu_tlbstate[cpu].active_mm = next; 
+			#endif 
+					set_bit(cpu, &amp;next-&gt;cpu_vm_mask); 
+					//本句主要：就是将新的页目录基址装入CR3寄存器
+					asm volatile("movl %0,%%cr3": :"r" (__pa(next-&gt;pgd))); 
+				} 
+			#ifdef CONFIG_SMP 
+				else { 
+					cpu_tlbstate[cpu].state = TLBSTATE_OK; 
+					if(cpu_tlbstate[cpu].active_mm != next) 
+						BUG(); 
+					if(!test_and_set_bit(cpu, &amp;next-&gt;cpu_vm_mask)) { 
+						local_flush_tlb(); 
+					} 
+				} 
+			#endif 
+			}
+			 */</span>
+			switch_mm<span style="color: #009900;">(</span>oldmm<span style="color: #339933;">,</span> mm<span style="color: #339933;">,</span> next<span style="color: #339933;">,</span> this_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> 
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>prev<span style="color: #339933;">-&gt;</span>mm<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 		<span style="color: #666666; font-style: italic;">//归还线程空间</span>
+			prev<span style="color: #339933;">-&gt;</span>active_mm <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span> 
+			mmdrop<span style="color: #009900;">(</span>oldmm<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> 
+	<span style="color: #009900;">}</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * This just switches the register state and the 
+	 * stack. 
+	 */</span> 
+	switch_to<span style="color: #009900;">(</span>prev<span style="color: #339933;">,</span> next<span style="color: #339933;">,</span> prev<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//本函数为切换进程函数，后面讲</span>
+	__schedule_tail<span style="color: #009900;">(</span>prev<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 		<span style="color: #666666; font-style: italic;">//将prev的SCHED_YIELD标志为清0</span>
+&nbsp;
+same_process<span style="color: #339933;">:</span> 
+	reacquire_kernel_lock<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>need_resched<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> need_resched_back<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span> 
+&nbsp;
+recalculate<span style="color: #339933;">:</span> 		<span style="color: #666666; font-style: italic;">//重新计算时间配额</span>
+	<span style="color: #009900;">{</span> 
+		<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p<span style="color: #339933;">;</span> 
+		spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		read_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		for_each_task<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span> 
+			p<span style="color: #339933;">-&gt;</span>counter <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>counter <span style="color: #339933;">&gt;&gt;</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span> <span style="color: #339933;">+</span> NICE_TO_TICKS<span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>nice<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		read_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+	<span style="color: #b1b100;">goto</span> repeat_schedule<span style="color: #339933;">;</span> 
+&nbsp;
+still_running<span style="color: #339933;">:</span> 	<span style="color: #666666; font-style: italic;">//当前进程状态为TASK_RUNNING，则将next设置为当前进程</span>
+				<span style="color: #666666; font-style: italic;">//以后从当前进程开始搜索</span>
+	c <span style="color: #339933;">=</span> goodness<span style="color: #009900;">(</span>prev<span style="color: #339933;">,</span> this_cpu<span style="color: #339933;">,</span> prev<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	next <span style="color: #339933;">=</span> prev<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">goto</span> still_running_back<span style="color: #339933;">;</span> 
+&nbsp;
+handle_softirq<span style="color: #339933;">:</span> 		<span style="color: #666666; font-style: italic;">//执行软中断</span>
+	do_softirq<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">goto</span> handle_softirq_back<span style="color: #339933;">;</span> 
+&nbsp;
+move_rr_last<span style="color: #339933;">:</span> 	<span style="color: #666666; font-style: italic;">//若时间配额用完则重新分配并且将其移至队列尾部</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>prev<span style="color: #339933;">-&gt;</span>counter<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		prev<span style="color: #339933;">-&gt;</span>counter <span style="color: #339933;">=</span> NICE_TO_TICKS<span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>nice<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		move_last_runqueue<span style="color: #009900;">(</span>prev<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+	<span style="color: #b1b100;">goto</span> move_rr_back<span style="color: #339933;">;</span> 
+&nbsp;
+scheduling_in_interrupt<span style="color: #339933;">:</span> 	<span style="color: #666666; font-style: italic;">//在中断中，打印出错信息</span>
+	printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"Scheduling in interrupt<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #808080; font-style: italic;">/*
+	 *BUG的定义如下（include/asm-i386/page.h）：
+	 #define BUG() do { \ 
+		printk("kernel BUG at %s:%d!\n", __FILE__, __LINE__); \ 
+		__asm__ __volatile__(".byte 0x0f,0x0b"); \ 
+	} while (0)
+	这个定义首先打印信息，然后使用汇编来执行两个无效指令，这样就会转到
+	invalid_op异常进行执行了
+	 */</span>
+	BUG<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">还需要说明的两个函数一个是</span>goodness<span style="font-family: 'DejaVu Sans';">，一个是</span>switch_to<span style="font-family: 'DejaVu Sans';">，</span>goodness<span style="font-family: 'DejaVu Sans';">函数用来计算进程权值，定义在</span>sched.c<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6542"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+</pre></td> 
+             <td class="code" id="p654code2"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">int</span> goodness<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> p<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> this_cpu<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> mm_struct <span style="color: #339933;">*</span>this_mm<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">int</span> weight<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * select the current process after every other 
+	 * runnable process, but before the idle thread. 
+	 * Also, dont trigger a counter recalculation. 
+	 */</span> 
+	weight <span style="color: #339933;">=</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 	<span style="color: #666666; font-style: italic;">//权值先置成-1</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>policy <span style="color: #339933;">&amp;</span> SCHED_YIELD<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span> 		<span style="color: #666666; font-style: italic;">//如果需要“礼让”别的进程，则权值就位-1</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Non-RT process - normal case first. 
+	 */</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>policy <span style="color: #339933;">==</span> SCHED_OTHER<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 	<span style="color: #666666; font-style: italic;">//非实时进程</span>
+		<span style="color: #808080; font-style: italic;">/* 
+		 * Give the process a first-approximation goodness value 
+		 * according to the number of clock-ticks it has left. 
+		 * 
+		 * Don't do any other calculations if the time slice is 
+		 * over.. 
+		 */</span> 
+		weight <span style="color: #339933;">=</span> p<span style="color: #339933;">-&gt;</span>counter<span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>weight<span style="color: #009900;">)</span> 	<span style="color: #666666; font-style: italic;">//时间配额已经下降到0</span>
+			<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span> 
+&nbsp;
+<span style="color: #339933;">#ifdef CONFIG_SMP </span>
+		<span style="color: #808080; font-style: italic;">/* Give a largish advantage to the same processor...   */</span> 
+		<span style="color: #808080; font-style: italic;">/* (this is equivalent to penalizing other processors) */</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>processor <span style="color: #339933;">==</span> this_cpu<span style="color: #009900;">)</span> 
+			weight <span style="color: #339933;">+=</span> PROC_CHANGE_PENALTY<span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* .. and a slight advantage to the current MM */</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>mm <span style="color: #339933;">==</span> this_mm <span style="color: #339933;">||</span> <span style="color: #339933;">!</span>p<span style="color: #339933;">-&gt;</span>mm<span style="color: #009900;">)</span> 	<span style="color: #666666; font-style: italic;">//是内核线程或者共享用户空间，无需切换用户空间，会</span>
+										<span style="color: #666666; font-style: italic;">//得到一些“奖励”，将权值加1</span>
+			weight <span style="color: #339933;">+=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+		weight <span style="color: #339933;">+=</span> <span style="color: #0000dd;">20</span> – p<span style="color: #339933;">-&gt;</span>nice<span style="color: #339933;">;</span> 		<span style="color: #666666; font-style: italic;">//计算权值</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Realtime process, select the first one on the 
+	 * runqueue (taking priorities within processes 
+	 * into account). 
+	 */</span> 
+	weight <span style="color: #339933;">=</span> <span style="color: #0000dd;">1000</span> <span style="color: #339933;">+</span> p<span style="color: #339933;">-&gt;</span>rt_priority<span style="color: #339933;">;</span> 		<span style="color: #666666; font-style: italic;">//实时进程的权值为1000以上，其他进程达不到</span>
+										<span style="color: #666666; font-style: italic;">//所以有实时进程在，其他进程将得不到执行</span>
+out<span style="color: #339933;">:</span> 
+	<span style="color: #b1b100;">return</span> weight<span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>switch_to<span style="font-family: 'DejaVu Sans';">函数是一个宏定义，用于进程切换，在</span>include/asm-i386/system.h<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6543"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td> 
+             <td class="code" id="p654code3"><pre class="c" style="font-family:monospace;"><span style="color: #339933;">#define switch_to(prev,next,last) do {					\ </span>
+	asm <span style="color: #993333;">volatile</span><span style="color: #009900;">(</span><span style="color: #ff0000;">"pushl %%esi<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>					\ 
+		     <span style="color: #ff0000;">"pushl %%edi<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>					\ 
+		     <span style="color: #ff0000;">"pushl %%ebp<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>					\ 
+		     <span style="color: #ff0000;">"movl %%esp,%0<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>	<span style="color: #808080; font-style: italic;">/* save ESP */</span>		\ 
+		     <span style="color: #ff0000;">"movl %3,%%esp<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>	<span style="color: #808080; font-style: italic;">/* restore ESP */</span>	\ 
+		     <span style="color: #ff0000;">"movl $1f,%1<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>		<span style="color: #808080; font-style: italic;">/* save EIP */</span>		\ 
+		     <span style="color: #ff0000;">"pushl %4<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>		<span style="color: #808080; font-style: italic;">/* restore EIP */</span>	\ 
+		     <span style="color: #ff0000;">"jmp __switch_to<span style="color: #000099; font-weight: bold;">\n</span>"</span>				\ 
+		     <span style="color: #ff0000;">"1:<span style="color: #000099; font-weight: bold;">\t</span>"</span>						\ 
+		     <span style="color: #ff0000;">"popl %%ebp<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>					\ 
+		     <span style="color: #ff0000;">"popl %%edi<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>					\ 
+		     <span style="color: #ff0000;">"popl %%esi<span style="color: #000099; font-weight: bold;">\n</span><span style="color: #000099; font-weight: bold;">\t</span>"</span>					\ 
+		     <span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">esp</span><span style="color: #009900;">)</span><span style="color: #339933;">,</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">eip</span><span style="color: #009900;">)</span><span style="color: #339933;">,</span>	\ 
+		      <span style="color: #ff0000;">"=b"</span> <span style="color: #009900;">(</span>last<span style="color: #009900;">)</span>					\ 
+		     <span style="color: #339933;">:</span><span style="color: #ff0000;">"m"</span> <span style="color: #009900;">(</span>next<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">esp</span><span style="color: #009900;">)</span><span style="color: #339933;">,</span><span style="color: #ff0000;">"m"</span> <span style="color: #009900;">(</span>next<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">eip</span><span style="color: #009900;">)</span><span style="color: #339933;">,</span>	\ 
+		      <span style="color: #ff0000;">"a"</span> <span style="color: #009900;">(</span>prev<span style="color: #009900;">)</span><span style="color: #339933;">,</span> <span style="color: #ff0000;">"d"</span> <span style="color: #009900;">(</span>next<span style="color: #009900;">)</span><span style="color: #339933;">,</span>				\ 
+		      <span style="color: #ff0000;">"b"</span> <span style="color: #009900;">(</span>prev<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>					\ 
+<span style="color: #009900;">}</span> <span style="color: #b1b100;">while</span> <span style="color: #009900;">(</span><span style="color: #0000dd;">0</span><span style="color: #009900;">)</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">在这里，进程的切换是通过堆栈的切换来实现的，我们都知道，在现代的</span>Linux<span style="font-family: 'DejaVu Sans';">中并没有使用</span>Intel<span style="font-family: 'DejaVu Sans';">的硬件实现的部分操作，包括任务门切换、</span>TSS<span style="font-family: 'DejaVu Sans';">段等，甚至连</span>CS<span style="font-family: 'DejaVu Sans';">、</span>DS<span style="font-family: 'DejaVu Sans';">等也只是形式上设置了一下，实际上并没有多少意义。内核中只有堆栈才是存储空间，所以要切换进程就和切换堆栈差不多，不像原始的那种切换需要切换</span>CS<span style="font-family: 'DejaVu Sans';">等，因为进程切换是在内核中，而内核的</span>CS<span style="font-family: 'DejaVu Sans';">都是一样的。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">进程切换这段代码还是比较有意思的，虽然只有短短几行，可是却大有文章。为了说明简单，就把还没切换之前运行的进程称为旧进程，把切换之后运行的进程称为新进程。首先，压入栈三个寄存器内容，就是旧进程下的寄存器也就是还没切换时候的寄存器内容，然后保存旧进程的</span>ESP<span style="font-family: 'DejaVu Sans';">，此时“当前进程”就是旧进程。然后通过改变</span>ESP<span style="font-family: 'DejaVu Sans';">来进行堆栈切换，因为</span>current<span style="font-family: 'DejaVu Sans';">是通过系统堆栈及其偏移量来计算的，所以这个时候“当前进程”已经是新进程了。然后将下面的标号</span>1<span style="font-family: 'DejaVu Sans';">的地址保存到旧进程的</span>EIP<span style="font-family: 'DejaVu Sans';">中，这个标号</span>1<span style="font-family: 'DejaVu Sans';">就是进程切换时的返回地址。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">然后通过将新进程的</span>EIP<span style="font-family: 'DejaVu Sans';">压入堆栈，注意这个</span>EIP<span style="font-family: 'DejaVu Sans';">也是在上次“当前进程”被切换出去后压入的</span>1<span style="font-family: 'DejaVu Sans';">标号的地址，也就是说在新进程的堆栈中压入了上次被切换出去的时候</span>1<span style="font-family: 'DejaVu Sans';">标号的地址，然后使用</span>jmp<span style="font-family: 'DejaVu Sans';">指令转入</span>__switch_to()<span style="font-family: 'DejaVu Sans';">函数执行，</span>__switch_to()<span style="font-family: 'DejaVu Sans';">是个函数，不是宏定义，是要通过返回地址来返回的，而这里使用</span>jmp<span style="font-family: 'DejaVu Sans';">而不是</span>call<span style="font-family: 'DejaVu Sans';">来调用，显然没有往堆栈压入返回地址，倒是在前面压入了标号</span>1<span style="font-family: 'DejaVu Sans';">的地址，然后</span>__switch_to()<span style="font-family: 'DejaVu Sans';">函数返回的时候就“误以为”标号</span>1<span style="font-family: 'DejaVu Sans';">就是函数的返回地址，接着就返回标号</span>1<span style="font-family: 'DejaVu Sans';">处来执行。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">而对于新创建的进程显然没有手工压入标号</span>1<span style="font-family: 'DejaVu Sans';">的地址，而是压入了</span>ret_from_fork<span style="font-family: 'DejaVu Sans';">的地址，同样当切换到的时候会返回到</span>ret_from_fork<span style="font-family: 'DejaVu Sans';">来运行。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">这就是进程切换的过程。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">至于</span>__switch_to()<span style="font-family: 'DejaVu Sans';">函数定义在</span>arch/i386/kernel/process.c<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6544"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+</pre></td> 
+             <td class="code" id="p654code4"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">void</span> __switch_to<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>prev_p<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>next_p<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">struct</span> thread_struct <span style="color: #339933;">*</span>prev <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>prev_p<span style="color: #339933;">-&gt;</span>thread<span style="color: #339933;">,</span> 
+				 <span style="color: #339933;">*</span>next <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>next_p<span style="color: #339933;">-&gt;</span>thread<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> tss_struct <span style="color: #339933;">*</span>tss <span style="color: #339933;">=</span> init_tss <span style="color: #339933;">+</span> smp_processor_id<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	unlazy_fpu<span style="color: #009900;">(</span>prev_p<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Reload esp0, LDT and the page table pointer: 
+	 */</span> 
+	tss<span style="color: #339933;">-&gt;</span>esp0 <span style="color: #339933;">=</span> next<span style="color: #339933;">-&gt;</span>esp0<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Save away %fs and %gs. No need to save %es and %ds, as 
+	 * those are always kernel segments while inside the kernel. 
+	 */</span> 
+	asm <span style="color: #993333;">volatile</span><span style="color: #009900;">(</span><span style="color: #ff0000;">"movl %%fs,%0"</span><span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>prev<span style="color: #339933;">-&gt;</span>fs<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	asm <span style="color: #993333;">volatile</span><span style="color: #009900;">(</span><span style="color: #ff0000;">"movl %%gs,%0"</span><span style="color: #339933;">:</span><span style="color: #ff0000;">"=m"</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>prev<span style="color: #339933;">-&gt;</span>gs<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Restore %fs and %gs. 
+	 */</span> 
+	loadsegment<span style="color: #009900;">(</span>fs<span style="color: #339933;">,</span> next<span style="color: #339933;">-&gt;</span>fs<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	loadsegment<span style="color: #009900;">(</span>gs<span style="color: #339933;">,</span> next<span style="color: #339933;">-&gt;</span>gs<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Now maybe reload the debug registers 
+	 */</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>next<span style="color: #339933;">-&gt;</span>debugreg<span style="color: #009900;">[</span><span style="color: #0000dd;">7</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span><span style="color: #009900;">{</span> 
+		loaddebug<span style="color: #009900;">(</span>next<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		loaddebug<span style="color: #009900;">(</span>next<span style="color: #339933;">,</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		loaddebug<span style="color: #009900;">(</span>next<span style="color: #339933;">,</span> <span style="color: #0000dd;">2</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		loaddebug<span style="color: #009900;">(</span>next<span style="color: #339933;">,</span> <span style="color: #0000dd;">3</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #808080; font-style: italic;">/* no 4 and 5 */</span> 
+		loaddebug<span style="color: #009900;">(</span>next<span style="color: #339933;">,</span> <span style="color: #0000dd;">6</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		loaddebug<span style="color: #009900;">(</span>next<span style="color: #339933;">,</span> <span style="color: #0000dd;">7</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>prev<span style="color: #339933;">-&gt;</span>ioperm <span style="color: #339933;">||</span> next<span style="color: #339933;">-&gt;</span>ioperm<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>next<span style="color: #339933;">-&gt;</span>ioperm<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			<span style="color: #808080; font-style: italic;">/* 
+			 * 4 cachelines copy ... not good, but not that 
+			 * bad either. Anyone got something better? 
+			 * This only affects processes which use ioperm(). 
+			 * [Putting the TSSs into 4k-tlb mapped regions 
+			 * and playing VM tricks to switch the IO bitmap 
+			 * is not really acceptable.] 
+			 */</span> 
+			memcpy<span style="color: #009900;">(</span>tss<span style="color: #339933;">-&gt;</span>io_bitmap<span style="color: #339933;">,</span> next<span style="color: #339933;">-&gt;</span>io_bitmap<span style="color: #339933;">,</span> 
+				 IO_BITMAP_SIZE<span style="color: #339933;">*</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+			tss<span style="color: #339933;">-&gt;</span>bitmap <span style="color: #339933;">=</span> IO_BITMAP_OFFSET<span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> 
+			<span style="color: #808080; font-style: italic;">/* 
+			 * a bitmap offset pointing outside of the TSS limit 
+			 * causes a nicely controllable SIGSEGV if a process 
+			 * tries to use a port IO instruction. The first 
+			 * sys_ioperm() call sets up the bitmap properly. 
+			 */</span> 
+			tss<span style="color: #339933;">-&gt;</span>bitmap <span style="color: #339933;">=</span> INVALID_IO_BITMAP_OFFSET<span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">函数比较简单。不多说了。</span></p> 
+         <h2><span style="font-family: 'DejaVu Sans';">二、强制调度</span></h2> 
+         <p>Linux<span style="font-family: 'DejaVu Sans';">内核中进程的强制性调度，也就是非自愿的、被动的、剥夺式的调度，主要是由时间引起的。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">第一个就是时钟中断的调度，在时钟中断的时候只要不是</span>0<span style="font-family: 'DejaVu Sans';">号进程，就将当前的进程的时间配额减</span>1<span style="font-family: 'DejaVu Sans';">，当减到</span>0<span style="font-family: 'DejaVu Sans';">的时候就将当前进程的</span>need_resched<span style="font-family: 'DejaVu Sans';">置位成</span>1<span style="font-family: 'DejaVu Sans';">，然后返回用户空间前夕来进行一次调度。</span></p> 
+         <p><span style="font-family: 'DejaVu Sans';">时钟中断的时候在</span>do_timer<span style="font-family: 'DejaVu Sans';">里面调用了一个函数：</span>update_process_times()<span style="font-family: 'DejaVu Sans';">，这个函数就是负责这个事的，定义如下（</span>kernel/timer.c<span style="font-family: 'DejaVu Sans';">）：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6545"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td> 
+             <td class="code" id="p654code5"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">void</span> update_process_times<span style="color: #009900;">(</span><span style="color: #993333;">int</span> user_tick<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p <span style="color: #339933;">=</span> current<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">int</span> cpu <span style="color: #339933;">=</span> smp_processor_id<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">,</span> system <span style="color: #339933;">=</span> user_tick <span style="color: #339933;">^</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+&nbsp;
+	update_one_process<span style="color: #009900;">(</span>p<span style="color: #339933;">,</span> user_tick<span style="color: #339933;">,</span> system<span style="color: #339933;">,</span> cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>pid<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">--</span>p<span style="color: #339933;">-&gt;</span>counter <span style="color: #339933;">&lt;=</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			p<span style="color: #339933;">-&gt;</span>counter <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> 
+			p<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>nice <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> 
+			kstat.<span style="color: #202020;">per_cpu_nice</span><span style="color: #009900;">[</span>cpu<span style="color: #009900;">]</span> <span style="color: #339933;">+=</span> user_tick<span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">else</span> 
+			kstat.<span style="color: #202020;">per_cpu_user</span><span style="color: #009900;">[</span>cpu<span style="color: #009900;">]</span> <span style="color: #339933;">+=</span> user_tick<span style="color: #339933;">;</span> 
+		kstat.<span style="color: #202020;">per_cpu_system</span><span style="color: #009900;">[</span>cpu<span style="color: #009900;">]</span> <span style="color: #339933;">+=</span> system<span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>local_bh_count<span style="color: #009900;">(</span>cpu<span style="color: #009900;">)</span> <span style="color: #339933;">||</span> local_irq_count<span style="color: #009900;">(</span>cpu<span style="color: #009900;">)</span> <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span> 
+		kstat.<span style="color: #202020;">per_cpu_system</span><span style="color: #009900;">[</span>cpu<span style="color: #009900;">]</span> <span style="color: #339933;">+=</span> system<span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">第二个就是唤醒进程的时候，调用函数</span>wake_up_process()<span style="font-family: 'DejaVu Sans';">，这个函数就是将进程状态置为</span>TASK_RUNNING<span style="font-family: 'DejaVu Sans';">，然后加入运行队列，最后比较进程的权值，如果权值较高就设置</span>need_resched<span style="font-family: 'DejaVu Sans';">位为</span>1.<span style="font-family: 'DejaVu Sans';">这个函数定义在</span>kernel/sched.c<span style="font-family: 'DejaVu Sans';">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6546"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+</pre></td> 
+             <td class="code" id="p654code6"><pre class="c" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> wake_up_process<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> p<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * We want the common case fall through straight, thus the goto. 
+	 */</span> 
+	spin_lock_irqsave<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	p<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_RUNNING<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>task_on_runqueue<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span> 
+	add_to_runqueue<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	reschedule_idle<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+out<span style="color: #339933;">:</span> 
+	spin_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">static</span> FASTCALL<span style="color: #009900;">(</span><span style="color: #993333;">void</span> reschedule_idle<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> p<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #993333;">void</span> reschedule_idle<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> p<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+<span style="color: #339933;">#ifdef CONFIG_SMP </span>
+	<span style="color: #993333;">int</span> this_cpu <span style="color: #339933;">=</span> smp_processor_id<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>tsk<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>target_tsk<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">int</span> cpu<span style="color: #339933;">,</span> best_cpu<span style="color: #339933;">,</span> i<span style="color: #339933;">,</span> max_prio<span style="color: #339933;">;</span> 
+	cycles_t oldest_idle<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * shortcut if the woken up task's last CPU is 
+	 * idle now. 
+	 */</span> 
+	best_cpu <span style="color: #339933;">=</span> p<span style="color: #339933;">-&gt;</span>processor<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>can_schedule<span style="color: #009900;">(</span>p<span style="color: #339933;">,</span> best_cpu<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		tsk <span style="color: #339933;">=</span> idle_task<span style="color: #009900;">(</span>best_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>cpu_curr<span style="color: #009900;">(</span>best_cpu<span style="color: #009900;">)</span> <span style="color: #339933;">==</span> tsk<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			<span style="color: #993333;">int</span> need_resched<span style="color: #339933;">;</span> 
+send_now_idle<span style="color: #339933;">:</span> 
+			<span style="color: #808080; font-style: italic;">/* 
+			 * If need_resched == -1 then we can skip sending 
+			 * the IPI altogether, tsk-&gt;need_resched is 
+			 * actively watched by the idle thread. 
+			 */</span> 
+			need_resched <span style="color: #339933;">=</span> tsk<span style="color: #339933;">-&gt;</span>need_resched<span style="color: #339933;">;</span> 
+			tsk<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>best_cpu <span style="color: #339933;">!=</span> this_cpu<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>need_resched<span style="color: #009900;">)</span> 
+				smp_send_reschedule<span style="color: #009900;">(</span>best_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+			<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> 
+	<span style="color: #009900;">}</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * We know that the preferred CPU has a cache-affine current 
+	 * process, lets try to find a new idle CPU for the woken-up 
+	 * process. Select the least recently active idle CPU. (that 
+	 * one will have the least active cache context.) Also find 
+	 * the executing process which has the least priority. 
+	 */</span> 
+	oldest_idle <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>cycles_t<span style="color: #009900;">)</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+	target_tsk <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span> 
+	max_prio <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> i <span style="color: #339933;">&lt;</span> smp_num_cpus<span style="color: #339933;">;</span> i<span style="color: #339933;">++</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		cpu <span style="color: #339933;">=</span> cpu_logical_map<span style="color: #009900;">(</span>i<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>can_schedule<span style="color: #009900;">(</span>p<span style="color: #339933;">,</span> cpu<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+			<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span> 
+		tsk <span style="color: #339933;">=</span> cpu_curr<span style="color: #009900;">(</span>cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+		<span style="color: #808080; font-style: italic;">/* 
+		 * We use the first available idle CPU. This creates 
+		 * a priority list between idle CPUs, but this is not 
+		 * a problem. 
+		 */</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>tsk <span style="color: #339933;">==</span> idle_task<span style="color: #009900;">(</span>cpu<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>last_schedule<span style="color: #009900;">(</span>cpu<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;</span> oldest_idle<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+				oldest_idle <span style="color: #339933;">=</span> last_schedule<span style="color: #009900;">(</span>cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+				target_tsk <span style="color: #339933;">=</span> tsk<span style="color: #339933;">;</span> 
+			<span style="color: #009900;">}</span> 
+		<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span> 
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>oldest_idle <span style="color: #339933;">==</span> <span style="color: #339933;">-</span>1ULL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+				<span style="color: #993333;">int</span> prio <span style="color: #339933;">=</span> preemption_goodness<span style="color: #009900;">(</span>tsk<span style="color: #339933;">,</span> p<span style="color: #339933;">,</span> cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>prio <span style="color: #339933;">&gt;</span> max_prio<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+					max_prio <span style="color: #339933;">=</span> prio<span style="color: #339933;">;</span> 
+					target_tsk <span style="color: #339933;">=</span> tsk<span style="color: #339933;">;</span> 
+				<span style="color: #009900;">}</span> 
+			<span style="color: #009900;">}</span> 
+		<span style="color: #009900;">}</span> 
+	<span style="color: #009900;">}</span> 
+	tsk <span style="color: #339933;">=</span> target_tsk<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>tsk<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>oldest_idle <span style="color: #339933;">!=</span> <span style="color: #339933;">-</span>1ULL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+			best_cpu <span style="color: #339933;">=</span> tsk<span style="color: #339933;">-&gt;</span>processor<span style="color: #339933;">;</span> 
+			<span style="color: #b1b100;">goto</span> send_now_idle<span style="color: #339933;">;</span> 
+		<span style="color: #009900;">}</span> 
+		tsk<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>tsk<span style="color: #339933;">-&gt;</span>processor <span style="color: #339933;">!=</span> this_cpu<span style="color: #009900;">)</span> 
+			smp_send_reschedule<span style="color: #009900;">(</span>tsk<span style="color: #339933;">-&gt;</span>processor<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+	<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span> 
+&nbsp;
+&nbsp;
+<span style="color: #339933;">#else /* UP */ </span>
+	<span style="color: #993333;">int</span> this_cpu <span style="color: #339933;">=</span> smp_processor_id<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>tsk<span style="color: #339933;">;</span> 
+&nbsp;
+	tsk <span style="color: #339933;">=</span> cpu_curr<span style="color: #009900;">(</span>this_cpu<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>preemption_goodness<span style="color: #009900;">(</span>tsk<span style="color: #339933;">,</span> p<span style="color: #339933;">,</span> this_cpu<span style="color: #009900;">)</span> <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span> 
+		tsk<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+<span style="color: #339933;">#endif </span>
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">int</span> preemption_goodness<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> prev<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> p<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> cpu<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #b1b100;">return</span> goodness<span style="color: #009900;">(</span>p<span style="color: #339933;">,</span> cpu<span style="color: #339933;">,</span> prev<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #009900;">)</span> <span style="color: #339933;">-</span> goodness<span style="color: #009900;">(</span>prev<span style="color: #339933;">,</span> cpu<span style="color: #339933;">,</span> prev<span style="color: #339933;">-&gt;</span>active_mm<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p><span style="font-family: 'DejaVu Sans';">第三种情况，就是进程资源让出，有两种方式，一个是通过</span>sched_setscheduler()<span style="font-family: 'DejaVu Sans';">系统调用，一个是通过</span>shced_yield()<span style="font-family: 'DejaVu Sans';">函数。原理和前两个差不多，不多说了，代码如下（</span>sched.c<span style="font-family: 'DejaVu Sans';">）：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=654&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p6547"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+</pre></td> 
+             <td class="code" id="p654code7"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">long</span> sys_sched_setscheduler<span style="color: #009900;">(</span>pid_t pid<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> policy<span style="color: #339933;">,</span> 
+				      <span style="color: #993333;">struct</span> sched_param <span style="color: #339933;">*</span>param<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #b1b100;">return</span> setscheduler<span style="color: #009900;">(</span>pid<span style="color: #339933;">,</span> policy<span style="color: #339933;">,</span> param<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span> 
+&nbsp;
+asmlinkage <span style="color: #993333;">long</span> sys_sched_setparam<span style="color: #009900;">(</span>pid_t pid<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sched_param <span style="color: #339933;">*</span>param<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #b1b100;">return</span> setscheduler<span style="color: #009900;">(</span>pid<span style="color: #339933;">,</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">,</span> param<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">static</span> <span style="color: #993333;">int</span> setscheduler<span style="color: #009900;">(</span>pid_t pid<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> policy<span style="color: #339933;">,</span> 
+			<span style="color: #993333;">struct</span> sched_param <span style="color: #339933;">*</span>param<span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #993333;">struct</span> sched_param lp<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p<span style="color: #339933;">;</span> 
+	<span style="color: #993333;">int</span> retval<span style="color: #339933;">;</span> 
+&nbsp;
+	retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>param <span style="color: #339933;">||</span> pid <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_nounlock<span style="color: #339933;">;</span> 
+&nbsp;
+	retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EFAULT<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>copy_from_user<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>lp<span style="color: #339933;">,</span> param<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sched_param<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_nounlock<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * We play safe to avoid deadlocks. 
+	 */</span> 
+	read_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	spin_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	p <span style="color: #339933;">=</span> find_process_by_pid<span style="color: #009900;">(</span>pid<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ESRCH<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>p<span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>policy <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> 
+		policy <span style="color: #339933;">=</span> p<span style="color: #339933;">-&gt;</span>policy<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span> 
+		retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>policy <span style="color: #339933;">!=</span> SCHED_FIFO <span style="color: #339933;">&amp;&amp;</span> policy <span style="color: #339933;">!=</span> SCHED_RR <span style="color: #339933;">&amp;&amp;</span> 
+				policy <span style="color: #339933;">!=</span> SCHED_OTHER<span style="color: #009900;">)</span> 
+			<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Valid priorities for SCHED_FIFO and SCHED_RR are 1..99, valid 
+	 * priority for SCHED_OTHER is 0. 
+	 */</span> 
+	retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>lp.<span style="color: #202020;">sched_priority</span> <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span> <span style="color: #339933;">||</span> lp.<span style="color: #202020;">sched_priority</span> <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">99</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>policy <span style="color: #339933;">==</span> SCHED_OTHER<span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> <span style="color: #009900;">(</span>lp.<span style="color: #202020;">sched_priority</span> <span style="color: #339933;">==</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span> 
+&nbsp;
+	retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EPERM<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>policy <span style="color: #339933;">==</span> SCHED_FIFO <span style="color: #339933;">||</span> policy <span style="color: #339933;">==</span> SCHED_RR<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> 
+	    <span style="color: #339933;">!</span>capable<span style="color: #009900;">(</span>CAP_SYS_NICE<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>euid <span style="color: #339933;">!=</span> p<span style="color: #339933;">-&gt;</span>euid<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>euid <span style="color: #339933;">!=</span> p<span style="color: #339933;">-&gt;</span>uid<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> 
+	    <span style="color: #339933;">!</span>capable<span style="color: #009900;">(</span>CAP_SYS_NICE<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span> 
+&nbsp;
+	retval <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> 
+	p<span style="color: #339933;">-&gt;</span>policy <span style="color: #339933;">=</span> policy<span style="color: #339933;">;</span> 
+	p<span style="color: #339933;">-&gt;</span>rt_priority <span style="color: #339933;">=</span> lp.<span style="color: #202020;">sched_priority</span><span style="color: #339933;">;</span> 
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>task_on_runqueue<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+		move_first_runqueue<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+	current<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+&nbsp;
+out_unlock<span style="color: #339933;">:</span> 
+	spin_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>runqueue_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	read_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+&nbsp;
+out_nounlock<span style="color: #339933;">:</span> 
+	<span style="color: #b1b100;">return</span> retval<span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span>
+asmlinkage <span style="color: #993333;">long</span> sys_sched_yield<span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span> 
+<span style="color: #009900;">{</span> 
+	<span style="color: #808080; font-style: italic;">/* 
+	 * Trick. sched_yield() first counts the number of truly 
+	 * 'pending' runnable processes, then returns if it's 
+	 * only the current processes. (This test does not have 
+	 * to be atomic.) In threaded applications this optimization 
+	 * gets triggered quite often. 
+	 */</span> 
+&nbsp;
+	<span style="color: #993333;">int</span> nr_pending <span style="color: #339933;">=</span> nr_running<span style="color: #339933;">;</span> 
+&nbsp;
+<span style="color: #339933;">#if CONFIG_SMP </span>
+	<span style="color: #993333;">int</span> i<span style="color: #339933;">;</span> 
+&nbsp;
+	<span style="color: #666666; font-style: italic;">// Substract non-idle processes running on other CPUs. </span>
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> i <span style="color: #339933;">&lt;</span> smp_num_cpus<span style="color: #339933;">;</span> i<span style="color: #339933;">++</span><span style="color: #009900;">)</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>aligned_data<span style="color: #009900;">[</span>i<span style="color: #009900;">]</span>.<span style="color: #202020;">schedule_data</span>.<span style="color: #202020;">curr</span> <span style="color: #339933;">!=</span> idle_task<span style="color: #009900;">(</span>i<span style="color: #009900;">)</span><span style="color: #009900;">)</span> 
+			nr_pending<span style="color: #339933;">--;</span> 
+<span style="color: #339933;">#else </span>
+	<span style="color: #666666; font-style: italic;">// on UP this process is on the runqueue as well </span>
+	nr_pending<span style="color: #339933;">--;</span> 
+<span style="color: #339933;">#endif </span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>nr_pending<span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+		<span style="color: #808080; font-style: italic;">/* 
+		 * This process can only be rescheduled by us, 
+		 * so this is safe without any locking. 
+		 */</span> 
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>policy <span style="color: #339933;">==</span> SCHED_OTHER<span style="color: #009900;">)</span> 
+			current<span style="color: #339933;">-&gt;</span>policy <span style="color: #339933;">|=</span> SCHED_YIELD<span style="color: #339933;">;</span> 
+		current<span style="color: #339933;">-&gt;</span>need_resched <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span> 
+	<span style="color: #009900;">}</span> 
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>The End.</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-654 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

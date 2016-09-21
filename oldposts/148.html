@@ -1,0 +1,329 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-148 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-148" class="post-148 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10285&nbsp;–&nbsp;Longest&nbsp;Run&nbsp;on&nbsp;a&nbsp;Snowboard&nbsp;（记忆化搜索，DP）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=148" title="下午 4:31" rel="bookmark"><time class="entry-date" datetime="2011-08-13T16:31:24+00:00" pubdate>13 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=148#respond" title="Comment on UVA&nbsp;10285&nbsp;–&nbsp;Longest&nbsp;Run&nbsp;on&nbsp;a&nbsp;Snowboard&nbsp;（记忆化搜索，DP）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目：</p> 
+         <div> 
+          <p style="margin-left:9.0pt;text-align:center" align="center"><b><span style="font-size:18.0pt">Problem<br> C</span></b></p> 
+          <p style="margin-left:9.0pt;text-align:center" align="center"><b><span style="font-size:24.0pt">Longest Run on a<br> Snowboard</span></b></p> 
+          <p style="margin-left:9.0pt;text-align:center" align="center"><b>Input:</b> standard input</p> 
+          <p style="margin-left:9.0pt;text-align:center" align="center"><b>Output:</b> standard output</p> 
+          <p style="margin-left:9.0pt;text-align:center" align="center"><b style="mso-bidi-font-weight:normal">Time<br> Limit:</b> 5 seconds</p> 
+          <p style="margin-left:9.0pt;text-align:center" align="center"><b style="mso-bidi-font-weight:normal">Memory<br> Limit:</b> 32 MB</p> 
+          <p>&nbsp;<wbr></p> 
+          <p style="text-align:justify;tab-stops:0in">Michael likes<br> snowboarding. That’s not very surprising, since snowboarding is<br> really great. The bad thing is that in order to gain speed, the<br> area must slide downwards. Another disadvantage is that when you’ve<br> reached the bottom of the hill you have to walk up again or wait<br> for the ski-lift.</p> 
+          <p style="text-align:justify">Michael would like to know how long<br> the longest run in an area is. That area is given by a grid of<br> numbers, defining the heights at those points. Look at this<br> example:</p> 
+          <pre style="margin-left:135.0pt">
+<span style="mso-spacerun:yes">&nbsp;<wbr></span><b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt">1<span style="mso-spacerun:yes">&nbsp;<wbr> </span>2<span style="mso-spacerun:yes">&nbsp;<wbr> </span>3<span style="mso-spacerun:yes">&nbsp;<wbr> </span>4 5</span></b>
+</pre> 
+          <pre style="margin-left:135.0pt">
+<b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt">16 17 18 19 6</span></b>
+</pre> 
+          <pre style="margin-left:135.0pt">
+<b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt">15 24 25 20 7</span></b>
+</pre> 
+          <pre style="margin-left:135.0pt">
+<b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt">14 23 22 21 8</span></b>
+</pre> 
+          <pre style="margin-left:135.0pt">
+<b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt">13 12 11 10 9</span></b>
+</pre> 
+          <p style="text-align:justify;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> One can slide down from one point to a connected other one if and<br> only if the height decreases. One point is connected to another if<br> it’s at left, at right, above or below it. In the sample map, a<br> possible slide would be <b style="mso-bidi-font-weight:normal">24-17-16-1</b> (start at <b style="mso-bidi-font-weight:normal">24</b>, end at <b style="mso-bidi-font-weight: normal">1</b>). Of course if you would go<br> <b style="mso-bidi-font-weight:normal">25-24-23-…-3-2-1</b>, it<br> would be a much longer run. In fact, it’s the longest possible.</p> 
+          <p style="text-align:justify;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:18.0pt">Input</span></b></p> 
+          <p style="text-align:justify;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> The first line contains the number of test cases <b style="mso-bidi-font-weight: normal">N</b>. Each test case starts with a<br> line containing the name (it’s a single string), the number of rows<br> <b style="mso-bidi-font-weight:normal">R</b> and the number of<br> columns <b style="mso-bidi-font-weight:normal">C</b>. After that<br> follow <b style="mso-bidi-font-weight:normal">R</b> lines with<br> <b style="mso-bidi-font-weight:normal">C</b> numbers each, defining<br> the heights. <b style="mso-bidi-font-weight:normal">R</b> and C<br> won’t be bigger than <b style="mso-bidi-font-weight:normal">100</b>, <b style="mso-bidi-font-weight: normal">N</b> not bigger than <b style="mso-bidi-font-weight:normal">15</b> and the heights are always in<br> the range from <b style="mso-bidi-font-weight:normal">0</b> to<br> <b style="mso-bidi-font-weight:normal">100</b>.</p> 
+          <p style="text-align:justify;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> For each test case, print a line containing the name of the area, a<br> colon, a space and the length of the longest run one can slide down<br> in that area.</p> 
+          <pre>
+<b style="mso-bidi-font-weight:normal"><span style="font-size:18.0pt; font-family:&quot;Times new roman&quot;">Sample Input</span></b>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">2</span>
+</pre> 
+          <pre>
+<span style="font-size: 11.0pt">Feldberg 10 5</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">56 14 51 58 88</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">26 94 24 39 41</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">24 16 8 51 51</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">76 72 77 43 10</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">38 50 59 84 81</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">5 23 37 71 77</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">96 10 93 53 82</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">94 15 96 69 9</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">74 0 62 38 96</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">37 54 55 82 38</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">Spiral 5 5</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">1 2 3 4 5</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">16 17 18 19 6</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">15 24 25 20 7</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">14 23 22 21 8</span>
+</pre> 
+          <pre>
+<span style="font-size:11.0pt">13 12 11 10 9</span>
+</pre> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> &nbsp;<wbr></p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:18.0pt">Sample Output</span></b></p> 
+          <pre>
+Feldberg: 7
+</pre> 
+          <pre>
+Spiral: 25
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+char Name[100];
+</pre> 
+          <pre>
+int map[100][100];
+</pre> 
+          <pre>
+int vis[100][100];
+</pre> 
+          <pre>
+int R,C;
+</pre> 
+          <pre>
+int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int dp(int x,int y){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int &amp;ans=vis[x][y];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(ans)return ans;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>bool found=false;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;4;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int nx=x+dir[i][0];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ny=y+dir[i][1];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(nx&gt;=0&amp;&amp;ny&gt;=0&amp;&amp;nx&lt;R&amp;&amp;ny&lt;C&amp;&amp;map[nx][ny]&lt;map[x][y]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>ans=max(ans,dp(nx,ny)+1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>found=true;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(!found)return 1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return ans;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test,txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(ncase--){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;Name;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;R&gt;&gt;C;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;R;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=0;j&lt;C;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;map[i][j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int maxres=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;R;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=0;j&lt;C;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>maxres=max(maxres,dp(i,j));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;Name&lt;&lt;": "&lt;&lt;maxres&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-148 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

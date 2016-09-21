@@ -1,0 +1,151 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-51 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-51" class="post-51 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10112&nbsp;–&nbsp;Myacm&nbsp;Triangles&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=51" title="下午 3:29" rel="bookmark"><time class="entry-date" datetime="2011-06-10T15:29:13+00:00" pubdate>10 六月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=51#comments" title="Comment on UVA&nbsp;10112&nbsp;–&nbsp;Myacm&nbsp;Triangles&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 好几天没写了。。。。。<br> 次题暴力即可<br> 题目：</p> 
+         <h1 align="center"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-family: 'Ar pL UKai Cn'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-border-horizontal-spacing: 0px; -webkit-border-vertical-spacing: 0px; -webkit-text-decorations-in-effect: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; font-size: medium;"><br> Problem B: Myacm Triangles</span></h1> 
+         <p></p> 
+         <center> 
+          <p></p> 
+          <table> 
+           <tbody> 
+            <tr> 
+             <td>Source file:</td> 
+             <td><tt>triangle.</tt>{<tt>c</tt>,<span>&nbsp;<wbr></span><tt>cpp</tt>,<span>&nbsp;<wbr></span><tt>java</tt>,<span>&nbsp;<wbr></span><tt>pas</tt>}</td> 
+            </tr> 
+            <tr> 
+             <td>Input file:</td> 
+             <td><tt>triangle.in</tt></td> 
+            </tr> 
+            <tr> 
+             <td>Output file:</td> 
+             <td><tt>triangle.out</tt></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p></p> 
+         </center> 
+         <br> 
+         <center> 
+          <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/101/p10112.gif" alt="UVA&nbsp;<wbr>10112&nbsp;<wbr>-&nbsp;<wbr>Myacm&nbsp;<wbr>Triangles&nbsp;<wbr>解题报告"> 
+          <wbr>10112&nbsp; 
+          <wbr>-&nbsp; 
+          <wbr>Myacm&nbsp; 
+          <wbr>Triangles&nbsp; 
+          <wbr>解题报告” TITLE=”UVA&nbsp; 
+          <wbr>10112&nbsp; 
+          <wbr>-&nbsp; 
+          <wbr>Myacm&nbsp; 
+          <wbr>Triangles&nbsp; 
+          <wbr>解题报告” /&gt; 
+         </center> 
+         <p></p> 
+         <p>There has been considerable archeological work on the ancient<br> Myacm culture. Many artifacts have been found in what have been<br> called power fields: a fairly small area, less than 100 meters<br> square where there are from four to fifteen tall monuments with<br> crystals on top. Such an area is mapped out above. Most of the<br> artifacts discovered have come from inside a triangular area<br> between just three of the monuments, now called the power triangle.<br> After considerable analysis archeologists agree how this triangle<br> is selected from all the triangles with three monuments as<br> vertices: it is the triangle with the largest possible area that<br> does not contain any other monuments inside the triangle or on an<br> edge of the triangle. Each field contains only one such<br> triangle.</p> 
+         <p>Archeological teams are continuing to find more power fields.<br> They would like to automate the task of locating the power<br> triangles in power fields. Write a program that takes the positions<br> of the monuments in any number of power fields as input and<br> determines the power triangle for each power field.</p> 
+         <p>A useful formula: the area of a triangle with vertices<br> (<i>x</i><sub>1</sub>,<span>&nbsp;<wbr></span><i>y</i><sub>1</sub>),<br> (<i>x</i><sub>2</sub>,<span>&nbsp;<wbr></span><i>y</i><sub>2</sub>),<br> and (<i>x</i><sub>3</sub>,<span>&nbsp;<wbr></span><i>y</i><sub>3</sub>)<br> is the absolute value of</p> 
+         <blockquote> 
+          <p>0.5 × [(<i>y</i><sub>3</sub><span>&nbsp;<wbr></span><font face="Symbol">-</font><span>&nbsp;<wbr></span><i>y</i><sub>1</sub>)(<i>x</i><sub>2</sub><span>&nbsp;<wbr></span><font face="Symbol">-</font><span>&nbsp;<wbr></span><i>x</i><sub>1</sub>)<span>&nbsp;<wbr></span><font face="Symbol">-</font><span>&nbsp;<wbr></span>(<i>y</i><sub>2</sub><span>&nbsp;<wbr></span><font face="Symbol">-</font><span>&nbsp;<wbr></span><i>y</i><sub>1</sub>)(<i>x</i><sub>3</sub><span>&nbsp;<wbr></span><font face="Symbol">-</font><span>&nbsp;<wbr></span><i>x</i><sub>1</sub>)].</p> 
+         </blockquote> 
+         <p>For each power field there are several lines of data. The first<br> line is the number of monuments: at least 4, and at most 15. For<br> each monument there is a data line that starts with a one character<br> label for the monument and is followed by the coordinates of the<br> monument, which are nonnegative integers less than 100. The first<br> label is A, and the next is B, and so on.</p> 
+         <p>There is at least one such power field described. The end of<br> input is indicated by a 0 for the number of monuments. The first<br> sample data below corresponds to the diagram in the problem.</p> 
+         <p>For each power field there is one line of output. It contains<br> the three labels of the vertices of the power triangle, listed in<br> increasing alphabetical order, with no spaces.</p> 
+         <p><b>Example input:</b></p> 
+         <blockquote> 
+          <pre>
+6<br>
+A 1 0<br>
+B 4 0<br>
+C 0 3<br>
+D 1 3<br>
+E 4 4<br>
+F 0 6<br>
+4<br>
+A 0 0<br>
+B 1 0<br>
+C 99 0<br>
+D 99 99<br>
+0
+</pre> 
+         </blockquote> 
+         <p><b>Example output:</b></p> 
+         <blockquote> 
+          <pre>
+BEF
+<br>
+BC<span style="font-family: '宋体',Verdana,Arial,Helvetica,sans-serif;">D<br>
+<br></span>
+</pre> 
+         </blockquote> 
+         <p>代码：</p> 
+         <p> #include&lt;iostream&gt;<br> #include&lt;fstream&gt;<br> #include&lt;cmath&gt;<br> #define eps 1e-8<br> using namespace std;<br> typedef struct{<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> char<br> num;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> double<br> x;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> double<br> y;<br> }point;<br> point p[30];<br> char xuhao[5];</p> 
+         <p>double area(point a,point b,point c){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> return<br> fabs((c.x-a.x)*(b.y-a.y)-(b.x-a.x)*(c.y-a.y))/2.0;<br> }</p> 
+         <p>bool is_in(point a,point p1,point p2,point p3){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> double<br> area1=area(a,p1,p2)+area(a,p1,p3)+area(a,p2,p3);<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> double<br> area2=area(p1,p2,p3);<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> if(fabs(area1-area2)&lt;eps)return true;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> return<br> false;<br> }</p> 
+         <p>int main()<br> {<br> //&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> freopen(“test.txt”,”r”,stdin);<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> int<br> num;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xuhao[3]=’ ';<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> while(cin&gt;&gt;num&amp;&amp;num)</p> 
+         <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> {<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> for(int<br> i=0;i&lt;num;i++){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cin&gt;&gt;p[i].num&gt;&gt;p[i].x&gt;&gt;p[i].y;</p> 
+         <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> double<br> re=0.0;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> for(int<br> i=0;i&lt;num-2;i++){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> for(int<br> j=i+1;j&lt;num-1;j++){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> for(int<br> k=j+1;k&lt;num;k++){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> bool<br> mark=true;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> for(int<br> m=0;m&lt;num;m++){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> if(m!=i&amp;&amp;m!=j&amp;&amp;m!=k){</p> 
+         <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> if(is_in(p[m],p[i],p[j],p[k])){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mark=false;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> break;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> if(mark){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> double<br> tmparea=area(p[i],p[j],p[k]);<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> if(tmparea&gt;re){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> re=tmparea;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xuhao[0]=p[i].num;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xuhao[1]=p[j].num;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xuhao[2]=p[k].num;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cout&lt;&lt;xuhao&lt;&lt;endl;</p> 
+         <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> return<br> 0;<br> }</p> 
+         <p></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-51 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

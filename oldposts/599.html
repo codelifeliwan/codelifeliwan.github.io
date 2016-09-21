@@ -1,0 +1,1355 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-599 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-599" class="post-599 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-中断处理（二、中断响应及部分中断介绍）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=599" title="上午 10:32" rel="bookmark"><time class="entry-date" datetime="2012-10-02T10:32:35+00:00" pubdate>2 十月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=599#respond" title="Comment on Linux内核-中断处理（二、中断响应及部分中断介绍）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div> 
+          <p>上一篇说过了中断初始化，这里就从所有中断都要跳转的一个地方common_interrupt开始说起。</p> 
+          <p>在程序穿越中断门（不是陷阱门）的时候中断已经被关闭，在开启中断之前是不允许中断的。</p> 
+          <p>common_interrupt是在include/asm-i386/hw_irq.h中定义的：</p> 
+          <p>#define&nbsp;BUILD_COMMON_IRQ()&nbsp;\</p> 
+          <p>asmlinkage&nbsp;void&nbsp;call_do_IRQ(void);&nbsp;\</p> 
+          <p>__asm__(&nbsp;\</p> 
+          <p>“\n”&nbsp;__ALIGN_STR”\n”&nbsp;\</p> 
+          <p>“common_interrupt:\n\t”&nbsp;\</p> 
+          <p>SAVE_ALL&nbsp;\</p> 
+          <p>“pushl&nbsp;$ret_from_intr\n\t”&nbsp;\</p> 
+          <p>SYMBOL_NAME_STR(call_do_IRQ)”:\n\t”&nbsp;\</p> 
+          <p>“jmp&nbsp;“SYMBOL_NAME_STR(do_IRQ));</p> 
+          <p>其中，<span style="font-family: 'Times New Roman';">SAVE_ALL</span><span style="font-family: 宋体;">是在</span>arch/i386/kernel/entry.S中定义的，它的作用就是保存各个寄存器内容等：</p> 
+          <p>#define&nbsp;SAVE_ALL&nbsp;\</p> 
+          <p>cld;&nbsp;\</p> 
+          <p>pushl&nbsp;%es;&nbsp;\</p> 
+          <p>pushl&nbsp;%ds;&nbsp;\</p> 
+          <p>pushl&nbsp;%eax;&nbsp;\</p> 
+          <p>pushl&nbsp;%ebp;&nbsp;\</p> 
+          <p>pushl&nbsp;%edi;&nbsp;\</p> 
+          <p>pushl&nbsp;%esi;&nbsp;\</p> 
+          <p>pushl&nbsp;%edx;&nbsp;\</p> 
+          <p>pushl&nbsp;%ecx;&nbsp;\</p> 
+          <p>pushl&nbsp;%ebx;&nbsp;\</p> 
+          <p>movl&nbsp;$(__KERNEL_DS),%edx;&nbsp;\</p> 
+          <p>movl&nbsp;%edx,%ds;&nbsp;\</p> 
+          <p>movl&nbsp;%edx,%es;</p> 
+          <p>这里，除了<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">进入中断时自动压入堆栈的内容外，系统又压入了部分内容，在最后将</span><span style="font-family: 'Times New Roman';">DS</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">ES</span><span style="font-family: 宋体;">寄存器改成内核段，表明快要进入内核运行了。</span></p> 
+          <p>在同一文件中定义了各个寄存器内容在堆栈中的偏移，包括自动压入堆栈的部分：</p> 
+          <p>EBX =&nbsp;0x00</p> 
+          <p>ECX =&nbsp;0x04</p> 
+          <p>EDX =&nbsp;0x08</p> 
+          <p>ESI =&nbsp;0x0C</p> 
+          <p>EDI =&nbsp;0x10</p> 
+          <p>EBP =&nbsp;0x14</p> 
+          <p>EAX =&nbsp;0x18</p> 
+          <p>DS =&nbsp;0x1C</p> 
+          <p>ES =&nbsp;0x20</p> 
+          <p>ORIG_EAX =&nbsp;0x24</p> 
+          <p>EIP =&nbsp;0x28</p> 
+          <p>CS =&nbsp;0x2C</p> 
+          <p>EFLAGS =&nbsp;0x30</p> 
+          <p>OLDESP =&nbsp;0x34</p> 
+          <p>OLDSS =&nbsp;0x38</p> 
+          <p>事实上上述压入堆栈的内容就是我们的一个数据结构，还记得页面异常的时候说的传递的一个<span style="font-family: 'Times New Roman';">pt_regs</span><span style="font-family: 宋体;">类型的参数吗（当然页面异常不是经过这里，但是处理上差不多）？它的定义如下</span>(include/asm-i386/ptrace.h)：</p> 
+          <p>struct&nbsp;pt_regs&nbsp;{</p> 
+          <p>long&nbsp;ebx;</p> 
+          <p>long&nbsp;ecx;</p> 
+          <p>long&nbsp;edx;</p> 
+          <p>long&nbsp;esi;</p> 
+          <p>long&nbsp;edi;</p> 
+          <p>long&nbsp;ebp;</p> 
+          <p>long&nbsp;eax;</p> 
+          <p>int&nbsp;&nbsp;xds;</p> 
+          <p>int&nbsp;&nbsp;xes;</p> 
+          <p>long&nbsp;orig_eax;</p> 
+          <p>long&nbsp;eip;</p> 
+          <p>int&nbsp;&nbsp;xcs;</p> 
+          <p>long&nbsp;eflags;</p> 
+          <p>long&nbsp;esp;</p> 
+          <p>int&nbsp;&nbsp;xss;</p> 
+          <p>};</p> 
+          <p>这个数据结构的实例并不是手工设置的，一个一个压入堆栈的，其中<span style="font-family: 'Times New Roman';">orig_eax</span><span style="font-family: 宋体;">表示的是中断来源。关于函数参数传递可以参考《</span><span style="font-family: 'Times New Roman';">Diers</span><span style="font-family: 宋体;">操作系统设计与实现》。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">SAVE_ALL</span><span style="font-family: 宋体;">之后压入一个中断返回地址，然后就跳转到</span>do_IRQ函数来执行。</p> 
+          <p>再来看看<span style="font-family: 'Times New Roman';">do_IRQ</span><span style="font-family: 宋体;">，这个函数是在</span>arch/i386/kernel/irq.c中定义：</p> 
+          <p>asmlinkage&nbsp;unsigned&nbsp;int&nbsp;do_IRQ(struct&nbsp;pt_regs&nbsp;regs)</p> 
+          <p>{</p> 
+          <p>/*</p> 
+          <p>*&nbsp;We&nbsp;ack&nbsp;quickly,&nbsp;we&nbsp;don’t&nbsp;want&nbsp;the&nbsp;irq&nbsp;controller</p> 
+          <p>*&nbsp;thinking&nbsp;we’re&nbsp;snobs&nbsp;just&nbsp;because&nbsp;some&nbsp;other&nbsp;CPU&nbsp;has</p> 
+          <p>*&nbsp;disabled&nbsp;global&nbsp;interrupts&nbsp;(we&nbsp;have&nbsp;already&nbsp;done&nbsp;the</p> 
+          <p>*&nbsp;INT_ACK&nbsp;cycles,&nbsp;it’s&nbsp;too&nbsp;late&nbsp;to&nbsp;try&nbsp;to&nbsp;pretend&nbsp;to&nbsp;the</p> 
+          <p>*&nbsp;controller&nbsp;that&nbsp;we&nbsp;aren’t&nbsp;taking&nbsp;the&nbsp;interrupt).</p> 
+          <p>*</p> 
+          <p>*&nbsp;0&nbsp;return&nbsp;value&nbsp;means&nbsp;that&nbsp;this&nbsp;irq&nbsp;is&nbsp;already&nbsp;being</p> 
+          <p>*&nbsp;handled&nbsp;by&nbsp;some&nbsp;other&nbsp;CPU.&nbsp;(or&nbsp;is&nbsp;disabled)</p> 
+          <p>*/</p> 
+          <p>int&nbsp;irq&nbsp;=&nbsp;regs.orig_eax&nbsp;&amp;&nbsp;0xff;&nbsp;/*&nbsp;high&nbsp;bits&nbsp;used&nbsp;in&nbsp;ret_from_&nbsp;code&nbsp;&nbsp;*/</p> 
+          <p>int&nbsp;cpu&nbsp;=&nbsp;smp_processor_id();</p> 
+          <p>irq_desc_t&nbsp;*desc&nbsp;=&nbsp;irq_desc&nbsp;+&nbsp;irq;</p> 
+          <p>struct&nbsp;irqaction&nbsp;*&nbsp;action;</p> 
+          <p>unsigned&nbsp;int&nbsp;status;</p> 
+          <p>&nbsp;</p> 
+          <p>kstat.irqs[cpu][irq]++; //<span style="font-family: 宋体;">中断服务计数</span></p> 
+          <p>spin_lock(&amp;desc-&gt;lock); //为了多处理器设置，加锁</p> 
+          <p>desc-&gt;handler-&gt;ack(irq); //<span style="font-family: 宋体;">告诉</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">已经在处理</span></p> 
+          <p>/*</p> 
+          <p>REPLAY&nbsp;is&nbsp;when&nbsp;Linux&nbsp;resends&nbsp;an&nbsp;IRQ&nbsp;that&nbsp;was&nbsp;dropped&nbsp;earlier</p> 
+          <p>WAITING&nbsp;is&nbsp;used&nbsp;by&nbsp;probe&nbsp;to&nbsp;mark&nbsp;irqs&nbsp;that&nbsp;are&nbsp;being&nbsp;tested</p> 
+          <p>*/</p> 
+          <p>status&nbsp;=&nbsp;desc-&gt;status&nbsp;&amp;&nbsp;~(IRQ_REPLAY&nbsp;|&nbsp;IRQ_WAITING);</p> 
+          <p>status&nbsp;|=&nbsp;IRQ_PENDING;&nbsp;/*&nbsp;we&nbsp;_want_&nbsp;to&nbsp;handle&nbsp;it&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;the&nbsp;IRQ&nbsp;is&nbsp;disabled&nbsp;for&nbsp;whatever&nbsp;reason,&nbsp;we&nbsp;cannot</p> 
+          <p>*&nbsp;use&nbsp;the&nbsp;action&nbsp;we&nbsp;have.</p> 
+          <p>*/</p> 
+          <p>action&nbsp;=&nbsp;NULL;</p> 
+          <p>if&nbsp;(!(status&nbsp;&amp;&nbsp;(IRQ_DISABLED&nbsp;|&nbsp;IRQ_INPROGRESS)))&nbsp;{</p> 
+          <p>action&nbsp;=&nbsp;desc-&gt;action;</p> 
+          <p>status&nbsp;&amp;=&nbsp;~IRQ_PENDING;&nbsp;/*&nbsp;we&nbsp;commit&nbsp;to&nbsp;handling&nbsp;*/</p> 
+          <p>status&nbsp;|=&nbsp;IRQ_INPROGRESS;&nbsp;/*&nbsp;we&nbsp;are&nbsp;handling&nbsp;it&nbsp;*/</p> 
+          <p>}</p> 
+          <p>desc-&gt;status&nbsp;=&nbsp;status;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;there&nbsp;is&nbsp;no&nbsp;IRQ&nbsp;handler&nbsp;or&nbsp;it&nbsp;was&nbsp;disabled,&nbsp;exit&nbsp;early.</p> 
+          <p>Since&nbsp;we&nbsp;set&nbsp;PENDING,&nbsp;if&nbsp;another&nbsp;processor&nbsp;is&nbsp;handling</p> 
+          <p>a&nbsp;different&nbsp;instance&nbsp;of&nbsp;this&nbsp;same&nbsp;irq,&nbsp;the&nbsp;other&nbsp;processor</p> 
+          <p>will&nbsp;take&nbsp;care&nbsp;of&nbsp;it.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(!action)</p> 
+          <p>goto&nbsp;out;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Edge&nbsp;triggered&nbsp;interrupts&nbsp;need&nbsp;to&nbsp;remember</p> 
+          <p>*&nbsp;pending&nbsp;events.</p> 
+          <p>*&nbsp;This&nbsp;applies&nbsp;to&nbsp;any&nbsp;hw&nbsp;interrupts&nbsp;that&nbsp;allow&nbsp;a&nbsp;second</p> 
+          <p>*&nbsp;instance&nbsp;of&nbsp;the&nbsp;same&nbsp;irq&nbsp;to&nbsp;arrive&nbsp;while&nbsp;we&nbsp;are&nbsp;in&nbsp;do_IRQ</p> 
+          <p>*&nbsp;or&nbsp;in&nbsp;the&nbsp;handler.&nbsp;But&nbsp;the&nbsp;code&nbsp;here&nbsp;only&nbsp;handles&nbsp;the&nbsp;_second_</p> 
+          <p>*&nbsp;instance&nbsp;of&nbsp;the&nbsp;irq,&nbsp;not&nbsp;the&nbsp;third&nbsp;or&nbsp;fourth.&nbsp;So&nbsp;it&nbsp;is&nbsp;mostly</p> 
+          <p>*&nbsp;useful&nbsp;for&nbsp;irq&nbsp;hardware&nbsp;that&nbsp;does&nbsp;not&nbsp;mask&nbsp;cleanly&nbsp;in&nbsp;an</p> 
+          <p>*&nbsp;SMP&nbsp;environment.</p> 
+          <p>*/</p> 
+          <p>for&nbsp;(;;)&nbsp;{</p> 
+          <p>spin_unlock(&amp;desc-&gt;lock);</p> 
+          <p>handle_IRQ_event(irq,&nbsp;®s,&nbsp;action); //<span style="font-family: 宋体;">执行中断服务程序</span></p> 
+          <p>spin_lock(&amp;desc-&gt;lock);</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!(desc-&gt;status&nbsp;&amp;&nbsp;IRQ_PENDING))</p> 
+          <p>break;</p> 
+          <p>desc-&gt;status&nbsp;&amp;=&nbsp;~IRQ_PENDING;</p> 
+          <p>}</p> 
+          <p>desc-&gt;status&nbsp;&amp;=&nbsp;~IRQ_INPROGRESS;</p> 
+          <p>out:</p> 
+          <p>/*</p> 
+          <p>*&nbsp;The&nbsp;-&gt;end()&nbsp;handler&nbsp;has&nbsp;to&nbsp;deal&nbsp;with&nbsp;interrupts&nbsp;which&nbsp;got</p> 
+          <p>*&nbsp;disabled&nbsp;while&nbsp;the&nbsp;handler&nbsp;was&nbsp;running.</p> 
+          <p>*/</p> 
+          <p>desc-&gt;handler-&gt;end(irq);</p> 
+          <p>spin_unlock(&amp;desc-&gt;lock);</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(softirq_active(cpu)&nbsp;&amp;&nbsp;softirq_mask(cpu))</p> 
+          <p>do_softirq();</p> 
+          <p>return&nbsp;1;</p> 
+          <p>}</p> 
+          <p>这个函数的传入参数就是<span style="font-family: 'Times New Roman';">pt_regs</span><span style="font-family: 宋体;">类型，也就是上述压入堆栈的内容。</span><span style="font-family: 'Times New Roman';">irq</span><span style="font-family: 宋体;">是检测中断来源的，在前面是使用减法将其变成一个负数，这里又将其变回来。</span></p> 
+          <p>在这个函数中不得不考虑多个处理器的情况，<span style="font-family: 'Times New Roman';">int&nbsp;cpu&nbsp;=&nbsp;smp_processor_id();</span><span style="font-family: 宋体;">就是为多处理器设置的。</span></p> 
+          <p>desc<span style="font-family: 宋体;">就是具体的本中断的服务程序的</span>irq_desc_t。<span style="font-family: 'Times New Roman';">action</span><span style="font-family: 宋体;">指向具体的服务程序。</span></p> 
+          <p>在程序中大部分位置是为多处理器设置的，这里看<span style="font-family: 'Times New Roman';">handle_IRQ_event</span><span style="font-family: 宋体;">函数，它是用来执行中断服务程序的函数。它的传入参数有三个，一个是表示中断源的</span><span style="font-family: 'Times New Roman';">irq</span><span style="font-family: 宋体;">，一个是表示寄存器内容的</span><span style="font-family: 'Times New Roman';">regs</span><span style="font-family: 宋体;">，一个是具体的中断服务程序指针</span><span style="font-family: 'Times New Roman';">action</span><span style="font-family: 宋体;">，也是定义在</span>irq.c中：</p> 
+          <p>int&nbsp;handle_IRQ_event(unsigned&nbsp;int&nbsp;irq,&nbsp;struct&nbsp;pt_regs&nbsp;*&nbsp;regs,&nbsp;struct&nbsp;irqaction&nbsp;*&nbsp;action)</p> 
+          <p>{</p> 
+          <p>int&nbsp;status;</p> 
+          <p>int&nbsp;cpu&nbsp;=&nbsp;smp_processor_id();</p> 
+          <p>&nbsp;</p> 
+          <p>irq_enter(cpu,&nbsp;irq);</p> 
+          <p>&nbsp;</p> 
+          <p>status&nbsp;=&nbsp;1; /*&nbsp;Force&nbsp;the&nbsp;“do&nbsp;bottom&nbsp;halves”&nbsp;bit&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!(action-&gt;flags&nbsp;&amp;&nbsp;SA_INTERRUPT))</p> 
+          <p>__sti();</p> 
+          <p>&nbsp;</p> 
+          <p>do&nbsp;{</p> 
+          <p>status&nbsp;|=&nbsp;action-&gt;flags;</p> 
+          <p>action-&gt;handler(irq,&nbsp;action-&gt;dev_id,&nbsp;regs);</p> 
+          <p>action&nbsp;=&nbsp;action-&gt;next;</p> 
+          <p>}&nbsp;while&nbsp;(action);</p> 
+          <p>if&nbsp;(status&nbsp;&amp;&nbsp;SA_SAMPLE_RANDOM)</p> 
+          <p>add_interrupt_randomness(irq);</p> 
+          <p>__cli();</p> 
+          <p>&nbsp;</p> 
+          <p>irq_exit(cpu,&nbsp;irq);</p> 
+          <p>&nbsp;</p> 
+          <p>return&nbsp;status;</p> 
+          <p>}</p> 
+          <p>其中在<span style="font-family: 'Times New Roman';">while</span><span style="font-family: 宋体;">循环中来执行中断服务程序，注意这里执行的是一个队列，也就是将本队列中的所有中断服务程序都执行。</span></p> 
+          <p>irq_enter(cpu,&nbsp;irq)<span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">irq_exit(cpu,&nbsp;irq)</span><span style="font-family: 宋体;">是用来计数的操作，定义于</span>include/asm-i386/hardirq.h中：</p> 
+          <p>#define&nbsp;irq_enter(cpu,&nbsp;irq) (local_irq_count(cpu)++)</p> 
+          <p>#define&nbsp;irq_exit(cpu,&nbsp;irq) (local_irq_count(cpu)–)</p> 
+          <p>当这个计数器非<span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">表示</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">正在中断中。</span></p> 
+          <p>&nbsp;</p> 
+          <p>继续在<span style="font-family: 'Times New Roman';">do_IRQ</span><span style="font-family: 宋体;">中往下看：在中断的最后检查一个叫做</span><span style="font-family: 'Times New Roman';">softirq</span><span style="font-family: 宋体;">的东西，这是软中断。软中断就是一些要求不是很高的中断，不需要在关中断条件下执行或者比较耗时等。每次执行中断结束后都会检测软中断列表看看是否有需要执行的软中断，然后执行。</span></p> 
+          <p>关于软中断一会再说。</p> 
+          <p>当执行完软中断以后返回的时候是从前面压入堆栈的ret_from_intr处返回的，<span style="font-family: 'Times New Roman';">ret_from_intr</span><span style="font-family: 宋体;">定义在</span>arch/i386/kernel/entry.S中：</p> 
+          <p>ENTRY(ret_from_intr)</p> 
+          <p>GET_CURRENT(%ebx) #<span style="font-family: 宋体;">取得当前进程的</span>task_struct指针</p> 
+          <p>movl&nbsp;EFLAGS(%esp),%eax #&nbsp;mix&nbsp;EFLAGS&nbsp;and&nbsp;CS</p> 
+          <p>movb&nbsp;CS(%esp),%al</p> 
+          <p>testl&nbsp;$(VM_MASK&nbsp;|&nbsp;3),%eax #<span style="font-family: 宋体;">检测中断是否是发生在用户空间或</span><span style="font-family: 'Times New Roman';">VM86</span><span style="font-family: 宋体;">模式</span></p> 
+          <p>jne&nbsp;ret_with_reschedule #<span style="font-family: 宋体;">是，跳转到</span>ret_with_reschedule</p> 
+          <p>jmp&nbsp;restore_all #否，直接跳转到restore_all</p> 
+          <p>&nbsp;</p> 
+          <p>ret_with_reschedule和restore_all定义如下：</p> 
+          <p>ret_with_reschedule:</p> 
+          <p>cmpl&nbsp;$0,need_resched(%ebx) #<span style="font-family: 宋体;">检查是否需要一次进程调度</span></p> 
+          <p>jne&nbsp;reschedule #<span style="font-family: 宋体;">需要，转到进程调度程序</span></p> 
+          <p>cmpl&nbsp;$0,sigpending(%ebx) #<span style="font-family: 宋体;">检测该进程是否有信号等待处理</span></p> 
+          <p>jne&nbsp;signal_return #<span style="font-family: 宋体;">有，转到信号处理程序</span></p> 
+          <p>restore_all:</p> 
+          <p>RESTORE_ALL #<span style="font-family: 宋体;">恢复寄存器</span></p> 
+          <p>&nbsp;</p> 
+          <p>ALIGN</p> 
+          <p>signal_return:</p> 
+          <p>sti #<span style="font-family: 宋体;">开中断</span></p> 
+          <p>testl&nbsp;$(VM_MASK),EFLAGS(%esp)</p> 
+          <p>movl&nbsp;%esp,%eax</p> 
+          <p>jne&nbsp;v86_signal_return</p> 
+          <p>xorl&nbsp;%edx,%edx</p> 
+          <p>call&nbsp;SYMBOL_NAME(do_signal)</p> 
+          <p>jmp&nbsp;restore_all</p> 
+          <p>这里，检查是否需要进程调度的时候<span style="font-family: 'Times New Roman';">need_resched</span><span style="font-family: 宋体;">是标志位在</span>task_struct中的偏移量，定义如下：</p> 
+          <p>state =&nbsp;&nbsp;0</p> 
+          <p>flags =&nbsp;&nbsp;4</p> 
+          <p>sigpending =&nbsp;&nbsp;8</p> 
+          <p>addr_limit =&nbsp;12</p> 
+          <p>exec_domain =&nbsp;16</p> 
+          <p>need_resched =&nbsp;20</p> 
+          <p>tsk_ptrace =&nbsp;24</p> 
+          <p>processor =&nbsp;52</p> 
+          <p>&nbsp;</p> 
+          <p>ENOSYS&nbsp;=&nbsp;38</p> 
+          <p>reschedule<span style="font-family: 宋体;">定义如下：</span></p> 
+          <p>reschedule:</p> 
+          <p>call&nbsp;SYMBOL_NAME(schedule)&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;test</p> 
+          <p>jmp&nbsp;ret_from_sys_call</p> 
+          <p>其实不管怎么说，最后都是要跳转到<span style="font-family: 'Times New Roman';">restall_all</span><span style="font-family: 宋体;">处执行的，其中</span><span style="font-family: 'Times New Roman';">RESTORE_ALL</span><span style="font-family: 宋体;">定义如下：</span></p> 
+          <p>#define&nbsp;RESTORE_ALL \</p> 
+          <p>popl&nbsp;%ebx; \</p> 
+          <p>popl&nbsp;%ecx; \</p> 
+          <p>popl&nbsp;%edx; \</p> 
+          <p>popl&nbsp;%esi; \</p> 
+          <p>popl&nbsp;%edi; \</p> 
+          <p>popl&nbsp;%ebp; \</p> 
+          <p>popl&nbsp;%eax; \</p> 
+          <p>1: popl&nbsp;%ds; \</p> 
+          <p>2: popl&nbsp;%es; \</p> 
+          <p>addl&nbsp;$4,%esp; \</p> 
+          <p>3: iret; \</p> 
+          <p>这里，按照顺序恢复各个寄存器，并且执行<span style="font-family: 'Times New Roman';">iret</span><span style="font-family: 宋体;">来从中断返回。</span></p> 
+          <h2>软中断Bottom&nbsp;Half:</h2> 
+          <p>前面说过，软中断是在可以开中断的条件下执行的，在内核中成为后半部中断，通常叫做<span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">。</span></p> 
+          <p>软中断的机制其实也很简单，首先，内核设置<span style="font-family: 'Times New Roman';">32</span><span style="font-family: 宋体;">个软中断，组成一个数组，然后使用两个</span><span style="font-family: 'Times New Roman';">32</span><span style="font-family: 宋体;">位数字</span>bh_active和bh_mask来进行控制，这两个数字分别代表着中断请求和中断允许，每一位对应一个软中断。</p> 
+          <p>这里需要说明的是，<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">内核设置的是</span><span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">不允许嵌套，而且多个</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">可以同时执行中断，但是一个</span><span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">只能由一个</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">执行。</span></p> 
+          <p>当然，除了<span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">机制的软中断以外，还有其他机制的软中断，这里先不介绍。</span></p> 
+          <p>前面说的<span style="font-family: 'Times New Roman';">32</span><span style="font-family: 宋体;">个中断的数据结构是</span>tasklet_struct类型，定义在include/linux/interrupt.h中：</p> 
+          <p>struct&nbsp;tasklet_struct</p> 
+          <p>{</p> 
+          <p>struct&nbsp;tasklet_struct&nbsp;*next;</p> 
+          <p>unsigned&nbsp;long&nbsp;state;</p> 
+          <p>atomic_t&nbsp;count;</p> 
+          <p>void&nbsp;(*func)(unsigned&nbsp;long);</p> 
+          <p>unsigned&nbsp;long&nbsp;data;</p> 
+          <p>};</p> 
+          <p>其中，<span style="font-family: 'Times New Roman';">next</span><span style="font-family: 宋体;">是链表指针，</span><span style="font-family: 'Times New Roman';">func</span><span style="font-family: 宋体;">就是具体中断服务的函数指针。</span></p> 
+          <p>定义的数组是bh_task_vec，初始化是在kernel/softirq.c中：</p> 
+          <p>void&nbsp;__init&nbsp;softirq_init()</p> 
+          <p>{</p> 
+          <p>int&nbsp;i;</p> 
+          <p>&nbsp;</p> 
+          <p>for&nbsp;(i=0;&nbsp;i&lt;32;&nbsp;i++)</p> 
+          <p>tasklet_init(bh_task_vec+i,&nbsp;bh_action,&nbsp;i);</p> 
+          <p>&nbsp;</p> 
+          <p>open_softirq(TASKLET_SOFTIRQ,&nbsp;tasklet_action,&nbsp;NULL);</p> 
+          <p>open_softirq(HI_SOFTIRQ,&nbsp;tasklet_hi_action,&nbsp;NULL);</p> 
+          <p>}</p> 
+          <p>其中，tasklet_init函数是定义在同一文件中的：</p> 
+          <p>void&nbsp;tasklet_init(struct&nbsp;tasklet_struct&nbsp;*t,</p> 
+          <p>void&nbsp;(*func)(unsigned&nbsp;long),&nbsp;unsigned&nbsp;long&nbsp;data)</p> 
+          <p>{</p> 
+          <p>t-&gt;func&nbsp;=&nbsp;func;</p> 
+          <p>t-&gt;data&nbsp;=&nbsp;data;</p> 
+          <p>t-&gt;state&nbsp;=&nbsp;0;</p> 
+          <p>atomic_set(&amp;t-&gt;count,&nbsp;0);</p> 
+          <p>}</p> 
+          <p>在初始化中将<span style="font-family: 'Times New Roman';">32</span><span style="font-family: 宋体;">个软中断服务程序都指向了</span>bh_action函数。</p> 
+          <p>除了上述的<span style="font-family: 'Times New Roman';">32</span><span style="font-family: 宋体;">个软中断以外，系统中还有其他的软中断，上述的软中断是所有</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">都可以运行的（上述</span><span style="font-family: 'Times New Roman';">32</span><span style="font-family: 宋体;">个软中断称为</span>TASKLET_SOFTIRQ），其他的软中断是每个<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">都有专属结构的，这样的软中断执行数据结构为</span>softirq_action，定义于interrupt.h中：</p> 
+          <p>struct&nbsp;softirq_action</p> 
+          <p>{</p> 
+          <p>void (*action)(struct&nbsp;softirq_action&nbsp;*); //执行函数指针</p> 
+          <p>void *data; //</p> 
+          <p>};</p> 
+          <p>在<span style="font-family: 'Times New Roman';">softirq.c</span><span style="font-family: 宋体;">中定义如下：</span></p> 
+          <p>static&nbsp;struct&nbsp;softirq_action&nbsp;softirq_vec[32]&nbsp;__cacheline_aligned;</p> 
+          <p>初始化是在softirq.c中：</p> 
+          <p>void&nbsp;open_softirq(int&nbsp;nr,&nbsp;void&nbsp;(*action)(struct&nbsp;softirq_action*),&nbsp;void&nbsp;*data)</p> 
+          <p>{</p> 
+          <p>unsigned&nbsp;long&nbsp;flags;</p> 
+          <p>int&nbsp;i;</p> 
+          <p>&nbsp;</p> 
+          <p>spin_lock_irqsave(&amp;softirq_mask_lock,&nbsp;flags);</p> 
+          <p>softirq_vec[nr].data&nbsp;=&nbsp;data;</p> 
+          <p>softirq_vec[nr].action&nbsp;=&nbsp;action;</p> 
+          <p>&nbsp;</p> 
+          <p>for&nbsp;(i=0;&nbsp;i&lt;NR_CPUS;&nbsp;i++)</p> 
+          <p>softirq_mask(i)&nbsp;|=&nbsp;(1&lt;&lt;nr);</p> 
+          <p>spin_unlock_irqrestore(&amp;softirq_mask_lock,&nbsp;flags);</p> 
+          <p>}</p> 
+          <p>其中，softirq_vec是个全局量，所有<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">都能看见和公用。但是其控制结构确实每个</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">专有的，控制数据结构定义如下（</span>hardirq.h）：</p> 
+          <p>typedef&nbsp;struct&nbsp;{</p> 
+          <p>unsigned&nbsp;int&nbsp;__softirq_active;</p> 
+          <p>unsigned&nbsp;int&nbsp;__softirq_mask;</p> 
+          <p>unsigned&nbsp;int&nbsp;__local_irq_count;</p> 
+          <p>unsigned&nbsp;int&nbsp;__local_bh_count;</p> 
+          <p>unsigned&nbsp;int&nbsp;__syscall_count;</p> 
+          <p>unsigned&nbsp;int&nbsp;__nmi_count; /*&nbsp;arch&nbsp;dependent&nbsp;*/</p> 
+          <p>}&nbsp;____cacheline_aligned&nbsp;irq_cpustat_t;</p> 
+          <p>控制结构的数组定义如下：</p> 
+          <p>irq_cpustat_t&nbsp;irq_stat[NR_CPUS];</p> 
+          <p>__soft_active相当于“中断请求寄存器”，__softirq_mask相当于“软中断屏蔽寄存器”。</p> 
+          <p>部分操作如下：</p> 
+          <p>#ifdef&nbsp;CONFIG_SMP</p> 
+          <p>#define&nbsp;__IRQ_STAT(cpu,&nbsp;member)&nbsp;(iqr_stat[cpu].member)</p> 
+          <p>#else</p> 
+          <p>#define&nbsp;__IRQ_STAT(cpu,&nbsp;member)&nbsp;((void)(cpu),&nbsp;irq_stat[0].member)</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;softirq_active(cpu)&nbsp;__IRQ_STAT((cpu),&nbsp;__softirq_active)</p> 
+          <p>#define&nbsp;softirq_mask(cpu)&nbsp;__IRQ_STAT((cpu),&nbsp;__softirq_mask)</p> 
+          <p>可以看到每个<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">定义一个</span>irq_cpustat_t结构，来控制本<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">的软中断请求和屏蔽等。</span> 可以看到在<span style="font-family: 'Times New Roman';">open_softirq</span><span style="font-family: 宋体;">函数中除了将函数指针</span><span style="font-family: 'Times New Roman';">action</span><span style="font-family: 宋体;">指向具体的服务函数以外，还将本</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">的“中断屏蔽寄存器”设置为</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">，使得软中断可运行。</span></p> 
+          <p>在内核中还有一个以<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">编号为下标的数组</span>tasklet_hi_vec[]，这是个tasklet_head结构数组，每个<span style="font-family: 'Times New Roman';">tasklet_head</span><span style="font-family: 宋体;">结构就是一个</span><span style="font-family: 'Times New Roman';">tasklet_struct</span><span style="font-family: 宋体;">结构的队列头：</span></p> 
+          <p>struct&nbsp;tasklet_head&nbsp;tasklet_hi_vec[NR_CPUS]&nbsp;__cacheline_aligned;</p> 
+          <p>&nbsp;</p> 
+          <p>struct&nbsp;tasklet_head</p> 
+          <p>{</p> 
+          <p>struct&nbsp;tasklet_struct&nbsp;*list;</p> 
+          <p>}&nbsp;__attribute__&nbsp;((__aligned__(SMP_CACHE_BYTES)));</p> 
+          <p>继续回到<span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">机制上，</span><span style="font-family: 'Times New Roman';">tasklet_init</span><span style="font-family: 宋体;">函数将具体服务操作都指向</span><span style="font-family: 'Times New Roman';">bh_action</span><span style="font-family: 宋体;">函数，从理论上建立了</span><span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">的执行机制，但是并没有真正指向具体服务，具体服务是在初始化时候通过</span>init_bh函数进行的（<span style="font-family: 'Times New Roman';">kernel</span>/softirq.c）：</p> 
+          <p>void&nbsp;init_bh(int&nbsp;nr,&nbsp;void&nbsp;(*routine)(void))</p> 
+          <p>{</p> 
+          <p>bh_base[nr]&nbsp;=&nbsp;routine;</p> 
+          <p>mb();</p> 
+          <p>}</p> 
+          <p>传入参数有两个，<span style="font-family: 'Times New Roman';">nr</span><span style="font-family: 宋体;">是外部中断的中断号偏移量，</span>routine就是具体的中断服务程序指针，常用几个中断号偏移量定义如下（include/linux/interrupt.h）：</p> 
+          <p>enum&nbsp;{</p> 
+          <p>TIMER_BH&nbsp;=&nbsp;0,</p> 
+          <p>TQUEUE_BH,</p> 
+          <p>DIGI_BH,</p> 
+          <p>SERIAL_BH,</p> 
+          <p>RISCOM8_BH,</p> 
+          <p>SPECIALIX_BH,</p> 
+          <p>AURORA_BH,</p> 
+          <p>ESP_BH,</p> 
+          <p>SCSI_BH,</p> 
+          <p>IMMEDIATE_BH,</p> 
+          <p>CYCLADES_BH,</p> 
+          <p>CM206_BH,</p> 
+          <p>JS_BH,</p> 
+          <p>MACSERIAL_BH,</p> 
+          <p>ISICOM_BH</p> 
+          <p>};</p> 
+          <p>bh_base[]数组定义在<span style="font-family: 'Times New Roman';">softirq.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>static&nbsp;void&nbsp;(*bh_base[32])(void);</p> 
+          <p>bh_base中存储的是真正的中断服务指针，结合下面的<span style="font-family: 'Times New Roman';">bh_action</span><span style="font-family: 宋体;">函数来看：</span></p> 
+          <p>static&nbsp;void&nbsp;bh_action(unsigned&nbsp;long&nbsp;nr)</p> 
+          <p>{</p> 
+          <p>int&nbsp;cpu&nbsp;=&nbsp;smp_processor_id();</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!spin_trylock(&amp;global_bh_lock)) //<span style="font-family: 宋体;">检测是否有其他</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">执行此程序</span></p> 
+          <p>goto&nbsp;resched;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!hardirq_trylock(cpu)) //<span style="font-family: 宋体;">防止硬中断服务调用</span></p> 
+          <p>goto&nbsp;resched_unlock;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(bh_base[nr]) //<span style="font-family: 宋体;">如果初始化了函数指针</span></p> 
+          <p>bh_base[nr](); //<span style="font-family: 宋体;">直接执行软中断服务程序</span></p> 
+          <p>&nbsp;</p> 
+          <p>hardirq_endlock(cpu);</p> 
+          <p>spin_unlock(&amp;global_bh_lock);</p> 
+          <p>return;</p> 
+          <p>&nbsp;</p> 
+          <p>resched_unlock:</p> 
+          <p>spin_unlock(&amp;global_bh_lock);</p> 
+          <p>resched:</p> 
+          <p>mark_bh(nr);</p> 
+          <p>}</p> 
+          <p>也就是<span style="font-family: 'Times New Roman';">bh_action</span><span style="font-family: 宋体;">相当于一个公共通道，在里面检测</span><span style="font-family: 'Times New Roman';">bh_base</span><span style="font-family: 宋体;">指针，然后执行。其中，</span>spin_trylock函数定义如下：</p> 
+          <p>#define&nbsp;spin_trylock(lock)&nbsp;(!test_and_set_bit(0,(lock)))</p> 
+          <p>这个“锁”就是全局量<span style="font-family: 'Times New Roman';">global_bh_lock</span><span style="font-family: 宋体;">，用来使</span><span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">全局串行化，同一时间最多只能有一个</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">来执行</span><span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">函数。</span></p> 
+          <p>hardirq_trylock<span style="font-family: 宋体;">函数定义如下：</span></p> 
+          <p>#define&nbsp;hardirq_trylock(cpu)&nbsp;(local_irq_count(irq)==0)</p> 
+          <p>这个锁是用来防止硬件中断中调用的。</p> 
+          <p>当需要执行一个特定的<span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">函数的时候，必须先通过</span><span style="font-family: 'Times New Roman';">mark_bh</span><span style="font-family: 宋体;">函数来提出请求，然后根据具体执行的</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">来将其链入特定的</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">队列中（</span><span style="font-family: 'Times New Roman';">interrupt.h</span><span style="font-family: 宋体;">）：</span></p> 
+          <p>static&nbsp;inline&nbsp;void&nbsp;mark_bh(int&nbsp;nr)</p> 
+          <p>{</p> 
+          <p>tasklet_hi_schedule(bh_task_vec+nr);</p> 
+          <p>}</p> 
+          <p>函数<span style="font-family: 'Times New Roman';">tasklet_hi_schedule</span><span style="font-family: 宋体;">定义如下：</span></p> 
+          <p>static&nbsp;inline&nbsp;void&nbsp;tasklet_hi_schedule(struct&nbsp;tasklet_struct&nbsp;*t)</p> 
+          <p>{</p> 
+          <p>if&nbsp;(!test_and_set_bit(TASKLET_STATE_SCHED,&nbsp;&amp;t-&gt;state))&nbsp;{</p> 
+          <p>int&nbsp;cpu&nbsp;=&nbsp;smp_processor_id();</p> 
+          <p>unsigned&nbsp;long&nbsp;flags;</p> 
+          <p>&nbsp;</p> 
+          <p>local_irq_save(flags);</p> 
+          <p>t-&gt;next&nbsp;=&nbsp;tasklet_hi_vec[cpu].list;</p> 
+          <p>tasklet_hi_vec[cpu].list&nbsp;=&nbsp;t;</p> 
+          <p>__cpu_raise_softirq(cpu,&nbsp;HI_SOFTIRQ);</p> 
+          <p>local_irq_restore(flags);</p> 
+          <p>}</p> 
+          <p>}</p> 
+          <p>这个函数将具体的<span style="font-family: 'Times New Roman';">tasklet_struct</span><span style="font-family: 宋体;">链入具体</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">的</span><span style="font-family: 'Times New Roman';">tasklet_hi_vec</span><span style="font-family: 宋体;">队列中，需要说明的是如果已经链入一个队列还没有执行，那么就不允许链入其他队列，</span><span style="font-family: 'Times New Roman';">TASKLET_STATE_SCHED</span><span style="font-family: 宋体;">位就是为了保证这一点的。</span></p> 
+          <p>最后通过<span style="font-family: 'Times New Roman';">__cpu_raise_softirq</span><span style="font-family: 宋体;">来发出软中断请求：</span></p> 
+          <p>static&nbsp;inline&nbsp;void&nbsp;__cpu_raise_softirq(int&nbsp;cpu,&nbsp;int&nbsp;nr)</p> 
+          <p>{</p> 
+          <p>softirq_active(cpu)&nbsp;|=&nbsp;(1&lt;&lt;nr); //<span style="font-family: 宋体;">设置请求标志位</span></p> 
+          <p>}</p> 
+          <p>前面说道做在<span style="font-family: 'Times New Roman';">do_IRQ</span><span style="font-family: 宋体;">结束后检测并且通过</span><span style="font-family: 'Times New Roman';">do_softirq</span><span style="font-family: 宋体;">来执行软中断，这个函数定义在</span>kernel/softirq.c中：</p> 
+          <p>asmlinkage&nbsp;void&nbsp;do_softirq()</p> 
+          <p>{</p> 
+          <p>int&nbsp;cpu&nbsp;=&nbsp;smp_processor_id();</p> 
+          <p>__u32&nbsp;active,&nbsp;mask;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(in_interrupt()) //检测是否正在中断中</p> 
+          <p>return;</p> 
+          <p>&nbsp;</p> 
+          <p>local_bh_disable();</p> 
+          <p>&nbsp;</p> 
+          <p>local_irq_disable();</p> 
+          <p>mask&nbsp;=&nbsp;softirq_mask(cpu);</p> 
+          <p>active&nbsp;=&nbsp;softirq_active(cpu)&nbsp;&amp;&nbsp;mask;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(active)&nbsp;{</p> 
+          <p>struct&nbsp;softirq_action&nbsp;*h;</p> 
+          <p>&nbsp;</p> 
+          <p>restart:</p> 
+          <p>/*&nbsp;Reset&nbsp;active&nbsp;bitmask&nbsp;before&nbsp;enabling&nbsp;irqs&nbsp;*/</p> 
+          <p>softirq_active(cpu)&nbsp;&amp;=&nbsp;~active;</p> 
+          <p>&nbsp;</p> 
+          <p>local_irq_enable();</p> 
+          <p>&nbsp;</p> 
+          <p>h&nbsp;=&nbsp;softirq_vec;</p> 
+          <p>mask&nbsp;&amp;=&nbsp;~active;</p> 
+          <p>&nbsp;</p> 
+          <p>do&nbsp;{</p> 
+          <p>if&nbsp;(active&nbsp;&amp;&nbsp;1)</p> 
+          <p>h-&gt;action(h);</p> 
+          <p>h++;</p> 
+          <p>active&nbsp;&gt;&gt;=&nbsp;1;</p> 
+          <p>}&nbsp;while&nbsp;(active);</p> 
+          <p>&nbsp;</p> 
+          <p>local_irq_disable();</p> 
+          <p>&nbsp;</p> 
+          <p>active&nbsp;=&nbsp;softirq_active(cpu);</p> 
+          <p>if&nbsp;((active&nbsp;&amp;=&nbsp;mask)&nbsp;!=&nbsp;0)</p> 
+          <p>goto&nbsp;retry;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>local_bh_enable();</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;Leave&nbsp;with&nbsp;locally&nbsp;disabled&nbsp;hard&nbsp;irqs.&nbsp;It&nbsp;is&nbsp;critical&nbsp;to&nbsp;close</p> 
+          <p>*&nbsp;window&nbsp;for&nbsp;infinite&nbsp;recursion,&nbsp;while&nbsp;we&nbsp;help&nbsp;local&nbsp;bh&nbsp;count,</p> 
+          <p>*&nbsp;it&nbsp;protected&nbsp;us.&nbsp;Now&nbsp;we&nbsp;are&nbsp;defenceless.</p> 
+          <p>*/</p> 
+          <p>return;</p> 
+          <p>&nbsp;</p> 
+          <p>retry:</p> 
+          <p>goto&nbsp;restart;</p> 
+          <p>}</p> 
+          <p>部分操作定义如下：</p> 
+          <p>#define&nbsp;in_interrupt()&nbsp;({&nbsp;int&nbsp;__cpu&nbsp;=&nbsp;smp_processor_id();&nbsp;\</p> 
+          <p>(local_irq_count(__cpu)&nbsp;+&nbsp;local_bh_count(__cpu)&nbsp;!=&nbsp;0);&nbsp;})</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;cpu_bh_disable(cpu) do&nbsp;{&nbsp;local_bh_count(cpu)++;&nbsp;barrier();&nbsp;}&nbsp;while&nbsp;(0)</p> 
+          <p>#define&nbsp;cpu_bh_enable(cpu) do&nbsp;{&nbsp;barrier();&nbsp;local_bh_count(cpu)–;&nbsp;}&nbsp;while&nbsp;(0)</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;local_bh_disable() cpu_bh_disable(smp_processor_id())</p> 
+          <p>#define&nbsp;local_bh_enable() cpu_bh_enable(smp_processor_id())</p> 
+          <p>可见，对于软中断的限制只有一个，就是in_interrupt。代码比较简单，不多说了。</p> 
+          <p>&nbsp;</p> 
+          <h2>页面异常：</h2> 
+          <p>前面说内存管理的时候说道页面异常程序<span style="font-family: 'Times New Roman';">do_page_fault</span><span style="font-family: 宋体;">，那么现在就补上从异常发生到响应</span><span style="font-family: 'Times New Roman';">do_page_fault</span><span style="font-family: 宋体;">的一段程序和处理完成返回的程序。</span></p> 
+          <p>CPU<span style="font-family: 宋体;">检测到页面异常并且通过陷阱门进入</span><span style="font-family: 'Times New Roman';">page_fault</span><span style="font-family: 宋体;">，因为为页面异常设置的程序入口就是</span><span style="font-family: 'Times New Roman';">page_fault</span><span style="font-family: 宋体;">，定义在</span>arch/i386/kernel/entry.S中：</p> 
+          <p>ENTRY(page_fault)</p> 
+          <p>pushl&nbsp;$&nbsp;SYMBOL_NAME(do_page_fault)</p> 
+          <p>jmp&nbsp;error_code</p> 
+          <p>这里不是<span style="font-family: 'Times New Roman';">SAVE_ALL</span><span style="font-family: 宋体;">，而是保存服务地址后直接跳转到</span><span style="font-family: 'Times New Roman';">error_code</span><span style="font-family: 宋体;">处执行。</span></p> 
+          <p>关于带出错码和不带出错码异常请参见《<span style="font-family: 'Times New Roman';">Diers</span><span style="font-family: 宋体;">操作系统设计与实现》。</span></p> 
+          <p>这里将带出错码异常复制下来加上注释：</p> 
+          <p>error_code:</p> 
+          <p>pushl&nbsp;%ds</p> 
+          <p>pushl&nbsp;%eax</p> 
+          <p>xorl&nbsp;%eax,%eax</p> 
+          <p>pushl&nbsp;%ebp</p> 
+          <p>pushl&nbsp;%edi</p> 
+          <p>pushl&nbsp;%esi</p> 
+          <p>pushl&nbsp;%edx</p> 
+          <p>decl&nbsp;%eax #&nbsp;eax&nbsp;=&nbsp;-1</p> 
+          <p>pushl&nbsp;%ecx</p> 
+          <p>pushl&nbsp;%ebx #<span style="font-family: 宋体;">以上为保存寄存器内容</span></p> 
+          <p>cld</p> 
+          <p>movl&nbsp;%es,%ecx</p> 
+          <p>movl&nbsp;ORIG_EAX(%esp),&nbsp;%esi #&nbsp;get&nbsp;the&nbsp;error&nbsp;code</p> 
+          <p>movl&nbsp;ES(%esp),&nbsp;%edi #&nbsp;get&nbsp;the&nbsp;function&nbsp;address</p> 
+          <p>movl&nbsp;%eax,&nbsp;ORIG_EAX(%esp)</p> 
+          <p>movl&nbsp;%ecx,&nbsp;ES(%esp)</p> 
+          <p>movl&nbsp;%esp,%edx</p> 
+          <p>pushl&nbsp;%esi #&nbsp;push&nbsp;the&nbsp;error&nbsp;code</p> 
+          <p>pushl&nbsp;%edx #&nbsp;push&nbsp;the&nbsp;pt_regs&nbsp;pointer</p> 
+          <p>movl&nbsp;$(__KERNEL_DS),%edx</p> 
+          <p>movl&nbsp;%edx,%ds</p> 
+          <p>movl&nbsp;%edx,%es</p> 
+          <p>GET_CURRENT(%ebx)</p> 
+          <p>call&nbsp;*%edi #<span style="font-family: 宋体;">调用服务程序</span></p> 
+          <p>addl&nbsp;$8,%esp #<span style="font-family: 宋体;">最后压入的两个参数不再需要</span></p> 
+          <p>jmp&nbsp;ret_from_exception #<span style="font-family: 宋体;">异常返回</span></p> 
+          <p>&nbsp;</p> 
+          <p>至于不带出错码异常请看个例子：</p> 
+          <p>ENTRY(coprocessor_error)</p> 
+          <p>pushl&nbsp;$0</p> 
+          <p>pushl&nbsp;$&nbsp;SYMBOL_NAME(do_coprocessor_error)</p> 
+          <p>jmp&nbsp;error_code</p> 
+          <p>这里先压入一个<span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">，相当于出错码为</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">，但是并不用，这样就和带出错码异常一样了。</span></p> 
+          <p>异常返回程序ret_from_exception如下所示：</p> 
+          <p>ret_from_exception:</p> 
+          <p>#ifdef&nbsp;CONFIG_SMP</p> 
+          <p>GET_CURRENT(%ebx)</p> 
+          <p>movl&nbsp;processor(%ebx),%eax</p> 
+          <p>shll&nbsp;$CONFIG_X86_L1_CACHE_SHIFT,%eax</p> 
+          <p>movl&nbsp;SYMBOL_NAME(irq_stat)(,%eax),%ecx #&nbsp;softirq_active</p> 
+          <p>testl&nbsp;SYMBOL_NAME(irq_stat)+4(,%eax),%ecx #&nbsp;softirq_mask</p> 
+          <p>#else</p> 
+          <p>movl&nbsp;SYMBOL_NAME(irq_stat),%ecx #&nbsp;softirq_active</p> 
+          <p>testl&nbsp;SYMBOL_NAME(irq_stat)+4,%ecx #&nbsp;softirq_mask</p> 
+          <p>#endif</p> 
+          <p>jne&nbsp;&nbsp;&nbsp;handle_softirq</p> 
+          <p>&nbsp;</p> 
+          <p>ENTRY(ret_from_intr)</p> 
+          <p>GET_CURRENT(%ebx)</p> 
+          <p>movl&nbsp;EFLAGS(%esp),%eax #&nbsp;mix&nbsp;EFLAGS&nbsp;and&nbsp;CS</p> 
+          <p>movb&nbsp;CS(%esp),%al</p> 
+          <p>testl&nbsp;$(VM_MASK&nbsp;|&nbsp;3),%eax #&nbsp;return&nbsp;to&nbsp;VM86&nbsp;mode&nbsp;or&nbsp;non-supervisor?</p> 
+          <p>jne&nbsp;ret_with_reschedule</p> 
+          <p>jmp&nbsp;restore_all</p> 
+          <p>&nbsp;</p> 
+          <p>ALIGN</p> 
+          <p>handle_softirq:</p> 
+          <p>call&nbsp;SYMBOL_NAME(do_softirq)</p> 
+          <p>jmp&nbsp;ret_from_intr</p> 
+          <p>主要就是一些软中断检测等，不再细说。</p> 
+          <p>&nbsp;</p> 
+          <h2>时钟中断：</h2> 
+          <p>关于时钟中断的其他介绍请参考《<span style="font-family: 'Times New Roman';">Diers</span><span style="font-family: 宋体;">操作系统设计与实现》</span></p> 
+          <p>Linux2.4的时钟中断初始化程序是在<span style="font-family: 'Times New Roman';">arch</span>/i386/kernel/time.c中的：</p> 
+          <p>void&nbsp;__init&nbsp;time_init(void)</p> 
+          <p>{</p> 
+          <p>extern&nbsp;int&nbsp;x86_udelay_tsc;</p> 
+          <p>&nbsp;</p> 
+          <p>xtime.tv_sec&nbsp;=&nbsp;get_cmos_time();</p> 
+          <p>xtime.tv_usec&nbsp;=&nbsp;0;</p> 
+          <p>…</p> 
+          <p>setup_irq(0,&nbsp;&amp;irq0);</p> 
+          <p>…</p> 
+          <p>}</p> 
+          <p>这里就先看列出来的几行：</p> 
+          <p>前面<span style="font-family: 'Times New Roman';">get_cmos_time</span><span style="font-family: 宋体;">就是取得</span><span style="font-family: 'Times New Roman';">CMOS</span><span style="font-family: 宋体;">时间，</span><span style="font-family: 'Times New Roman';">xtime</span><span style="font-family: 宋体;">是一个</span>timeval类型的全局量，用来保存时间：</p> 
+          <p>struct&nbsp;timeval&nbsp;{</p> 
+          <p>time_t tv_sec; /*&nbsp;seconds&nbsp;*/</p> 
+          <p>suseconds_t tv_usec; /*&nbsp;microseconds&nbsp;*/</p> 
+          <p>};</p> 
+          <p>另外还有一个系统从开机启动开始运行的时间片数<span style="font-family: 'Times New Roman';">jiffies</span><span style="font-family: 宋体;">在以后会经常用到。</span></p> 
+          <p>setup_irq<span style="font-family: 宋体;">是前面说过的设置中断的函数，</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">表示时钟中断的偏移量为</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">，也就是中断号为</span><span style="font-family: 'Times New Roman';">0x20</span><span style="font-family: 宋体;">。</span><span style="font-family: 'Times New Roman';">irq0</span><span style="font-family: 宋体;">是在</span><span style="font-family: 'Times New Roman';">time.c</span><span style="font-family: 宋体;">中定义的：</span></p> 
+          <p>static&nbsp;struct&nbsp;irqaction&nbsp;irq0&nbsp;&nbsp;=&nbsp;{&nbsp;timer_interrupt,&nbsp;SA_INTERRUPT,&nbsp;0,&nbsp;“timer”,&nbsp;NULL,&nbsp;NULL};</p> 
+          <p>可见，系统将时钟中断的服务函数设置为<span style="font-family: 'Times New Roman';">timer_interrupt</span><span style="font-family: 宋体;">了，这个函数也是在</span><span style="font-family: 'Times New Roman';">time.c</span><span style="font-family: 宋体;">中定义的：</span></p> 
+          <p>static&nbsp;void&nbsp;timer_interrupt(int&nbsp;irq,&nbsp;void&nbsp;*dev_id,&nbsp;struct&nbsp;pt_regs&nbsp;*regs)</p> 
+          <p>{</p> 
+          <p>…</p> 
+          <p>do_timer_interrupt(irq,&nbsp;NULL,&nbsp;regs);</p> 
+          <p>…</p> 
+          <p>}</p> 
+          <p>这里我们只关心一行<span style="font-family: 'Times New Roman';">do_timer_interrupt</span><span style="font-family: 宋体;">：</span></p> 
+          <p>static&nbsp;inline&nbsp;void&nbsp;do_timer_interrupt(int&nbsp;irq,&nbsp;void&nbsp;*dev_id,&nbsp;struct&nbsp;pt_regs&nbsp;*regs)</p> 
+          <p>{</p> 
+          <p>…</p> 
+          <p>do_timer(regs);</p> 
+          <p>…</p> 
+          <p>x86_do_profile(regs-&gt;eip);</p> 
+          <p>…</p> 
+          <p>}</p> 
+          <p>这里，也只关心两行：</p> 
+          <p>do_timer函数是定义在kernel/timer.c中：</p> 
+          <p>void&nbsp;do_timer(struct&nbsp;pt_regs&nbsp;*regs)</p> 
+          <p>{</p> 
+          <p>(*(unsigned&nbsp;long&nbsp;*)&amp;jiffies)++; //时间片加</p> 
+          <p>#ifndef&nbsp;CONFIG_SMP</p> 
+          <p>/*&nbsp;SMP&nbsp;process&nbsp;accounting&nbsp;uses&nbsp;the&nbsp;local&nbsp;APIC&nbsp;timer&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>update_process_times(user_mode(regs)); //<span style="font-family: 宋体;">进程调度相关</span></p> 
+          <p>#endif</p> 
+          <p>mark_bh(TIMER_BH);</p> 
+          <p>if&nbsp;(TQ_ACTIVE(tq_timer))</p> 
+          <p>mark_bh(TQUEUE_BH);</p> 
+          <p>}</p> 
+          <p>这里使用<span style="font-family: 'Times New Roman';">(*(unsigned&nbsp;long&nbsp;*)&amp;jiffies)++</span><span style="font-family: 宋体;">是为了确保操作的原子性，一条指令就可实现，不需要额外装寄存器等。</span></p> 
+          <p>mark_bh(TIMER_BH)<span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">mark_bh(TQUEUE_BH)</span><span style="font-family: 宋体;">是为了执行时钟中断的“后半部”，在前面已经初始化过了，每次时钟中断都得执行，在初始化中有如下代码：</span></p> 
+          <p>init_bh(TIMER_BH,&nbsp;timer_bh);</p> 
+          <p>init_bh(TQUEUE_BH,&nbsp;tqueue_bh);</p> 
+          <p>init_bh(IMMEDIATE_BH,&nbsp;immediate_bh);</p> 
+          <p>timer_bh<span style="font-family: 宋体;">是每次都必须执行的，函数定义在</span>kernel/timer.c中：</p> 
+          <p>void&nbsp;timer_bh(void)</p> 
+          <p>{</p> 
+          <p>update_times();</p> 
+          <p>run_timer_list();</p> 
+          <p>}</p> 
+          <p>update_times()<span style="font-family: 宋体;">定义在</span>kernel/timer.c中：</p> 
+          <p>static&nbsp;inline&nbsp;void&nbsp;update_times(void)</p> 
+          <p>{</p> 
+          <p>unsigned&nbsp;long&nbsp;ticks;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;update_times()&nbsp;is&nbsp;run&nbsp;from&nbsp;the&nbsp;raw&nbsp;timer_bh&nbsp;handler&nbsp;so&nbsp;we</p> 
+          <p>*&nbsp;just&nbsp;know&nbsp;that&nbsp;the&nbsp;irqs&nbsp;are&nbsp;locally&nbsp;enabled&nbsp;and&nbsp;so&nbsp;we&nbsp;don’t</p> 
+          <p>*&nbsp;need&nbsp;to&nbsp;save/restore&nbsp;the&nbsp;flags&nbsp;of&nbsp;the&nbsp;local&nbsp;CPU&nbsp;here.&nbsp;-arca</p> 
+          <p>*/</p> 
+          <p>write_lock_irq(&amp;xtime_lock);</p> 
+          <p>&nbsp;</p> 
+          <p>ticks&nbsp;=&nbsp;jiffies&nbsp;–&nbsp;wall_jiffies;</p> 
+          <p>if&nbsp;(ticks)&nbsp;{</p> 
+          <p>wall_jiffies&nbsp;+=&nbsp;ticks;</p> 
+          <p>update_wall_time(ticks); //<span style="font-family: 宋体;">处理</span><span style="font-family: 'Times New Roman';">xtime</span><span style="font-family: 宋体;">中的数值</span></p> 
+          <p>}</p> 
+          <p>write_unlock_irq(&amp;xtime_lock);</p> 
+          <p>calc_load(ticks); //<span style="font-family: 宋体;">计算累积</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">负荷</span></p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>run_timer_list函数定义如下：</p> 
+          <p>static&nbsp;inline&nbsp;void&nbsp;run_timer_list(void)</p> 
+          <p>{</p> 
+          <p>spin_lock_irq(&amp;timerlist_lock);</p> 
+          <p>while&nbsp;((long)(jiffies&nbsp;–&nbsp;timer_jiffies)&nbsp;&gt;=&nbsp;0)&nbsp;{</p> 
+          <p>struct&nbsp;list_head&nbsp;*head,&nbsp;*curr;</p> 
+          <p>if&nbsp;(!tv1.index)&nbsp;{</p> 
+          <p>int&nbsp;n&nbsp;=&nbsp;1;</p> 
+          <p>do&nbsp;{</p> 
+          <p>cascade_timers(tvecs[n]);</p> 
+          <p>}&nbsp;while&nbsp;(tvecs[n]-&gt;index&nbsp;==&nbsp;1&nbsp;&amp;&amp;&nbsp;++n&nbsp;&lt;&nbsp;NOOF_TVECS);</p> 
+          <p>}</p> 
+          <p>repeat:</p> 
+          <p>head&nbsp;=&nbsp;tv1.vec&nbsp;+&nbsp;tv1.index;</p> 
+          <p>curr&nbsp;=&nbsp;head-&gt;next;</p> 
+          <p>if&nbsp;(curr&nbsp;!=&nbsp;head)&nbsp;{</p> 
+          <p>struct&nbsp;timer_list&nbsp;*timer;</p> 
+          <p>void&nbsp;(*fn)(unsigned&nbsp;long);</p> 
+          <p>unsigned&nbsp;long&nbsp;data;</p> 
+          <p>&nbsp;</p> 
+          <p>timer&nbsp;=&nbsp;list_entry(curr,&nbsp;struct&nbsp;timer_list,&nbsp;list);</p> 
+          <p>fn&nbsp;=&nbsp;timer-&gt;function;</p> 
+          <p>data=&nbsp;timer-&gt;data;</p> 
+          <p>&nbsp;</p> 
+          <p>detach_timer(timer);</p> 
+          <p>timer-&gt;list.next&nbsp;=&nbsp;timer-&gt;list.prev&nbsp;=&nbsp;NULL;</p> 
+          <p>timer_enter(timer);</p> 
+          <p>spin_unlock_irq(&amp;timerlist_lock);</p> 
+          <p>fn(data);</p> 
+          <p>spin_lock_irq(&amp;timerlist_lock);</p> 
+          <p>timer_exit();</p> 
+          <p>goto&nbsp;repeat;</p> 
+          <p>}</p> 
+          <p>++timer_jiffies;</p> 
+          <p>tv1.index&nbsp;=&nbsp;(tv1.index&nbsp;+&nbsp;1)&nbsp;&amp;&nbsp;TVR_MASK;</p> 
+          <p>}</p> 
+          <p>spin_unlock_irq(&amp;timerlist_lock);</p> 
+          <p>}</p> 
+          <p>这个函数留到以后讲。</p> 
+          <h2>系统调用：</h2> 
+          <p>Linux设置的系统调用号的中断号为<span style="font-family: 'Times New Roman';">0x80</span><span style="font-family: 宋体;">，其入口程序为</span>system_call，在调用之前现将系统调用号存入<span style="font-family: 'Times New Roman';">EAX</span><span style="font-family: 宋体;">寄存器，然后调用</span><span style="font-family: 'Times New Roman';">int&nbsp;0x80</span><span style="font-family: 宋体;">来进入系统调用，</span>system_call定义在arch/i386/kernel/entry.S中：</p> 
+          <p>ENTRY(system_call)</p> 
+          <p>pushl&nbsp;%eax #&nbsp;save&nbsp;orig_eax<span style="font-family: 宋体;">，系统调用号</span></p> 
+          <p>SAVE_ALL #<span style="font-family: 宋体;">保存寄存器及其参数</span></p> 
+          <p>GET_CURRENT(%ebx) #<span style="font-family: 宋体;">取得当前</span><span style="font-family: 'Times New Roman';">CPU</span></p> 
+          <p>cmpl&nbsp;$(NR_syscalls),%eax #<span style="font-family: 宋体;">比较系统调用号是否超出</span></p> 
+          <p>jae&nbsp;badsys</p> 
+          <p>testb&nbsp;$0x02,tsk_ptrace(%ebx) #&nbsp;PT_TRACESYS<span style="font-family: 宋体;">，检查</span><span style="font-family: 'Times New Roman';">PT_TRACESYS</span><span style="font-family: 宋体;">位，</span></p> 
+          <p>#<span style="font-family: 宋体;">表示是否跟踪子进程系统调用</span></p> 
+          <p>jne&nbsp;tracesys</p> 
+          <p>call&nbsp;*SYMBOL_NAME(sys_call_table)(,%eax,4) #<span style="font-family: 宋体;">根据系统调用号</span></p> 
+          <p>#<span style="font-family: 宋体;">计算偏移来调用</span></p> 
+          <p>#sys_call_table+eax*4</p> 
+          <p>movl&nbsp;%eax,EAX(%esp) #&nbsp;save&nbsp;the&nbsp;return&nbsp;value #保存返回值</p> 
+          <p>转入的程序tracesys如下：</p> 
+          <p>tracesys:</p> 
+          <p>movl&nbsp;$-ENOSYS,EAX(%esp)</p> 
+          <p>call&nbsp;SYMBOL_NAME(syscall_trace)</p> 
+          <p>movl&nbsp;ORIG_EAX(%esp),%eax</p> 
+          <p>cmpl&nbsp;$(NR_syscalls),%eax</p> 
+          <p>jae&nbsp;tracesys_exit</p> 
+          <p>call&nbsp;*SYMBOL_NAME(sys_call_table)(,%eax,4)</p> 
+          <p>movl&nbsp;%eax,EAX(%esp) #&nbsp;save&nbsp;the&nbsp;return&nbsp;value</p> 
+          <p>tracesys_exit:</p> 
+          <p>call&nbsp;SYMBOL_NAME(syscall_trace)</p> 
+          <p>jmp&nbsp;ret_from_sys_call</p> 
+          <p>这个函数留到以后讲。</p> 
+          <p>再来看看系统调用的返回：</p> 
+          <p>ENTRY(ret_from_sys_call)</p> 
+          <p>#ifdef&nbsp;CONFIG_SMP</p> 
+          <p>movl&nbsp;processor(%ebx),%eax</p> 
+          <p>shll&nbsp;$CONFIG_X86_L1_CACHE_SHIFT,%eax</p> 
+          <p>movl&nbsp;SYMBOL_NAME(irq_stat)(,%eax),%ecx #&nbsp;softirq_active</p> 
+          <p>testl&nbsp;SYMBOL_NAME(irq_stat)+4(,%eax),%ecx #&nbsp;softirq_mask</p> 
+          <p>#else</p> 
+          <p>movl&nbsp;SYMBOL_NAME(irq_stat),%ecx #&nbsp;softirq_active</p> 
+          <p>testl&nbsp;SYMBOL_NAME(irq_stat)+4,%ecx #&nbsp;softirq_mask</p> 
+          <p>#endif</p> 
+          <p>jne&nbsp;&nbsp;&nbsp;handle_softirq</p> 
+          <p>&nbsp;</p> 
+          <p>ret_with_reschedule:</p> 
+          <p>cmpl&nbsp;$0,need_resched(%ebx)</p> 
+          <p>jne&nbsp;reschedule</p> 
+          <p>cmpl&nbsp;$0,sigpending(%ebx)</p> 
+          <p>jne&nbsp;signal_return</p> 
+          <p>restore_all:</p> 
+          <p>RESTORE_ALL</p> 
+          <p>…</p> 
+          <p>handle_softirq:</p> 
+          <p>call&nbsp;SYMBOL_NAME(do_softirq)</p> 
+          <p>jmp&nbsp;ret_from_intr</p> 
+          <p>关于系统调用的进一步使用可以看看include/asm-i386/unistd.h中的系统调用的最初的进入方法如下：</p> 
+          <p>#define&nbsp;__syscall_return(type,&nbsp;res)&nbsp;\</p> 
+          <p>do&nbsp;{&nbsp;\</p> 
+          <p>if&nbsp;((unsigned&nbsp;long)(res)&nbsp;&gt;=&nbsp;(unsigned&nbsp;long)(-125))&nbsp;{&nbsp;\</p> 
+          <p>errno&nbsp;=&nbsp;-(res);&nbsp;\</p> 
+          <p>res&nbsp;=&nbsp;-1;&nbsp;\</p> 
+          <p>}&nbsp;\</p> 
+          <p>return&nbsp;(type)&nbsp;(res);&nbsp;\</p> 
+          <p>}&nbsp;while&nbsp;(0)</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;XXX&nbsp;–&nbsp;_foo&nbsp;needs&nbsp;to&nbsp;be&nbsp;__foo,&nbsp;while&nbsp;__NR_bar&nbsp;could&nbsp;be&nbsp;_NR_bar.&nbsp;*/</p> 
+          <p>#define&nbsp;_syscall0(type,name)&nbsp;\</p> 
+          <p>type&nbsp;name(void)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_syscall1(type,name,type1,arg1)&nbsp;\</p> 
+          <p>type&nbsp;name(type1&nbsp;arg1)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_syscall2(type,name,type1,arg1,type2,arg2)&nbsp;\</p> 
+          <p>type&nbsp;name(type1&nbsp;arg1,type2&nbsp;arg2)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)),”c”&nbsp;((long)(arg2)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_syscall3(type,name,type1,arg1,type2,arg2,type3,arg3)&nbsp;\</p> 
+          <p>type&nbsp;name(type1&nbsp;arg1,type2&nbsp;arg2,type3&nbsp;arg3)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)),”c”&nbsp;((long)(arg2)),&nbsp;\</p> 
+          <p>“d”&nbsp;((long)(arg3)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_syscall4(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4)&nbsp;\</p> 
+          <p>type&nbsp;name&nbsp;(type1&nbsp;arg1,&nbsp;type2&nbsp;arg2,&nbsp;type3&nbsp;arg3,&nbsp;type4&nbsp;arg4)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)),”c”&nbsp;((long)(arg2)),&nbsp;\</p> 
+          <p>“d”&nbsp;((long)(arg3)),”S”&nbsp;((long)(arg4)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_syscall5(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4,&nbsp;\</p> 
+          <p>type5,arg5)&nbsp;\</p> 
+          <p>type&nbsp;name&nbsp;(type1&nbsp;arg1,type2&nbsp;arg2,type3&nbsp;arg3,type4&nbsp;arg4,type5&nbsp;arg5)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)),”c”&nbsp;((long)(arg2)),&nbsp;\</p> 
+          <p>“d”&nbsp;((long)(arg3)),”S”&nbsp;((long)(arg4)),”D”&nbsp;((long)(arg5)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_syscall6(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4,&nbsp;\</p> 
+          <p>type5,arg5,type6,arg6)&nbsp;\</p> 
+          <p>type&nbsp;name&nbsp;(type1&nbsp;arg1,type2&nbsp;arg2,type3&nbsp;arg3,type4&nbsp;arg4,type5&nbsp;arg5,type6&nbsp;arg6)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“push&nbsp;%%ebp&nbsp;;&nbsp;movl&nbsp;%%eax,%%ebp&nbsp;;&nbsp;movl&nbsp;%1,%%eax&nbsp;;&nbsp;int&nbsp;$0x80&nbsp;;&nbsp;pop&nbsp;%%ebp”&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“i”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)),”c”&nbsp;((long)(arg2)),&nbsp;\</p> 
+          <p>“d”&nbsp;((long)(arg3)),”S”&nbsp;((long)(arg4)),”D”&nbsp;((long)(arg5)),&nbsp;\</p> 
+          <p>“0”&nbsp;((long)(arg6)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>我们就拿一个通用的<span style="font-family: 'Times New Roman';">_syscall1</span><span style="font-family: 宋体;">来说吧：</span></p> 
+          <p>#define&nbsp;_syscall1(type,name,type1,arg1)&nbsp;\</p> 
+          <p>type&nbsp;name(type1&nbsp;arg1)&nbsp;\</p> 
+          <p>{&nbsp;\</p> 
+          <p>long&nbsp;__res;&nbsp;\</p> 
+          <p>__asm__&nbsp;volatile&nbsp;(“int&nbsp;$0x80″&nbsp;\</p> 
+          <p>:&nbsp;“=a”&nbsp;(__res)&nbsp;\</p> 
+          <p>:&nbsp;“0”&nbsp;(__NR_##name),”b”&nbsp;((long)(arg1)));&nbsp;\</p> 
+          <p>__syscall_return(type,__res);&nbsp;\</p> 
+          <p>}</p> 
+          <p>比如我想增加一个系统调用<span style="font-family: 'Times New Roman';">int</span>&nbsp;my_sys_call(int&nbsp;a)这个函数，那么我就会声明：</p> 
+          <p>_syscall(int,my_sys_call,int,a);</p> 
+          <p>gcc<span style="font-family: 宋体;">展开后程序如下：</span></p> 
+          <p>int&nbsp;my_sys_call(int&nbsp;a){</p> 
+          <p>long&nbsp;__res;</p> 
+          <p>__asm__&nbsp;volatile(“int&nbsp;$0x80″</p> 
+          <p>:”=a”(__res)</p> 
+          <p>:”0″(__NR_my_sys_call),”b”((long)(a)));</p> 
+          <p>__syscall_return(int,__res);</p> 
+          <p>}</p> 
+          <p>可见，函数调用<span style="font-family: 'Times New Roman';">int&nbsp;0x80</span><span style="font-family: 宋体;">，输出寄存器为</span><span style="font-family: 'Times New Roman';">eax</span><span style="font-family: 宋体;">，输入</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">表示使用与输出一样的寄存器</span><span style="font-family: 'Times New Roman';">eax</span><span style="font-family: 宋体;">，还输入一个参数</span><span style="font-family: 'Times New Roman';">ebx</span><span style="font-family: 宋体;">，也就是值</span><span style="font-family: 'Times New Roman';">a</span><span style="font-family: 宋体;">，输出存入</span>__res中返回。</p> 
+          <p>__NR_my_sys_call是自己添加的，每一个系统调用在unistd.h中有一个这个的定义，表示系统调用号：</p> 
+          <p>系统调用号与调用表：</p> 
+          <p>(unistd.h):</p> 
+          <p>#define&nbsp;__NR_exit &nbsp;&nbsp;1</p> 
+          <p>#define&nbsp;__NR_fork &nbsp;&nbsp;2</p> 
+          <p>#define&nbsp;__NR_read &nbsp;&nbsp;3</p> 
+          <p>#define&nbsp;__NR_write &nbsp;&nbsp;4</p> 
+          <p>#define&nbsp;__NR_open &nbsp;&nbsp;5</p> 
+          <p>#define&nbsp;__NR_close &nbsp;&nbsp;6</p> 
+          <p>#define&nbsp;__NR_waitpid &nbsp;&nbsp;7</p> 
+          <p>#define&nbsp;__NR_creat &nbsp;&nbsp;8</p> 
+          <p>#define&nbsp;__NR_link &nbsp;&nbsp;9</p> 
+          <p>#define&nbsp;__NR_unlink &nbsp;10</p> 
+          <p>#define&nbsp;__NR_execve &nbsp;11</p> 
+          <p>#define&nbsp;__NR_chdir &nbsp;12</p> 
+          <p>#define&nbsp;__NR_time &nbsp;13</p> 
+          <p>#define&nbsp;__NR_mknod &nbsp;14</p> 
+          <p>#define&nbsp;__NR_chmod &nbsp;15</p> 
+          <p>#define&nbsp;__NR_lchown &nbsp;16</p> 
+          <p>#define&nbsp;__NR_break &nbsp;17</p> 
+          <p>#define&nbsp;__NR_oldstat &nbsp;18</p> 
+          <p>#define&nbsp;__NR_lseek &nbsp;19</p> 
+          <p>#define&nbsp;__NR_getpid &nbsp;20</p> 
+          <p>#define&nbsp;__NR_mount &nbsp;21</p> 
+          <p>#define&nbsp;__NR_umount &nbsp;22</p> 
+          <p>#define&nbsp;__NR_setuid &nbsp;23</p> 
+          <p>#define&nbsp;__NR_getuid &nbsp;24</p> 
+          <p>#define&nbsp;__NR_stime &nbsp;25</p> 
+          <p>#define&nbsp;__NR_ptrace &nbsp;26</p> 
+          <p>#define&nbsp;__NR_alarm &nbsp;27</p> 
+          <p>#define&nbsp;__NR_oldfstat &nbsp;28</p> 
+          <p>#define&nbsp;__NR_pause &nbsp;29</p> 
+          <p>#define&nbsp;__NR_utime &nbsp;30</p> 
+          <p>#define&nbsp;__NR_stty &nbsp;31</p> 
+          <p>#define&nbsp;__NR_gtty &nbsp;32</p> 
+          <p>#define&nbsp;__NR_access &nbsp;33</p> 
+          <p>#define&nbsp;__NR_nice &nbsp;34</p> 
+          <p>#define&nbsp;__NR_ftime &nbsp;35</p> 
+          <p>#define&nbsp;__NR_sync &nbsp;36</p> 
+          <p>#define&nbsp;__NR_kill &nbsp;37</p> 
+          <p>#define&nbsp;__NR_rename &nbsp;38</p> 
+          <p>#define&nbsp;__NR_mkdir &nbsp;39</p> 
+          <p>#define&nbsp;__NR_rmdir &nbsp;40</p> 
+          <p>#define&nbsp;__NR_dup &nbsp;41</p> 
+          <p>#define&nbsp;__NR_pipe &nbsp;42</p> 
+          <p>#define&nbsp;__NR_times &nbsp;43</p> 
+          <p>#define&nbsp;__NR_prof &nbsp;44</p> 
+          <p>#define&nbsp;__NR_brk &nbsp;45</p> 
+          <p>#define&nbsp;__NR_setgid &nbsp;46</p> 
+          <p>#define&nbsp;__NR_getgid &nbsp;47</p> 
+          <p>#define&nbsp;__NR_signal &nbsp;48</p> 
+          <p>#define&nbsp;__NR_geteuid &nbsp;49</p> 
+          <p>#define&nbsp;__NR_getegid &nbsp;50</p> 
+          <p>#define&nbsp;__NR_acct &nbsp;51</p> 
+          <p>#define&nbsp;__NR_umount2 &nbsp;52</p> 
+          <p>#define&nbsp;__NR_lock &nbsp;53</p> 
+          <p>#define&nbsp;__NR_ioctl &nbsp;54</p> 
+          <p>#define&nbsp;__NR_fcntl &nbsp;55</p> 
+          <p>#define&nbsp;__NR_mpx &nbsp;56</p> 
+          <p>#define&nbsp;__NR_setpgid &nbsp;57</p> 
+          <p>#define&nbsp;__NR_ulimit &nbsp;58</p> 
+          <p>#define&nbsp;__NR_oldolduname &nbsp;59</p> 
+          <p>#define&nbsp;__NR_umask &nbsp;60</p> 
+          <p>#define&nbsp;__NR_chroot &nbsp;61</p> 
+          <p>#define&nbsp;__NR_ustat &nbsp;62</p> 
+          <p>#define&nbsp;__NR_dup2 &nbsp;63</p> 
+          <p>#define&nbsp;__NR_getppid &nbsp;64</p> 
+          <p>#define&nbsp;__NR_getpgrp &nbsp;65</p> 
+          <p>#define&nbsp;__NR_setsid &nbsp;66</p> 
+          <p>#define&nbsp;__NR_sigaction &nbsp;67</p> 
+          <p>#define&nbsp;__NR_sgetmask &nbsp;68</p> 
+          <p>#define&nbsp;__NR_ssetmask &nbsp;69</p> 
+          <p>#define&nbsp;__NR_setreuid &nbsp;70</p> 
+          <p>#define&nbsp;__NR_setregid &nbsp;71</p> 
+          <p>#define&nbsp;__NR_sigsuspend &nbsp;72</p> 
+          <p>#define&nbsp;__NR_sigpending &nbsp;73</p> 
+          <p>#define&nbsp;__NR_sethostname &nbsp;74</p> 
+          <p>#define&nbsp;__NR_setrlimit &nbsp;75</p> 
+          <p>#define&nbsp;__NR_getrlimit &nbsp;76 /*&nbsp;Back&nbsp;compatible&nbsp;2Gig&nbsp;limited&nbsp;rlimit&nbsp;*/</p> 
+          <p>#define&nbsp;__NR_getrusage &nbsp;77</p> 
+          <p>#define&nbsp;__NR_gettimeofday &nbsp;78</p> 
+          <p>#define&nbsp;__NR_settimeofday &nbsp;79</p> 
+          <p>#define&nbsp;__NR_getgroups &nbsp;80</p> 
+          <p>#define&nbsp;__NR_setgroups &nbsp;81</p> 
+          <p>#define&nbsp;__NR_select &nbsp;82</p> 
+          <p>#define&nbsp;__NR_symlink &nbsp;83</p> 
+          <p>#define&nbsp;__NR_oldlstat &nbsp;84</p> 
+          <p>#define&nbsp;__NR_readlink &nbsp;85</p> 
+          <p>#define&nbsp;__NR_uselib &nbsp;86</p> 
+          <p>#define&nbsp;__NR_swapon &nbsp;87</p> 
+          <p>#define&nbsp;__NR_reboot &nbsp;88</p> 
+          <p>#define&nbsp;__NR_readdir &nbsp;89</p> 
+          <p>#define&nbsp;__NR_mmap &nbsp;90</p> 
+          <p>#define&nbsp;__NR_munmap &nbsp;91</p> 
+          <p>#define&nbsp;__NR_truncate &nbsp;92</p> 
+          <p>#define&nbsp;__NR_ftruncate &nbsp;93</p> 
+          <p>#define&nbsp;__NR_fchmod &nbsp;94</p> 
+          <p>#define&nbsp;__NR_fchown &nbsp;95</p> 
+          <p>#define&nbsp;__NR_getpriority &nbsp;96</p> 
+          <p>#define&nbsp;__NR_setpriority &nbsp;97</p> 
+          <p>#define&nbsp;__NR_profil &nbsp;98</p> 
+          <p>#define&nbsp;__NR_statfs &nbsp;99</p> 
+          <p>#define&nbsp;__NR_fstatfs 100</p> 
+          <p>#define&nbsp;__NR_ioperm 101</p> 
+          <p>#define&nbsp;__NR_socketcall 102</p> 
+          <p>#define&nbsp;__NR_syslog 103</p> 
+          <p>#define&nbsp;__NR_setitimer 104</p> 
+          <p>#define&nbsp;__NR_getitimer 105</p> 
+          <p>#define&nbsp;__NR_stat 106</p> 
+          <p>#define&nbsp;__NR_lstat 107</p> 
+          <p>#define&nbsp;__NR_fstat 108</p> 
+          <p>#define&nbsp;__NR_olduname 109</p> 
+          <p>#define&nbsp;__NR_iopl 110</p> 
+          <p>#define&nbsp;__NR_vhangup 111</p> 
+          <p>#define&nbsp;__NR_idle 112</p> 
+          <p>#define&nbsp;__NR_vm86old 113</p> 
+          <p>#define&nbsp;__NR_wait4 114</p> 
+          <p>#define&nbsp;__NR_swapoff 115</p> 
+          <p>#define&nbsp;__NR_sysinfo 116</p> 
+          <p>#define&nbsp;__NR_ipc 117</p> 
+          <p>#define&nbsp;__NR_fsync 118</p> 
+          <p>#define&nbsp;__NR_sigreturn 119</p> 
+          <p>#define&nbsp;__NR_clone 120</p> 
+          <p>#define&nbsp;__NR_setdomainname 121</p> 
+          <p>#define&nbsp;__NR_uname 122</p> 
+          <p>#define&nbsp;__NR_modify_ldt 123</p> 
+          <p>#define&nbsp;__NR_adjtimex 124</p> 
+          <p>#define&nbsp;__NR_mprotect 125</p> 
+          <p>#define&nbsp;__NR_sigprocmask 126</p> 
+          <p>#define&nbsp;__NR_create_module 127</p> 
+          <p>#define&nbsp;__NR_init_module 128</p> 
+          <p>#define&nbsp;__NR_delete_module 129</p> 
+          <p>#define&nbsp;__NR_get_kernel_syms 130</p> 
+          <p>#define&nbsp;__NR_quotactl 131</p> 
+          <p>#define&nbsp;__NR_getpgid 132</p> 
+          <p>#define&nbsp;__NR_fchdir 133</p> 
+          <p>#define&nbsp;__NR_bdflush 134</p> 
+          <p>#define&nbsp;__NR_sysfs 135</p> 
+          <p>#define&nbsp;__NR_personality 136</p> 
+          <p>#define&nbsp;__NR_afs_syscall 137&nbsp;/*&nbsp;Syscall&nbsp;for&nbsp;Andrew&nbsp;File&nbsp;System&nbsp;*/</p> 
+          <p>#define&nbsp;__NR_setfsuid 138</p> 
+          <p>#define&nbsp;__NR_setfsgid 139</p> 
+          <p>#define&nbsp;__NR__llseek 140</p> 
+          <p>#define&nbsp;__NR_getdents 141</p> 
+          <p>#define&nbsp;__NR__newselect 142</p> 
+          <p>#define&nbsp;__NR_flock 143</p> 
+          <p>#define&nbsp;__NR_msync 144</p> 
+          <p>#define&nbsp;__NR_readv 145</p> 
+          <p>#define&nbsp;__NR_writev 146</p> 
+          <p>#define&nbsp;__NR_getsid 147</p> 
+          <p>#define&nbsp;__NR_fdatasync 148</p> 
+          <p>#define&nbsp;__NR__sysctl 149</p> 
+          <p>#define&nbsp;__NR_mlock 150</p> 
+          <p>#define&nbsp;__NR_munlock 151</p> 
+          <p>#define&nbsp;__NR_mlockall 152</p> 
+          <p>#define&nbsp;__NR_munlockall 153</p> 
+          <p>#define&nbsp;__NR_sched_setparam 154</p> 
+          <p>#define&nbsp;__NR_sched_getparam 155</p> 
+          <p>#define&nbsp;__NR_sched_setscheduler 156</p> 
+          <p>#define&nbsp;__NR_sched_getscheduler 157</p> 
+          <p>#define&nbsp;__NR_sched_yield 158</p> 
+          <p>#define&nbsp;__NR_sched_get_priority_max 159</p> 
+          <p>#define&nbsp;__NR_sched_get_priority_min 160</p> 
+          <p>#define&nbsp;__NR_sched_rr_get_interval 161</p> 
+          <p>#define&nbsp;__NR_nanosleep 162</p> 
+          <p>#define&nbsp;__NR_mremap 163</p> 
+          <p>#define&nbsp;__NR_setresuid 164</p> 
+          <p>#define&nbsp;__NR_getresuid 165</p> 
+          <p>#define&nbsp;__NR_vm86 166</p> 
+          <p>#define&nbsp;__NR_query_module 167</p> 
+          <p>#define&nbsp;__NR_poll 168</p> 
+          <p>#define&nbsp;__NR_nfsservctl 169</p> 
+          <p>#define&nbsp;__NR_setresgid 170</p> 
+          <p>#define&nbsp;__NR_getresgid 171</p> 
+          <p>#define&nbsp;__NR_prctl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;172</p> 
+          <p>#define&nbsp;__NR_rt_sigreturn 173</p> 
+          <p>#define&nbsp;__NR_rt_sigaction 174</p> 
+          <p>#define&nbsp;__NR_rt_sigprocmask 175</p> 
+          <p>#define&nbsp;__NR_rt_sigpending 176</p> 
+          <p>#define&nbsp;__NR_rt_sigtimedwait 177</p> 
+          <p>#define&nbsp;__NR_rt_sigqueueinfo 178</p> 
+          <p>#define&nbsp;__NR_rt_sigsuspend 179</p> 
+          <p>#define&nbsp;__NR_pread 180</p> 
+          <p>#define&nbsp;__NR_pwrite 181</p> 
+          <p>#define&nbsp;__NR_chown 182</p> 
+          <p>#define&nbsp;__NR_getcwd 183</p> 
+          <p>#define&nbsp;__NR_capget 184</p> 
+          <p>#define&nbsp;__NR_capset 185</p> 
+          <p>#define&nbsp;__NR_sigaltstack 186</p> 
+          <p>#define&nbsp;__NR_sendfile 187</p> 
+          <p>#define&nbsp;__NR_getpmsg 188 /*&nbsp;some&nbsp;people&nbsp;actually&nbsp;want&nbsp;streams&nbsp;*/</p> 
+          <p>#define&nbsp;__NR_putpmsg 189 /*&nbsp;some&nbsp;people&nbsp;actually&nbsp;want&nbsp;streams&nbsp;*/</p> 
+          <p>#define&nbsp;__NR_vfork 190</p> 
+          <p>#define&nbsp;__NR_ugetrlimit 191 /*&nbsp;SuS&nbsp;compliant&nbsp;getrlimit&nbsp;*/</p> 
+          <p>#define&nbsp;__NR_mmap2 192</p> 
+          <p>#define&nbsp;__NR_truncate64 193</p> 
+          <p>#define&nbsp;__NR_ftruncate64 194</p> 
+          <p>#define&nbsp;__NR_stat64 195</p> 
+          <p>#define&nbsp;__NR_lstat64 196</p> 
+          <p>#define&nbsp;__NR_fstat64 197</p> 
+          <p>#define&nbsp;__NR_lchown32 198</p> 
+          <p>#define&nbsp;__NR_getuid32 199</p> 
+          <p>#define&nbsp;__NR_getgid32 200</p> 
+          <p>#define&nbsp;__NR_geteuid32 201</p> 
+          <p>#define&nbsp;__NR_getegid32 202</p> 
+          <p>#define&nbsp;__NR_setreuid32 203</p> 
+          <p>#define&nbsp;__NR_setregid32 204</p> 
+          <p>#define&nbsp;__NR_getgroups32 205</p> 
+          <p>#define&nbsp;__NR_setgroups32 206</p> 
+          <p>#define&nbsp;__NR_fchown32 207</p> 
+          <p>#define&nbsp;__NR_setresuid32 208</p> 
+          <p>#define&nbsp;__NR_getresuid32 209</p> 
+          <p>#define&nbsp;__NR_setresgid32 210</p> 
+          <p>#define&nbsp;__NR_getresgid32 211</p> 
+          <p>#define&nbsp;__NR_chown32 212</p> 
+          <p>#define&nbsp;__NR_setuid32 213</p> 
+          <p>#define&nbsp;__NR_setgid32 214</p> 
+          <p>#define&nbsp;__NR_setfsuid32 215</p> 
+          <p>#define&nbsp;__NR_setfsgid32 216</p> 
+          <p>#define&nbsp;__NR_pivot_root 217</p> 
+          <p>#define&nbsp;__NR_mincore 218</p> 
+          <p>#define&nbsp;__NR_madvise 219</p> 
+          <p>#define&nbsp;__NR_madvise1 219 /*&nbsp;delete&nbsp;when&nbsp;C&nbsp;lib&nbsp;stub&nbsp;is&nbsp;removed&nbsp;*/</p> 
+          <p>#define&nbsp;__NR_getdents64 220</p> 
+          <p>#define&nbsp;__NR_fcntl64 221</p> 
+          <p>&nbsp;</p> 
+          <p>(entry.S):</p> 
+          <p>ENTRY(sys_call_table)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;0&nbsp;&nbsp;–&nbsp;&nbsp;old&nbsp;“setup()”&nbsp;system&nbsp;call*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_exit)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fork)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_read)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_write)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_open) /*&nbsp;5&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_close)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_waitpid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_creat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_link)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_unlink) /*&nbsp;10&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_execve)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_chdir)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_time)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mknod)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_chmod) /*&nbsp;15&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_lchown16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;break&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_stat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_lseek)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getpid) /*&nbsp;20&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mount)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_oldumount)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setuid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getuid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_stime) /*&nbsp;25&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ptrace)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_alarm)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fstat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_pause)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_utime) /*&nbsp;30&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;stty&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;gtty&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_access)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_nice)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;35&nbsp;*/ /*&nbsp;old&nbsp;ftime&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sync)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_kill)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rename)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mkdir)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rmdir) /*&nbsp;40&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_dup)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_pipe)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_times)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;prof&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_brk) /*&nbsp;45&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setgid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getgid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_signal)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_geteuid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getegid16) /*&nbsp;50&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_acct)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_umount) /*&nbsp;recycled&nbsp;never&nbsp;used&nbsp;phys()&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;lock&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ioctl)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fcntl) /*&nbsp;55&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;mpx&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setpgid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;ulimit&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_olduname)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_umask) /*&nbsp;60&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_chroot)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ustat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_dup2)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getppid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getpgrp) /*&nbsp;65&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setsid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sigaction)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sgetmask)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ssetmask)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setreuid16) /*&nbsp;70&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setregid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sigsuspend)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sigpending)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sethostname)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setrlimit) /*&nbsp;75&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_old_getrlimit)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getrusage)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_gettimeofday)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_settimeofday)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getgroups16) /*&nbsp;80&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setgroups16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(old_select)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_symlink)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_lstat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_readlink) /*&nbsp;85&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_uselib)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_swapon)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_reboot)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(old_readdir)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(old_mmap) /*&nbsp;90&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_munmap)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_truncate)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ftruncate)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fchmod)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fchown16) /*&nbsp;95&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getpriority)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setpriority)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;profil&nbsp;syscall&nbsp;holder&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_statfs)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fstatfs) /*&nbsp;100&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ioperm)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_socketcall)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_syslog)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setitimer)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getitimer) /*&nbsp;105&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_newstat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_newlstat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_newfstat)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_uname)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_iopl) /*&nbsp;110&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_vhangup)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;old&nbsp;“idle”&nbsp;system&nbsp;call&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_vm86old)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_wait4)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_swapoff) /*&nbsp;115&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sysinfo)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ipc)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fsync)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sigreturn)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_clone) /*&nbsp;120&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setdomainname)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_newuname)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_modify_ldt)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_adjtimex)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mprotect) /*&nbsp;125&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sigprocmask)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_create_module)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_init_module)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_delete_module)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_get_kernel_syms) /*&nbsp;130&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_quotactl)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getpgid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fchdir)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_bdflush)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sysfs) /*&nbsp;135&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_personality)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;for&nbsp;afs_syscall&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setfsuid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setfsgid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_llseek) /*&nbsp;140&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getdents)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_select)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_flock)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_msync)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_readv) /*&nbsp;145&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_writev)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getsid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fdatasync)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sysctl)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mlock) /*&nbsp;150&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_munlock)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mlockall)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_munlockall)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_setparam)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_getparam)&nbsp;&nbsp;&nbsp;/*&nbsp;155&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_setscheduler)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_getscheduler)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_yield)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_get_priority_max)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_get_priority_min)&nbsp;&nbsp;/*&nbsp;160&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sched_rr_get_interval)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_nanosleep)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mremap)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setresuid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getresuid16) /*&nbsp;165&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_vm86)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_query_module)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_poll)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_nfsservctl)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setresgid16) /*&nbsp;170&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getresgid16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_prctl)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigreturn)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigaction)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigprocmask) /*&nbsp;175&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigpending)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigtimedwait)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigqueueinfo)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_rt_sigsuspend)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_pread) /*&nbsp;180&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_pwrite)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_chown16)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getcwd)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_capget)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_capset)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;185&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sigaltstack)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_sendfile)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;streams1&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;streams2&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_vfork)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;190&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getrlimit)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mmap2)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_truncate64)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ftruncate64)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_stat64) /*&nbsp;195&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_lstat64)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fstat64)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_lchown)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getuid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getgid) /*&nbsp;200&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_geteuid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getegid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setreuid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setregid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getgroups) /*&nbsp;205&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setgroups)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fchown)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setresuid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getresuid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setresgid) /*&nbsp;210&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getresgid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_chown)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setuid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setgid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setfsuid) /*&nbsp;215&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_setfsgid)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_pivot_root)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_mincore)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_madvise)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_getdents64) /*&nbsp;220&nbsp;*/</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_fcntl64)</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall) /*&nbsp;reserved&nbsp;for&nbsp;TUX&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;NOTE!!&nbsp;This&nbsp;doesn’t&nbsp;have&nbsp;to&nbsp;be&nbsp;exact&nbsp;–&nbsp;we&nbsp;just&nbsp;have</p> 
+          <p>*&nbsp;to&nbsp;make&nbsp;sure&nbsp;we&nbsp;have&nbsp;_enough_&nbsp;of&nbsp;the&nbsp;“sys_ni_syscall”</p> 
+          <p>*&nbsp;entries.&nbsp;Don’t&nbsp;panic&nbsp;if&nbsp;you&nbsp;notice&nbsp;that&nbsp;this&nbsp;hasn’t</p> 
+          <p>*&nbsp;been&nbsp;shrunk&nbsp;every&nbsp;time&nbsp;we&nbsp;add&nbsp;a&nbsp;new&nbsp;system&nbsp;call.</p> 
+          <p>*/</p> 
+          <p>.rept&nbsp;NR_syscalls-221</p> 
+          <p>.long&nbsp;SYMBOL_NAME(sys_ni_syscall)</p> 
+          <p>.endr</p> 
+          <p>&nbsp;</p> 
+          <p>中断模块结束</p> 
+          <p>The&nbsp;End.</p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-599 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

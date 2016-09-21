@@ -1,0 +1,433 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-132 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-132" class="post-132 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java基础–类和对象</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=132" title="下午 8:58" rel="bookmark"><time class="entry-date" datetime="2011-08-08T20:58:36+00:00" pubdate>8 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=132#respond" title="Comment on Java基础–类和对象">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 在讲这个之前，先看一个例子：</p> 
+         <div> 
+          <div>
+            public class person { 
+          </div> 
+          <div>
+            static int number; 
+          </div> 
+          <div>
+            private String name; 
+          </div> 
+          <div>
+            int age; 
+          </div> 
+          <div>
+            static{ 
+          </div> 
+          <div>
+            number=0; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            person(){ 
+          </div> 
+          <div>
+            number++; 
+          </div> 
+          <div>
+            name=””; 
+          </div> 
+          <div>
+            age=0; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            person(String n,int age){ 
+          </div> 
+          <div>
+            name=n; 
+          </div> 
+          <div>
+            this.age=age; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            public void fun(){ 
+          </div> 
+          <div>
+            System.out.println(“my name is “+name+”nmy age is 
+           <br> “+age); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            public void speak(String s){ 
+          </div> 
+          <div>
+            System.out.println(name+” said “+s); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            public String getName(){ 
+          </div> 
+          <div>
+            return name; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            public int getAge(){ 
+          </div> 
+          <div>
+            return age; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            public void setName(String n){ 
+          </div> 
+          <div>
+            this.name=n; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            public void setAge(int a){ 
+          </div> 
+          <div>
+            age=a; 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            static public void main(String args[]){ 
+          </div> 
+          <div>
+            person p1=new person(); 
+          </div> 
+          <div>
+            p1.setName(“Hello”); 
+          </div> 
+          <div>
+            p1.setAge(20); 
+          </div> 
+          <div>
+            p1.fun(); 
+          </div> 
+          <div>
+            person p2; 
+          </div> 
+          <div>
+            p2=new person(); 
+          </div> 
+          <div>
+            p2.setName(“World”); 
+          </div> 
+          <div>
+            p2.setAge(30); 
+          </div> 
+          <div>
+            p2.fun(); 
+          </div> 
+          <div>
+            p2.speak(“Hello World!”); 
+          </div> 
+          <div>
+            System.out.println(number); 
+          </div> 
+          <div>
+            System.out.println(person.number); 
+          </div> 
+          <div>
+            System.out.println(p2.number); 
+          </div> 
+          <div>
+            person p3=new person(“test”,30); 
+          </div> 
+          <div>
+            System.out.println(“name is : “+p3.getName()+’n’+”age is : 
+           <br> “+p3.getAge()); 
+          </div> 
+          <div>
+            if(p3 instanceof person)System.out.println(“Yes”); 
+          </div> 
+          <div>
+            else System.out.println(“No”); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div></div> 
+         <div>
+           运行结果： 
+         </div> 
+         <div> 
+          <div>
+            my name is Hello 
+          </div> 
+          <div>
+            my age is 20 
+          </div> 
+          <div>
+            my name is World 
+          </div> 
+          <div>
+            my age is 30 
+          </div> 
+          <div>
+            World said Hello World! 
+          </div> 
+          <div>
+            2 
+          </div> 
+          <div>
+            2 
+          </div> 
+          <div>
+            2 
+          </div> 
+          <div>
+            name is : test 
+          </div> 
+          <div>
+            age is : 30 
+          </div> 
+          <div>
+            Yes 
+          </div> 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div> 
+          <b>分析：</b> 
+         </div> 
+         <div>
+           开始还是定义一个类，学过C++的同学都知道类是什么，都比较熟悉了，那么再次类比讲Java。 
+         </div> 
+         <div>
+           看这两句： 
+         </div> 
+         <div> 
+          <div>
+            private String name; 
+          </div> 
+          <div>
+            int age; 
+          </div> 
+         </div> 
+         <div>
+           定义一个person类，里面包含姓名和年龄属性，在这里，private String name前面有private，而int 
+          <br> age前面没有，这里讲类成员的访问控制权限。 
+         </div> 
+         <div>
+           类成员访问控制权限有一下几种： 
+         </div> 
+         <div></div> 
+         <div> 
+          <font color="#FF0000">private：私有 &nbsp;<wbr><br> &nbsp;<wbr> 仅可被当前类使用</font> 
+         </div> 
+         <div> 
+          <font color="#FF0000">缺省： &nbsp;<wbr><br> &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr><br> &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr><br> 可被当前类和当前包（同一文件夹）使用</font> 
+         </div> 
+         <div> 
+          <font color="#FF0000">protected：保护<br> &nbsp;<wbr>在缺省的权限上加一个可被子类使用</font> 
+         </div> 
+         <div> 
+          <font color="#FF0000">public：共有 &nbsp;<wbr><br> &nbsp;<wbr> &nbsp;<wbr> 可以被所有类访问</font> 
+         </div> 
+         <div></div> 
+         <div>
+           下面再看： 
+         </div> 
+         <div>
+           static int number; 
+         </div> 
+         <div>
+           这里static标识符表示静态成员，静态成员属于类，不属于任何对象。 
+         </div> 
+         <div>
+           与C++不同的是 
+          <font color="#FF0000">初始化可以在声明的时候直接初始化，也可以在静态初始化块中初始化如下：</font> 
+         </div> 
+         <div> 
+          <div>
+            static{ 
+          </div> 
+          <div>
+            number=0; 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div>
+           调用静态成员如下： 
+         </div> 
+         <div> 
+          <div>
+            System.out.println(number); 
+          </div> 
+          <div>
+            System.out.println(person.number); 
+          </div> 
+          <div>
+            System.out.println(p2.number); 
+          </div> 
+         </div> 
+         <div> 
+          <font color="#FF0000">注意：不可使用this引用直接调用！！！</font> 
+         </div> 
+         <div></div> 
+         <div>
+           this引用： 
+         </div> 
+         <div>
+           在C++中，this是个指针，指向当前操作的对象，而在Java中没有指针的概念，什么都是引用，包括声明对象，数组等全部都是引用，所以Java里面没有“-&gt;”操作符，而是“.”操作。其他的部分跟C++一样，指向当前对象。 
+         </div> 
+         <div></div> 
+         <div>
+           构造方法： 
+         </div> 
+         <div>
+           与C++一样，构造方法如果用户自己不定义，系统会自动定义一个，如果用户自己定义，则系统不会分配，但是系统不会自动分配拷贝构造方法，这个必须用户自己定义。至于深拷贝浅拷贝就不说了。 
+         </div> 
+         <div></div> 
+         <div>
+           析构方法： 
+         </div> 
+         <div>
+           用户不自己定义，系统会自动分配，用户自定义格式如下： 
+         </div> 
+         <div> 
+          <div>
+            public void finalize(){ 
+          </div> 
+          <div>
+            &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> 
+           <br> &nbsp; 
+           <wbr> &nbsp; 
+           <wbr> //。。。 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div></div> 
+         <div>
+           再下面就是一些常用函数的定义和使用了。 
+         </div> 
+         <div></div> 
+         <div>
+           对象的声明： 
+         </div> 
+         <div>
+           声明对象与C++不同的地方是，Java必须是引用，如下： 
+         </div> 
+         <div>
+           person p1=new person(); 
+         </div> 
+         <div> 
+          <font color="#FF0000">后面必须带括号，不管有没有参数！！！</font> 
+         </div> 
+         <div> 
+          <font color="#FF0000"><br></font> 
+         </div> 
+         <div>
+           instanceof对象运算符： 
+         </div> 
+         <div>
+           用来检测某个对象是否属于某个类，如下： 
+         </div> 
+         <div> 
+          <div>
+            if(p3 instanceof person)System.out.println(“Yes”); 
+          </div> 
+          <div>
+            else System.out.println(“No”); 
+          </div> 
+         </div> 
+         <div>
+           则结果为“Yes”。 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-132 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

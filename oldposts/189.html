@@ -1,0 +1,86 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-189 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-189" class="post-189 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java常用类库–Arrays类</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=189" title="下午 8:12" rel="bookmark"><time class="entry-date" datetime="2011-10-13T20:12:20+00:00" pubdate>13 十月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=189#respond" title="Comment on Java常用类库–Arrays类">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="layout-grid:15.6000pt;"> 
+          <h1 style="margin-bottom:0pt; margin-top:0pt; text-align:center;"> <span style="mso-spacerun:'yes'; font-weight:bold; font-size:22.0000pt; font-family:'宋体';"><br> Java<font face="宋体">常用类库</font><font face="Times New Roman">–Arrays</font><font face="宋体">类</font></span></h1> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Arrays<font face="宋体">类是数组操作类，定义在</font><font face="Times New Roman">java.util</font><font face="宋体">包中。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">看下面程序：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';"><br> package</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr>ArraysTest;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';"><br> import</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr>java.util.*;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';"><br> public</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr></span><span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';">class</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr>ArraysTest001&nbsp;<wbr>{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';"><br> public</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr></span><span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';">static</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr></span><span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';">void</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(127,0,85); font-weight:bold; font-size:10.5000pt; font-family:'Courier new';"><br> int</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">&nbsp;<wbr>a[]={3,6,2,0,3};</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';"><br> Arrays.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">sort</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">(a);</span><br> <span style="mso-spacerun:'yes'; color:rgb(63,127,95); font-size:10.5000pt; font-family:'Courier new';"><br> //排序</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';"><br> System.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,192); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">out</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">.println(Arrays.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">toString</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">(a));</span><br> <span style="mso-spacerun:'yes'; color:rgb(63,127,95); font-size:10.5000pt; font-family:'Courier new';"><br> //信息</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';"><br> System.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,192); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">out</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">.println(Arrays.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">binarySearch</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">(a,10));</span><br> <span style="mso-spacerun:'yes'; color:rgb(63,127,95); font-size:10.5000pt; font-family:'Courier new';"><br> //二分查找</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';"><br> System.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,192); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">out</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">.println(Arrays.</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-style:italic; font-size:10.5000pt; font-family:'Courier new';">binarySearch</span><span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';">(a,6));</span><br> <span style="mso-spacerun:'yes'; color:rgb(63,127,95); font-size:10.5000pt; font-family:'Courier new';"><br> //二分查找</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(0,0,0); font-size:10.5000pt; font-family:'Courier new';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">方法过多，请参见<font face="Times New Roman">JDK&nbsp;<wbr>API</font></span></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-189 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

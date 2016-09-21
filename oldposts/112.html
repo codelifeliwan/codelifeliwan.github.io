@@ -1,0 +1,250 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-112 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-112" class="post-112 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10344&nbsp;–&nbsp;23&nbsp;out&nbsp;of&nbsp;5&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=112" title="下午 7:40" rel="bookmark"><time class="entry-date" datetime="2011-08-01T19:40:06+00:00" pubdate>1 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=112#comments" title="Comment on UVA&nbsp;10344&nbsp;–&nbsp;23&nbsp;out&nbsp;of&nbsp;5&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题意：给出5个数，只用+-*这三种运算符从前到后运算，能不能使其值为23.</p> 
+         <div>
+           就是对给出的数全排列，然后深搜。 
+         </div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <p style="text-align:center" align="center"> <b style="mso-bidi-font-weight: normal"><span style="font-size:18.0pt;color:black">Problem I</span></b></p> 
+          <p style="text-align:center" align="center"> <b style="mso-bidi-font-weight: normal"><span style="font-size:24.0pt;color:black">23 Out of 5</span></b></p> 
+          <p style="text-align:center" align="center"> <b><span style="color:black">Input:</span></b> <span style="color:black;mso-bidi-font-weight: bold">standard input</span></p> 
+          <p style="text-align:center" align="center"> <b><span style="color:black">Output:</span></b> <span style="color:black">standard output</span></p> 
+          <p style="text-align:center" align="center"> <b><span style="color:black">Time Limit:</span></b> <span style="color:black">1 second</span></p> 
+          <p style="text-align:center" align="center"> <b style="mso-bidi-font-weight: normal"><span style="color:black">Memory Limit:</span></b> <span style="color:black">32<br> MB</span></p> 
+          <p><span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">Your task is to write a program that can decide<br> whether you can find an arithmetic expression consisting of five<br> given numbers <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/103/p10344a.gif" height="28" width="18" align="middle" border="0" name="_x0000_i1025" alt="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"><wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告” /&gt;(1&lt;=i&lt;=5) that will<br> yield the value 23.<br> For this problem we will only consider arithmetic expressions of<br> the following from:</span></p> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/103/p10344b.gif" height="31" width="310" align="middle" border="0" name="_x0000_i1026" alt="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"><wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"  TITLE="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告" /&gt;</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">&nbsp;<wbr></span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">where <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/103/p10344c.gif" height="14" width="14" align="bottom" border="0" name="_x0000_i1027" alt="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"><wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"  TITLE="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告" /&gt;: {1,2,3,4,5} -&gt; {1,2,3,4,5} is a bijective function</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">and <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/103/p10344d.gif" height="28" width="32" align="middle" border="0" name="_x0000_i1028" alt="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"><wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告"  TITLE="UVA&nbsp;<wbr>10344&nbsp;<wbr>-&nbsp;<wbr>23&nbsp;<wbr>out&nbsp;<wbr>of&nbsp;<wbr>5&nbsp;<wbr>解题报告" /&gt;<span style="mso-spacerun:yes">&nbsp;</span><wbr></span>{+,-,*} (1&lt;=i&lt;=4)
+</pre> 
+          <h2 style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <a name="SECTION0001001000000000000000"><span style="color:black;mso-ansi-language: en" lang="EN" xml:lang="EN">Input</span></a></h2> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">The Input consists of 5-Tupels of positive Integers, each<br> between 1 and 50.<br> Input is terminated by a line containing five zero’s. This line<br> should not be processed.</span></p> 
+          <h2 style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <a name="SECTION0001002000000000000000"><span style="color:black;mso-ansi-language: en" lang="EN" xml:lang="EN">Output</span></a></h2> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">For each 5-Tupel print “Possible” (without quotes) if their<br> exists an arithmetic expression_r(as described above) that yields<br> 23. Otherwise print “Impossible”.</span></p> 
+          <h2 style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <a name="SECTION0001003000000000000000"><span style="color:black;mso-ansi-language: en" lang="EN" xml:lang="EN">Sample<br> Input</span></a></h2> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">1 1 1 1 1</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">1 2 3 4 5</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">2 3 5 7 11</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">0 0 0 0 0</span>
+</pre> 
+          <h2 style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <a name="SECTION0001004000000000000000"><span style="color:black;mso-ansi-language: en" lang="EN" xml:lang="EN">Sample<br> Output</span></a></h2> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">Impossible</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">Possible</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN">Possible</span>
+</pre> 
+          <pre>
+<span style="color:black;mso-ansi-language:en" lang="EN" xml:lang="EN"><br></span>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+int a[5];
+</pre> 
+          <pre>
+bool found;
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+bool mycmp(int m1,int m2){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return m1&lt;m2;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+void dfs(int n,int re){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(found)return;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(n==5){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(re==23)found=true;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(n+1,re+a[n]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(n+1,re-a[n]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(n+1,re*a[n]);
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;a[0]&gt;&gt;a[1]&gt;&gt;a[2]&gt;&gt;a[3]&gt;&gt;a[4]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(0==a[0]&amp;&amp;0==a[1]&amp;&amp;0==a[2]&amp;&amp;0==a[3]&amp;&amp;0==a[4])break;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>found=false;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>sort(a,a+5,mycmp);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(1,a[0]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(!found&amp;&amp;next_permutation(a,a+5)){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(1,a[0]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(found)cout&lt;&lt;"Possible"&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else cout&lt;&lt;"Impossible"&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+          <div style="text-align:center;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt" align="center"></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-112 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

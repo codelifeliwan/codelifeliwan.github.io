@@ -1,0 +1,113 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-170 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-170" class="post-170 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java&nbsp;继承及抽象类</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=170" title="下午 5:55" rel="bookmark"><time class="entry-date" datetime="2011-09-16T17:55:59+00:00" pubdate>16 九月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=170#comments" title="Comment on Java&nbsp;继承及抽象类">2 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">Java</font>笔记</p> 
+         <p style="margin-bottom: 0cm"></p> 
+         <p style="margin-bottom: 0cm">继承：</p> 
+         <p style="margin-bottom: 0cm">继承使用关键字：<font face="DejaVu Serif Condensed, serif">extends</font></p> 
+         <p style="margin-bottom: 0cm">例如 <font face="DejaVu Serif Condensed, serif">class child extends<br> father{}</font></p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">Java</font>不可多继承，即一个类只有一个父类。</p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">Final</font>关键字<font face="DejaVu Serif Condensed, serif">:</font></p> 
+         <p style="margin-bottom: 0cm">使用了<font face="DejaVu Serif Condensed, serif">final</font>关键字的是常量例如<font face="DejaVu Serif Condensed, serif">:final int a=30;</font></p> 
+         <p style="margin-bottom: 0cm">在继承里面使用<font face="DejaVu Serif Condensed, serif">final</font>关键字声明的函数不可被覆写。</p> 
+         <p style="margin-bottom: 0cm">使用<font face="DejaVu Serif Condensed, serif">final</font>声明的类称为最终类，不能被继承。</p> 
+         <p style="margin-bottom: 0cm">使用<font face="DejaVu Serif Condensed, serif">static<br> final</font>关键字联合声明的变量称为全局变量例如：</p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">public static final int<br> a=10;</font></p> 
+         <p style="margin-bottom: 0cm"></p> 
+         <p style="margin-bottom: 0cm"></p> 
+         <p style="margin-bottom: 0cm">抽象类：包含抽象方法的类称为抽象类。</p> 
+         <p style="margin-bottom: 0cm">抽象方法：只声明而未实现的方法称为抽象方法。必须使用<font face="DejaVu Serif Condensed, serif">abstract</font>关键字声明。</p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">*</font>抽象类和抽象方法都必须使用<font face="DejaVu Serif Condensed, serif">abstract</font>关键字声明。</p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">*</font>抽象方法只声明，不需要定义。</p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">*</font>抽象类不能声明对象，必须被继承。</p> 
+         <p style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif">*</font>抽象类中的抽象方法必须被子类全部覆写才能够使用。</p> 
+         <p style="margin-bottom: 0cm">如下：</p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>class</b></font><font color="#000000">Main<br> {</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>static</b></font><font color="#7F0055"><b>void</b></font><font color="#000000">main(String<br> args[]){</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">B</font><br> <font color="#000000"><u>b</u></font><font color="#000000">=</font><font color="#7F0055"><b>new</b></font><font color="#000000">B();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>abstract</b></font><font color="#7F0055"><b>class</b></font><font color="#000000">A{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>static</b></font><font color="#7F0055"><b>final</b></font><font color="#000000">String</font><br> <font color="#0000C0"><i>s</i></font><font color="#000000">=</font><font color="#2A00FF">“Hello”</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>int</b></font><font color="#0000C0">a</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">String</font><br> <font color="#0000C0">b</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>abstract</b></font><font color="#7F0055"><b>int</b></font><font color="#000000">getA();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>class</b></font><font color="#000000">B</font><br> <font color="#7F0055"><b>extends</b></font><font color="#000000">A{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>int</b></font><font color="#000000">getA(){</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>return</b></font><font color="#0000C0">a</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">类</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">b</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">继承抽象类</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">A</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">，并且覆写了抽象方法</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">getA()</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">，在</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">Main</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">类中实例化</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">B</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">。</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">注意，不能直接实例化</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">A</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">，如下：</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100wsuk&amp;url=http://s14.sinaimg.cn/orignal/6730a3aagad0c0804dfed" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s14.sinaimg.cn/middle/6730a3aagad0c0804dfed&amp;690" alt="Java&nbsp;<wbr>继承及抽象类"><wbr>继承及抽象类” TITLE=”Java&nbsp;<wbr>继承及抽象类” /&gt;</a></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#FF0000"><span style="background: transparent"><font face="Monospace"><font size="2">注意：抽象类不能使用</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">final</font></font></font></span><span style="background: transparent"><font face="Monospace"><font size="2">关键字，因为抽象类是必须有子类的！</font></font></span></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">抽象类可以定义构造方法。</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2"><br></font></font></font></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-170 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

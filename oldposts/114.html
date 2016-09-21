@@ -1,0 +1,339 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-114 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-114" class="post-114 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10012&nbsp;–&nbsp;How&nbsp;Big&nbsp;Is&nbsp;It?&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=114" title="上午 10:09" rel="bookmark"><time class="entry-date" datetime="2011-08-02T10:09:22+00:00" pubdate>2 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=114#comments" title="Comment on UVA&nbsp;10012&nbsp;–&nbsp;How&nbsp;Big&nbsp;Is&nbsp;It?&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 此题注意，只需要求出长方形的长即可。圆都是挨着底的。全排列。</p> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font color="#C0FFFF" size="5"><a name="SECTION0001000000000000000000">How Big Is<br> It?</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p>Ian’s going to California, and he has to pack his things, including<br> his collection of circles. Given a set of circles, your program<br> must find the smallest rectangular box in which they fit. All<br> circles must touch the bottom of the box. The figure below shows an<br> acceptable packing for a set of circles (although this may not be<br> the optimal packing for these particular circles). Note that in an<br> ideal packing, each circle should touch at least one other circle<br> (but you probably figured that out).</p> 
+          <div align="center"> 
+           <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/100/p10012.gif" alt="UVA&nbsp;<wbr>10012&nbsp;<wbr>-&nbsp;<wbr>How&nbsp;<wbr>Big&nbsp;<wbr>Is&nbsp;<wbr>It?&nbsp;<wbr>解题报告"> 
+           <wbr>10012&nbsp; 
+           <wbr>-&nbsp; 
+           <wbr>How&nbsp; 
+           <wbr>Big&nbsp; 
+           <wbr>Is&nbsp; 
+           <wbr>It?&nbsp; 
+           <wbr>解题报告” TITLE=”UVA&nbsp; 
+           <wbr>10012&nbsp; 
+           <wbr>-&nbsp; 
+           <wbr>How&nbsp; 
+           <wbr>Big&nbsp; 
+           <wbr>Is&nbsp; 
+           <wbr>It?&nbsp; 
+           <wbr>解题报告” /&gt; 
+          </div> 
+          <h2><font color="#0070E8"><a name="SECTION0001001000000000000000">Input</a>&nbsp;<wbr></font></h2> 
+          <p>The first line of input contains a single positive decimal integer<br> <i>n</i>, <i>n</i>&lt;=50. This indicates the number of<br> lines which follow. The subsequent <i>n</i> lines each contain a<br> series of numbers separated by spaces. The first number on each of<br> these lines is a positive integer <i>m</i>,<br> <i>m</i>&lt;=8, which indicates how many other numbers<br> appear on that line. The next <i>m</i> numbers on the line are the<br> radii of the circles which must be packed in a single box. These<br> numbers need not be integers.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001002000000000000000">Output</a>&nbsp;<wbr></font></h2> 
+          <p>For each data line of input, excluding the first line of input<br> containing <i>n</i>, your program must output the size of the<br> smallest rectangle which can pack the circles. Each case should be<br> output on a separate line by itself, with three places after the<br> decimal point. Do not output leading zeroes unless the number is<br> less than 1, e.g. <code>0.543</code>.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;<wbr></font></h2> 
+          <pre>
+3
+</pre> 
+          <pre>
+3 2.0 1.0 2.0
+</pre> 
+          <pre>
+4 2.0 2.0 2.0 2.0
+</pre> 
+          <pre>
+3 2.0 1.0 4.0
+</pre> 
+          <h2><font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <pre>
+9.657&nbsp;<wbr>
+</pre> 
+          <pre>
+16.000&nbsp;<wbr>
+</pre> 
+          <pre>
+12.657&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;cmath&gt;
+</pre> 
+          <pre>
+#include&lt;cstdio&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+int number;
+</pre> 
+          <pre>
+double area;
+</pre> 
+          <pre>
+double r[10];
+</pre> 
+          <pre>
+int vis[10];
+</pre> 
+          <pre>
+int b[10];
+</pre> 
+          <pre>
+double maxr;
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+double rec_area(){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>double tmpr[10];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>tmpr[0]=r[b[0]];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;number;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>double l=0.0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=i-1;j&gt;=0;j--){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>double t=sqrt((r[b[i]]+r[b[j]])*(r[b[i]]+r[b[j]])-(r[b[i]]-r[b[j]])*(r[b[i]]-r[b[j]]));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(tmpr[j]+t&gt;l)l=tmpr[j]+t;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(l&lt;r[b[i]])l=r[b[i]];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>tmpr[i]=l;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>double max=0.0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;number;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(max&lt;tmpr[i]+r[b[i]])max=tmpr[i]+r[b[i]];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return max&gt;maxr? max:maxr;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+void dfs(int step){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(step==number){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>double tmp=rec_area();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(tmp&lt;area)area=tmp;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;number;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(!vis[i]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>b[step]=i;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[i]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(step+1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[i]=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(ncase--){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;number;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>maxr=0.0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;number;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;r[i];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(maxr&lt;r[i])maxr=r[i];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>area=1&lt;&lt;31-1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(0);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>printf("%.3lfn",area);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-114 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

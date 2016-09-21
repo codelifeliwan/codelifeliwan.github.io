@@ -1,0 +1,243 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-129 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-129" class="post-129 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10405&nbsp;–&nbsp;Longest&nbsp;Common&nbsp;Subsequence&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=129" title="下午 3:09" rel="bookmark"><time class="entry-date" datetime="2011-08-08T15:09:37+00:00" pubdate>8 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=129#comments" title="Comment on UVA&nbsp;10405&nbsp;–&nbsp;Longest&nbsp;Common&nbsp;Subsequence&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 最长公共子序列问题，DP，输入里面有空格。</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <h2>Problem C: Longest Common Subsequence</h2> 
+          <p>Sequence 1: <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt;<br></p> 
+          <p>Sequence 2: <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405a.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405b.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt; <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10405c.gif" align="middle" alt="UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告"><wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>10405&nbsp;<wbr>-&nbsp;<wbr>Longest&nbsp;<wbr>Common&nbsp;<wbr>Subsequence&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p> Given two sequences of characters, print the length of the longest<br> common subsequence of both sequences. For example, the longest<br> common subsequence of the following two sequences:</p> 
+          <pre>
+abcdgh
+aedfhr
+</pre> 
+          <p>is <tt>adh</tt> of length 3.</p> 
+          <p>Input consists of pairs of lines. The first line of a pair<br> contains the first string and the second line contains the second<br> string. Each string is on a separate line and consists of at most<br> 1,000 characters</p> 
+          <p>For each subsequent pair of input lines, output a line<br> containing one integer number which satisfies the criteria stated<br> above.</p> 
+          <h3>Sample input</h3> 
+          <pre>
+a1b2c3d4e
+</pre> 
+          <pre>
+zz1yy2xx3ww4vv
+</pre> 
+          <pre>
+abcdgh
+</pre> 
+          <pre>
+aedfhr
+</pre> 
+          <pre>
+abcdefghijklmnopqrstuvwx<wbr>yz
+</pre> 
+          <pre>
+a0b0c0d0e0f0g0h0i0j0k0l0<wbr>m0n0o0p0q0r0s0t0u0v0w0x0<wbr>y0z0
+</pre> 
+          <pre>
+abcdefghijklmnzyxwvutsrq<wbr>po
+</pre> 
+          <pre>
+opqrstuvwxyzabcdefghijkl<wbr>mn
+</pre> 
+          <pre>
+<span style="font-family: 宋体, Verdana, Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; line-height: 24px;">Output for the sample input</span>
+</pre> 
+          <pre>
+4&nbsp;<wbr>
+</pre> 
+          <pre>
+3&nbsp;<wbr>
+</pre> 
+          <pre>
+26&nbsp;<wbr>
+</pre> 
+          <pre>
+14&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+#define maxn 1005
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+char S1[maxn];
+</pre> 
+          <pre>
+char S2[maxn];
+</pre> 
+          <pre>
+int map[maxn][maxn];
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int dp(){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int len1=strlen(S1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int len2=strlen(S2);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(map,0,sizeof(map));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int m=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;=len1;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=1;j&lt;=len2;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(S1[i-1]==S2[j-1])map[i][j]=map[i-1][j-1]+1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else map[i][j]=max(map[i][j-1],map[i-1][j]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(map[i][j]&gt;m)m=map[i][j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return m;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin.getline(S1,1000)){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin.getline(S2,1000);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int re=dp();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;re&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-129 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

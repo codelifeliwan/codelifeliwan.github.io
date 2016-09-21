@@ -1,0 +1,441 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-591 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-591" class="post-591 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-中断处理（一、初始化）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=591" title="下午 12:00" rel="bookmark"><time class="entry-date" datetime="2012-09-25T12:00:30+00:00" pubdate>25 九月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=591#respond" title="Comment on Linux内核-中断处理（一、初始化）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div> 
+          <p>首先，这里说的中断是指的中断、异常和系统调用等。 
+           <!--?xml:namespace prefix = "o" ns = "urn:schemas-microsoft-com:office:office" /--></p> 
+          <p>至于关于中断的硬件知识，请参考《Diers<span style="font-family: 宋体;">操作系统设计于实现</span>》一文。本篇从中断向量表IDT<span style="font-family: 宋体;">的初始化开始讲。</span></p> 
+          <p>设置各个门的方法在arch/i386/kernel/traps.c中定义如下：</p> 
+          <p>#define&nbsp;_set_gate(gate_addr,type,dpl,addr)&nbsp;\ //<span style="font-family: 宋体;">总设置门程序</span></p> 
+          <p>do&nbsp;{&nbsp;\</p> 
+          <p>int&nbsp;__d0,&nbsp;__d1;&nbsp;\</p> 
+          <p>__asm__&nbsp;__volatile__&nbsp;(“movw&nbsp;%%dx,%%ax\n\t”&nbsp;\</p> 
+          <p>“movw&nbsp;%4,%%dx\n\t”&nbsp;\</p> 
+          <p>“movl&nbsp;%%eax,%0\n\t”&nbsp;\</p> 
+          <p>“movl&nbsp;%%edx,%1″&nbsp;\</p> 
+          <p>:”=m”&nbsp;(*((long&nbsp;*)&nbsp;(gate_addr))),&nbsp;\</p> 
+          <p>“=m”&nbsp;(*(1+(long&nbsp;*)&nbsp;(gate_addr))),&nbsp;“=&amp;a”&nbsp;(__d0),&nbsp;“=&amp;d”&nbsp;(__d1)&nbsp;\</p> 
+          <p>:”i”&nbsp;((short)&nbsp;(0x8000+(dpl&lt;&lt;13)+(type&lt;&lt;8))),&nbsp;\</p> 
+          <p>“3”&nbsp;((char&nbsp;*)&nbsp;(addr)),”2″&nbsp;(__KERNEL_CS&nbsp;&lt;&lt;&nbsp;16));&nbsp;\</p> 
+          <p>}&nbsp;while&nbsp;(0)</p> 
+          <p>&nbsp;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;This&nbsp;needs&nbsp;to&nbsp;use&nbsp;‘idt_table’&nbsp;rather&nbsp;than&nbsp;‘idt’,&nbsp;and</p> 
+          <p>*&nbsp;thus&nbsp;use&nbsp;the&nbsp;_nonmapped_&nbsp;version&nbsp;of&nbsp;the&nbsp;IDT,&nbsp;as&nbsp;the</p> 
+          <p>*&nbsp;Pentium&nbsp;F0&nbsp;0F&nbsp;bugfix&nbsp;can&nbsp;have&nbsp;resulted&nbsp;in&nbsp;the&nbsp;mapped</p> 
+          <p>*&nbsp;IDT&nbsp;being&nbsp;write-protected.</p> 
+          <p>*/</p> 
+          <p>void&nbsp;set_intr_gate(unsigned&nbsp;int&nbsp;n,&nbsp;void&nbsp;*addr) //<span style="font-family: 宋体;">设置中断门程序</span></p> 
+          <p>{</p> 
+          <p>_set_gate(idt_table+n,14,0,addr);</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>static&nbsp;void&nbsp;__init&nbsp;set_trap_gate(unsigned&nbsp;int&nbsp;n,&nbsp;void&nbsp;*addr) //<span style="font-family: 宋体;">设置陷阱门程序</span></p> 
+          <p>{</p> 
+          <p>_set_gate(idt_table+n,15,0,addr);</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>static&nbsp;void&nbsp;__init&nbsp;set_system_gate(unsigned&nbsp;int&nbsp;n,&nbsp;void&nbsp;*addr) //<span style="font-family: 宋体;">设置系统调用门程序</span></p> 
+          <p>{</p> 
+          <p>_set_gate(idt_table+n,15,3,addr);</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>static&nbsp;void&nbsp;__init&nbsp;set_call_gate(void&nbsp;*a,&nbsp;void&nbsp;*addr) //<span style="font-family: 宋体;">设置调用门程序</span></p> 
+          <p>{</p> 
+          <p>_set_gate(a,12,3,addr);</p> 
+          <p>}</p> 
+          <p>中断向量表的初始化是在arch/i386/kernel/traps.c中定义的：</p> 
+          <p>void&nbsp;__init&nbsp;trap_init(void)</p> 
+          <p>{</p> 
+          <p>#ifdef&nbsp;CONFIG_EISA</p> 
+          <p>if&nbsp;(isa_readl(0x0FFFD9)&nbsp;==&nbsp;‘E’+(‘I'&lt;&lt;8)+(‘S'&lt;&lt;16)+(‘A'&lt;&lt;24))</p> 
+          <p>EISA_bus&nbsp;=&nbsp;1;</p> 
+          <p>#endif</p> 
+          <p>&nbsp;</p> 
+          <p>set_trap_gate(0,÷_error);</p> 
+          <p>set_trap_gate(1,&amp;debug);</p> 
+          <p>set_intr_gate(2,&amp;nmi);</p> 
+          <p>set_system_gate(3,&amp;int3); /*&nbsp;int3-5&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;all&nbsp;*/</p> 
+          <p>set_system_gate(4,&amp;overflow);</p> 
+          <p>set_system_gate(5,&amp;bounds);</p> 
+          <p>set_trap_gate(6,&amp;invalid_op);</p> 
+          <p>set_trap_gate(7,&amp;device_not_available);</p> 
+          <p>set_trap_gate(8,&amp;double_fault);</p> 
+          <p>set_trap_gate(9,&amp;coprocessor_segment_overrun);</p> 
+          <p>set_trap_gate(10,&amp;invalid_TSS);</p> 
+          <p>set_trap_gate(11,&amp;segment_not_present);</p> 
+          <p>set_trap_gate(12,&amp;stack_segment);</p> 
+          <p>set_trap_gate(13,&amp;general_protection);</p> 
+          <p>set_trap_gate(14,&amp;page_fault);</p> 
+          <p>set_trap_gate(15,&amp;spurious_interrupt_bug);</p> 
+          <p>set_trap_gate(16,&amp;coprocessor_error);</p> 
+          <p>set_trap_gate(17,&amp;alignment_check);</p> 
+          <p>set_trap_gate(18,&amp;machine_check);</p> 
+          <p>set_trap_gate(19,&amp;simd_coprocessor_error);</p> 
+          <p>&nbsp;</p> 
+          <p>set_system_gate(SYSCALL_VECTOR,&amp;system_call);</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;default&nbsp;LDT&nbsp;is&nbsp;a&nbsp;single-entry&nbsp;callgate&nbsp;to&nbsp;lcall7&nbsp;for&nbsp;iBCS</p> 
+          <p>*&nbsp;and&nbsp;a&nbsp;callgate&nbsp;to&nbsp;lcall27&nbsp;for&nbsp;Solaris/x86&nbsp;binaries</p> 
+          <p>*/</p> 
+          <p>set_call_gate(&amp;default_ldt[0],lcall7);</p> 
+          <p>set_call_gate(&amp;default_ldt[4],lcall27);</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Should&nbsp;be&nbsp;a&nbsp;barrier&nbsp;for&nbsp;any&nbsp;external&nbsp;CPU&nbsp;state.</p> 
+          <p>*/</p> 
+          <p>cpu_init();</p> 
+          <p>&nbsp;</p> 
+          <p>#ifdef&nbsp;CONFIG_X86_VISWS_APIC</p> 
+          <p>superio_init();</p> 
+          <p>lithium_init();</p> 
+          <p>cobalt_init();</p> 
+          <p>#endif</p> 
+          <p>}</p> 
+          <p>可见初始化程序里面除了设置其他的门以外还设置了两个调用门，实际上<span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">是几乎不使用调用门的。</span></p> 
+          <p>在这里设置了一个系统调用门，<span style="font-family: Times New Roman;">set_system_gate(SYSCALL_VECTOR,&amp;system_call);SYSCALL_VECTOR</span><span style="font-family: 宋体;">定义为</span>0x80，所以调用系统调用的时候用的都是&nbsp;int&nbsp;0x80</p> 
+          <p>以上设置都是一些<span style="font-family: Times New Roman;">CPU</span><span style="font-family: 宋体;">保留设置用于特殊目的的，比如除数为</span><span style="font-family: Times New Roman;">0</span><span style="font-family: 宋体;">等。中断号不大于</span><span style="font-family: Times New Roman;">20</span><span style="font-family: 宋体;">（调用门和系统调用门除外）。</span></p> 
+          <p>而对于硬件来说，<span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">设置的中断号都是大于</span><span style="font-family: Times New Roman;">20</span><span style="font-family: 宋体;">的。在这里不得不说一下，在</span><span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">中，对于硬件来说，</span><span style="font-family: Times New Roman;">CPU</span><span style="font-family: 宋体;">最多只支持</span><span style="font-family: Times New Roman;">256</span><span style="font-family: 宋体;">个中断向量（貌似我以前说的是</span><span style="font-family: Times New Roman;">512</span><span style="font-family: 宋体;">个？在这里改正），谁也不知道这些向量是否够用，于是可能就会出现几个外设同时共用一个中断向量的情况。因此，系统中为每一个中断向量设置一个队列，系统根据每个中断源所使用的中断向量，将其中断服务程序挂到中断向量对应的队列中去。这样，当中断发生时，首先执行一段总的通用中断处理程序，然后根据具体中断源的设备号在其所属队列中找到特定的服务程序加以执行。大体过程如下：</span></p> 
+          <p><span style="font-family: 宋体;"><a href="uploads/2012/09/pic0011.png"><img class="aligncenter size-full wp-image-596" title="pic001" src="uploads/2012/09/pic0011.png" alt="" width="220" height="459"></a></span></p> 
+          <p>其中interrupt[i]存储的是第<span style="font-family: Times New Roman;">i</span><span style="font-family: 宋体;">个中断号对应的中断向量表的表项，而</span>irq_desc[]数组对应的是每一个这样的队列的头部及其控制结构等。</p> 
+          <p>硬件的中断门设置是在arch/i386/kernel/i8259.c中的init_IRQ()函数中：</p> 
+          <p>void&nbsp;__init&nbsp;init_IRQ(void)</p> 
+          <p>{</p> 
+          <p>int&nbsp;i;</p> 
+          <p>&nbsp;</p> 
+          <p>#ifndef&nbsp;CONFIG_X86_VISWS_APIC</p> 
+          <p>init_ISA_irqs(); //<span style="font-family: 宋体;">初始化</span><span style="font-family: Times New Roman;">8259A</span><span style="font-family: 宋体;">和</span>irq_desc[]数组</p> 
+          <p>#else</p> 
+          <p>init_VISWS_APIC_irqs();</p> 
+          <p>#endif</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Cover&nbsp;the&nbsp;whole&nbsp;vector&nbsp;space,&nbsp;no&nbsp;vector&nbsp;can&nbsp;escape</p> 
+          <p>*&nbsp;us.&nbsp;(some&nbsp;of&nbsp;these&nbsp;will&nbsp;be&nbsp;overridden&nbsp;and&nbsp;become</p> 
+          <p>*&nbsp;‘special’&nbsp;SMP&nbsp;interrupts)</p> 
+          <p>*/</p> 
+          <p>for&nbsp;(i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;NR_IRQS;&nbsp;i++)&nbsp;{ //循环设置中断向量表的表项（外部中断）</p> 
+          <p>int&nbsp;vector&nbsp;=&nbsp;FIRST_EXTERNAL_VECTOR&nbsp;+&nbsp;i;</p> 
+          <p>if&nbsp;(vector&nbsp;!=&nbsp;SYSCALL_VECTOR)</p> 
+          <p>set_intr_gate(vector,&nbsp;interrupt[i]);</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>#ifdef&nbsp;CONFIG_SMP</p> 
+          <p>/*</p> 
+          <p>*&nbsp;IRQ0&nbsp;must&nbsp;be&nbsp;given&nbsp;a&nbsp;fixed&nbsp;assignment&nbsp;and&nbsp;initialized,</p> 
+          <p>*&nbsp;because&nbsp;it’s&nbsp;used&nbsp;before&nbsp;the&nbsp;IO-APIC&nbsp;is&nbsp;set&nbsp;up.</p> 
+          <p>*/</p> 
+          <p>set_intr_gate(FIRST_DEVICE_VECTOR,&nbsp;interrupt[0]);</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;The&nbsp;reschedule&nbsp;interrupt&nbsp;is&nbsp;a&nbsp;CPU-to-CPU&nbsp;reschedule-helper</p> 
+          <p>*&nbsp;IPI,&nbsp;driven&nbsp;by&nbsp;wakeup.</p> 
+          <p>*/</p> 
+          <p>set_intr_gate(RESCHEDULE_VECTOR,&nbsp;reschedule_interrupt);</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;IPI&nbsp;for&nbsp;invalidation&nbsp;*/</p> 
+          <p>set_intr_gate(INVALIDATE_TLB_VECTOR,&nbsp;invalidate_interrupt);</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;IPI&nbsp;for&nbsp;generic&nbsp;function&nbsp;call&nbsp;*/</p> 
+          <p>set_intr_gate(CALL_FUNCTION_VECTOR,&nbsp;call_function_interrupt);</p> 
+          <p>#endif</p> 
+          <p>&nbsp;</p> 
+          <p>#ifdef&nbsp;CONFIG_X86_LOCAL_APIC</p> 
+          <p>/*&nbsp;self&nbsp;generated&nbsp;IPI&nbsp;for&nbsp;local&nbsp;APIC&nbsp;timer&nbsp;*/</p> 
+          <p>set_intr_gate(LOCAL_TIMER_VECTOR,&nbsp;apic_timer_interrupt);</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;IPI&nbsp;vectors&nbsp;for&nbsp;APIC&nbsp;spurious&nbsp;and&nbsp;error&nbsp;interrupts&nbsp;*/</p> 
+          <p>set_intr_gate(SPURIOUS_APIC_VECTOR,&nbsp;spurious_interrupt);</p> 
+          <p>set_intr_gate(ERROR_APIC_VECTOR,&nbsp;error_interrupt);</p> 
+          <p>#endif</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Set&nbsp;the&nbsp;clock&nbsp;to&nbsp;HZ&nbsp;Hz,&nbsp;we&nbsp;already&nbsp;have&nbsp;a&nbsp;valid</p> 
+          <p>*&nbsp;vector&nbsp;now:</p> 
+          <p>*/</p> 
+          <p>outb_p(0x34,0x43); /*&nbsp;binary,&nbsp;mode&nbsp;2,&nbsp;LSB/MSB,&nbsp;ch&nbsp;0&nbsp;*/</p> 
+          <p>outb_p(LATCH&nbsp;&amp;&nbsp;0xff&nbsp;,&nbsp;0x40); /*&nbsp;LSB&nbsp;*/</p> 
+          <p>outb(LATCH&nbsp;&gt;&gt;&nbsp;8&nbsp;,&nbsp;0x40); /*&nbsp;MSB&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>#ifndef&nbsp;CONFIG_VISWS</p> 
+          <p>setup_irq(2,&nbsp;&amp;irq2);</p> 
+          <p>#endif</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;External&nbsp;FPU?&nbsp;Set&nbsp;up&nbsp;irq13&nbsp;if&nbsp;so,&nbsp;for</p> 
+          <p>*&nbsp;original&nbsp;braindamaged&nbsp;IBM&nbsp;FERR&nbsp;coupling.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(boot_cpu_data.hard_math&nbsp;&amp;&amp;&nbsp;!cpu_has_fpu)</p> 
+          <p>setup_irq(13,&nbsp;&amp;irq13);</p> 
+          <p>}</p> 
+          <p>其中，interrupt数组中是如下定义的：</p> 
+          <p>#define&nbsp;IRQ(x,y)&nbsp;\</p> 
+          <p>IRQ##x##y##_interrupt</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;IRQLIST_16(x)&nbsp;\</p> 
+          <p>IRQ(x,0),&nbsp;IRQ(x,1),&nbsp;IRQ(x,2),&nbsp;IRQ(x,3),&nbsp;\</p> 
+          <p>IRQ(x,4),&nbsp;IRQ(x,5),&nbsp;IRQ(x,6),&nbsp;IRQ(x,7),&nbsp;\</p> 
+          <p>IRQ(x,8),&nbsp;IRQ(x,9),&nbsp;IRQ(x,a),&nbsp;IRQ(x,b),&nbsp;\</p> 
+          <p>IRQ(x,c),&nbsp;IRQ(x,d),&nbsp;IRQ(x,e),&nbsp;IRQ(x,f)</p> 
+          <p>&nbsp;</p> 
+          <p>void&nbsp;(*interrupt[NR_IRQS])(void)&nbsp;=&nbsp;{</p> 
+          <p>IRQLIST_16(0x0),</p> 
+          <p>&nbsp;</p> 
+          <p>#ifdef&nbsp;CONFIG_X86_IO_APIC</p> 
+          <p>IRQLIST_16(0x1),&nbsp;IRQLIST_16(0x2),&nbsp;IRQLIST_16(0x3),</p> 
+          <p>IRQLIST_16(0x4),&nbsp;IRQLIST_16(0x5),&nbsp;IRQLIST_16(0x6),&nbsp;IRQLIST_16(0x7),</p> 
+          <p>IRQLIST_16(0x8),&nbsp;IRQLIST_16(0x9),&nbsp;IRQLIST_16(0xa),&nbsp;IRQLIST_16(0xb),</p> 
+          <p>IRQLIST_16(0xc),&nbsp;IRQLIST_16(0xd)</p> 
+          <p>#endif</p> 
+          <p>};</p> 
+          <p>在这里，IRQ(x,y)中的##是连接字符串的意思，比如下面的IRQLIST_16(0x0)通过IRQ(0x0,0)会变成IRQ0x00_interrupt，通过IRQ(0x0,1)会变成IRQ0x01_interrupt等等。</p> 
+          <p>这里一系列的为了省事的宏定义就不说了，也不是我们重点关注的内容。</p> 
+          <p>所有的外部中断都会跳转到一个地方：common_interrupt，在此之前主要是为了得到一些有用信息压入堆栈。然后跳转到此处执行。</p> 
+          <p>那么下面来看看中断请求队列irq_desc[]数组的初始化。</p> 
+          <p>这个数组的数据结构定义是在include/linux/irq.h中：</p> 
+          <p>typedef&nbsp;struct&nbsp;{</p> 
+          <p>unsigned&nbsp;int&nbsp;status; /*&nbsp;IRQ&nbsp;status&nbsp;*/</p> 
+          <p>hw_irq_controller&nbsp;*handler;</p> 
+          <p>struct&nbsp;irqaction&nbsp;*action; /*&nbsp;IRQ&nbsp;action&nbsp;list&nbsp;*/</p> 
+          <p>unsigned&nbsp;int&nbsp;depth; /*&nbsp;nested&nbsp;irq&nbsp;disables&nbsp;*/</p> 
+          <p>spinlock_t&nbsp;lock;</p> 
+          <p>}&nbsp;____cacheline_aligned&nbsp;irq_desc_t;</p> 
+          <p>&nbsp;</p> 
+          <p>extern&nbsp;irq_desc_t&nbsp;irq_desc&nbsp;[NR_IRQS];</p> 
+          <p>其中，handler就是本队列的通用控制结构，这个结构在同一文件中定义：</p> 
+          <p>struct&nbsp;hw_interrupt_type&nbsp;{</p> 
+          <p>const&nbsp;char&nbsp;*&nbsp;typename;</p> 
+          <p>unsigned&nbsp;int&nbsp;(*startup)(unsigned&nbsp;int&nbsp;irq);</p> 
+          <p>void&nbsp;(*shutdown)(unsigned&nbsp;int&nbsp;irq);</p> 
+          <p>void&nbsp;(*enable)(unsigned&nbsp;int&nbsp;irq);</p> 
+          <p>void&nbsp;(*disable)(unsigned&nbsp;int&nbsp;irq);</p> 
+          <p>void&nbsp;(*ack)(unsigned&nbsp;int&nbsp;irq);</p> 
+          <p>void&nbsp;(*end)(unsigned&nbsp;int&nbsp;irq);</p> 
+          <p>void&nbsp;(*set_affinity)(unsigned&nbsp;int&nbsp;irq,&nbsp;unsigned&nbsp;long&nbsp;mask);</p> 
+          <p>};</p> 
+          <p>&nbsp;</p> 
+          <p>typedef&nbsp;struct&nbsp;hw_interrupt_type&nbsp;&nbsp;hw_irq_controller;</p> 
+          <p>本结构中都是函数指针，指向一个个具体的函数操作。</p> 
+          <p>在<span style="font-family: Times New Roman;">irq_desc_t</span><span style="font-family: 宋体;">中还有一个</span><span style="font-family: Times New Roman;">struct&nbsp;irqaction&nbsp;*action</span><span style="font-family: 宋体;">，这个数据结构类型是在</span>include/linux/interrupt.h中定义的：</p> 
+          <p>struct&nbsp;irqaction&nbsp;{</p> 
+          <p>void&nbsp;(*handler)(int,&nbsp;void&nbsp;*,&nbsp;struct&nbsp;pt_regs&nbsp;*);</p> 
+          <p>unsigned&nbsp;long&nbsp;flags;</p> 
+          <p>unsigned&nbsp;long&nbsp;mask;</p> 
+          <p>const&nbsp;char&nbsp;*name;</p> 
+          <p>void&nbsp;*dev_id;</p> 
+          <p>struct&nbsp;irqaction&nbsp;*next;</p> 
+          <p>};</p> 
+          <p>其中里面的handler字段就指向具体的中断服务程序。<span style="font-family: Times New Roman;">irq_desc</span><span style="font-family: 宋体;">只是队列头，每个</span>irq_desc项里面链接了一个irqaction队列，每个irqaction队列中每个项里面才放的是真正处理程序的指针。而每个irq_desc中放的只是总控制。</p> 
+          <p>总的来说，数据结构是这样的：</p> 
+          <p><a href="uploads/2012/09/pic002.png"><img class="size-full wp-image-593 alignnone" title="pic002" src="uploads/2012/09/pic002.png" alt="" width="617" height="615"></a></p> 
+          <p>那么真正的设备中断处理程序是在设备初始化程序中通过request_irq()向系统“登记”，挂入某个中断请求队列的。</p> 
+          <p>request_irq()函数的代码是在arch/i386/kernel/irq.c中：</p> 
+          <p>/**</p> 
+          <p>* request_irq&nbsp;–&nbsp;allocate&nbsp;an&nbsp;interrupt&nbsp;line</p> 
+          <p>* @irq:&nbsp;Interrupt&nbsp;line&nbsp;to&nbsp;allocate</p> 
+          <p>* @handler:&nbsp;Function&nbsp;to&nbsp;be&nbsp;called&nbsp;when&nbsp;the&nbsp;IRQ&nbsp;occurs</p> 
+          <p>* @irqflags:&nbsp;Interrupt&nbsp;type&nbsp;flags</p> 
+          <p>* @devname:&nbsp;An&nbsp;ascii&nbsp;name&nbsp;for&nbsp;the&nbsp;claiming&nbsp;device</p> 
+          <p>* @dev_id:&nbsp;A&nbsp;cookie&nbsp;passed&nbsp;back&nbsp;to&nbsp;the&nbsp;handler&nbsp;function</p> 
+          <p>*</p> 
+          <p>* This&nbsp;call&nbsp;allocates&nbsp;interrupt&nbsp;resources&nbsp;and&nbsp;enables&nbsp;the</p> 
+          <p>* interrupt&nbsp;line&nbsp;and&nbsp;IRQ&nbsp;handling.&nbsp;From&nbsp;the&nbsp;point&nbsp;this</p> 
+          <p>* call&nbsp;is&nbsp;made&nbsp;your&nbsp;handler&nbsp;function&nbsp;may&nbsp;be&nbsp;invoked.&nbsp;Since</p> 
+          <p>* your&nbsp;handler&nbsp;function&nbsp;must&nbsp;clear&nbsp;any&nbsp;interrupt&nbsp;the&nbsp;board</p> 
+          <p>* raises,&nbsp;you&nbsp;must&nbsp;take&nbsp;care&nbsp;both&nbsp;to&nbsp;initialise&nbsp;your&nbsp;hardware</p> 
+          <p>* and&nbsp;to&nbsp;set&nbsp;up&nbsp;the&nbsp;interrupt&nbsp;handler&nbsp;in&nbsp;the&nbsp;right&nbsp;order.</p> 
+          <p>*</p> 
+          <p>* Dev_id&nbsp;must&nbsp;be&nbsp;globally&nbsp;unique.&nbsp;Normally&nbsp;the&nbsp;address&nbsp;of&nbsp;the</p> 
+          <p>* device&nbsp;data&nbsp;structure&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;cookie.&nbsp;Since&nbsp;the&nbsp;handler</p> 
+          <p>* receives&nbsp;this&nbsp;value&nbsp;it&nbsp;makes&nbsp;sense&nbsp;to&nbsp;use&nbsp;it.</p> 
+          <p>*</p> 
+          <p>* If&nbsp;your&nbsp;interrupt&nbsp;is&nbsp;shared&nbsp;you&nbsp;must&nbsp;pass&nbsp;a&nbsp;non&nbsp;NULL&nbsp;dev_id</p> 
+          <p>* as&nbsp;this&nbsp;is&nbsp;required&nbsp;when&nbsp;freeing&nbsp;the&nbsp;interrupt.</p> 
+          <p>*</p> 
+          <p>* Flags:</p> 
+          <p>*</p> 
+          <p>* SA_SHIRQ Interrupt&nbsp;is&nbsp;shared</p> 
+          <p>*</p> 
+          <p>* SA_INTERRUPT Disable&nbsp;local&nbsp;interrupts&nbsp;while&nbsp;processing</p> 
+          <p>*</p> 
+          <p>* SA_SAMPLE_RANDOM The&nbsp;interrupt&nbsp;can&nbsp;be&nbsp;used&nbsp;for&nbsp;entropy</p> 
+          <p>*</p> 
+          <p>*/</p> 
+          <p>&nbsp;</p> 
+          <p>int&nbsp;request_irq(unsigned&nbsp;int&nbsp;irq,</p> 
+          <p>void&nbsp;(*handler)(int,&nbsp;void&nbsp;*,&nbsp;struct&nbsp;pt_regs&nbsp;*),</p> 
+          <p>unsigned&nbsp;long&nbsp;irqflags,</p> 
+          <p>const&nbsp;char&nbsp;*&nbsp;devname,</p> 
+          <p>void&nbsp;*dev_id)</p> 
+          <p>{</p> 
+          <p>int&nbsp;retval;</p> 
+          <p>struct&nbsp;irqaction&nbsp;*&nbsp;action;</p> 
+          <p>&nbsp;</p> 
+          <p>#if&nbsp;1</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Sanity-check:&nbsp;shared&nbsp;interrupts&nbsp;should&nbsp;REALLY&nbsp;pass&nbsp;in</p> 
+          <p>*&nbsp;a&nbsp;real&nbsp;dev-ID,&nbsp;otherwise&nbsp;we’ll&nbsp;have&nbsp;trouble&nbsp;later&nbsp;trying</p> 
+          <p>*&nbsp;to&nbsp;figure&nbsp;out&nbsp;which&nbsp;interrupt&nbsp;is&nbsp;which&nbsp;(messes&nbsp;up&nbsp;the</p> 
+          <p>*&nbsp;interrupt&nbsp;freeing&nbsp;logic&nbsp;etc).</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(irqflags&nbsp;&amp;&nbsp;SA_SHIRQ)&nbsp;{</p> 
+          <p>if&nbsp;(!dev_id)</p> 
+          <p>printk(“Bad&nbsp;boy:&nbsp;%s&nbsp;(at&nbsp;0x%x)&nbsp;called&nbsp;us&nbsp;without&nbsp;a&nbsp;dev_id!\n”,&nbsp;devname,&nbsp;(&amp;irq)[-1]);</p> 
+          <p>}</p> 
+          <p>#endif</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(irq&nbsp;&gt;=&nbsp;NR_IRQS)</p> 
+          <p>return&nbsp;-EINVAL;</p> 
+          <p>if&nbsp;(!handler)</p> 
+          <p>return&nbsp;-EINVAL;</p> 
+          <p>&nbsp;</p> 
+          <p>action&nbsp;=&nbsp;(struct&nbsp;irqaction&nbsp;*)</p> 
+          <p>kmalloc(sizeof(struct&nbsp;irqaction),&nbsp;GFP_KERNEL);</p> 
+          <p>if&nbsp;(!action)</p> 
+          <p>return&nbsp;-ENOMEM;</p> 
+          <p>&nbsp;</p> 
+          <p>action-&gt;handler&nbsp;=&nbsp;handler;</p> 
+          <p>action-&gt;flags&nbsp;=&nbsp;irqflags;</p> 
+          <p>action-&gt;mask&nbsp;=&nbsp;0;</p> 
+          <p>action-&gt;name&nbsp;=&nbsp;devname;</p> 
+          <p>action-&gt;next&nbsp;=&nbsp;NULL;</p> 
+          <p>action-&gt;dev_id&nbsp;=&nbsp;dev_id;</p> 
+          <p>&nbsp;</p> 
+          <p>retval&nbsp;=&nbsp;setup_irq(irq,&nbsp;action);</p> 
+          <p>if&nbsp;(retval)</p> 
+          <p>kfree(action);</p> 
+          <p>return&nbsp;retval;</p> 
+          <p>}</p> 
+          <p>不得不说的是，<span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">在设置外部中断的时候将外部中断的初始中断向量号设置为了</span>0x20，这个函数里面参数irq就是外部中断的中断向量号相对<span style="font-family: Times New Roman;">0x20</span><span style="font-family: 宋体;">的偏移量。比如要设置向量号为</span>0x21的外部中断，那么irq就是<span style="font-family: Times New Roman;">1</span><span style="font-family: 宋体;">。</span></p> 
+          <p>handler<span style="font-family: 宋体;">就是中断的具体处理程序的指针。</span></p> 
+          <p>Devname就是设备名字。</p> 
+          <p>devid就是中断设备的唯一标识符，中断发生是程序会提供一个非<span style="font-family: Times New Roman;">0</span><span style="font-family: 宋体;">的</span>devid来区别其他的设备。</p> 
+          <p>程序就是分配并设置irqaction，然后调用setup_irq()来将其链入相应的中断请求队列。</p> 
+          <p>setup_irq()函数的定义也在同一文件：</p> 
+          <p>int&nbsp;setup_irq(unsigned&nbsp;int&nbsp;irq,&nbsp;struct&nbsp;irqaction&nbsp;*&nbsp;new)</p> 
+          <p>{</p> 
+          <p>int&nbsp;shared&nbsp;=&nbsp;0;</p> 
+          <p>unsigned&nbsp;long&nbsp;flags;</p> 
+          <p>struct&nbsp;irqaction&nbsp;*old,&nbsp;**p;</p> 
+          <p>irq_desc_t&nbsp;*desc&nbsp;=&nbsp;irq_desc&nbsp;+&nbsp;irq;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Some&nbsp;drivers&nbsp;like&nbsp;serial.c&nbsp;use&nbsp;request_irq()&nbsp;heavily,</p> 
+          <p>*&nbsp;so&nbsp;we&nbsp;have&nbsp;to&nbsp;be&nbsp;careful&nbsp;not&nbsp;to&nbsp;interfere&nbsp;with&nbsp;a</p> 
+          <p>*&nbsp;running&nbsp;system.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(new-&gt;flags&nbsp;&amp;&nbsp;SA_SAMPLE_RANDOM)&nbsp;{</p> 
+          <p>/*</p> 
+          <p>*&nbsp;This&nbsp;function&nbsp;might&nbsp;sleep,&nbsp;we&nbsp;want&nbsp;to&nbsp;call&nbsp;it&nbsp;first,</p> 
+          <p>*&nbsp;outside&nbsp;of&nbsp;the&nbsp;atomic&nbsp;block.</p> 
+          <p>*&nbsp;Yes,&nbsp;this&nbsp;might&nbsp;clear&nbsp;the&nbsp;entropy&nbsp;pool&nbsp;if&nbsp;the&nbsp;wrong</p> 
+          <p>*&nbsp;driver&nbsp;is&nbsp;attempted&nbsp;to&nbsp;be&nbsp;loaded,&nbsp;without&nbsp;actually</p> 
+          <p>*&nbsp;installing&nbsp;a&nbsp;new&nbsp;handler,&nbsp;but&nbsp;is&nbsp;this&nbsp;really&nbsp;a&nbsp;problem,</p> 
+          <p>*&nbsp;only&nbsp;the&nbsp;sysadmin&nbsp;is&nbsp;able&nbsp;to&nbsp;do&nbsp;this.</p> 
+          <p>*/</p> 
+          <p>rand_initialize_irq(irq);</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;The&nbsp;following&nbsp;block&nbsp;of&nbsp;code&nbsp;has&nbsp;to&nbsp;be&nbsp;executed&nbsp;atomically</p> 
+          <p>*/</p> 
+          <p>spin_lock_irqsave(&amp;desc-&gt;lock,flags);</p> 
+          <p>p&nbsp;=&nbsp;&amp;desc-&gt;action;</p> 
+          <p>if&nbsp;((old&nbsp;=&nbsp;*p)&nbsp;!=&nbsp;NULL)&nbsp;{</p> 
+          <p>/*&nbsp;Can’t&nbsp;share&nbsp;interrupts&nbsp;unless&nbsp;both&nbsp;agree&nbsp;to&nbsp;*/</p> 
+          <p>if&nbsp;(!(old-&gt;flags&nbsp;&amp;&nbsp;new-&gt;flags&nbsp;&amp;&nbsp;SA_SHIRQ))&nbsp;{</p> 
+          <p>spin_unlock_irqrestore(&amp;desc-&gt;lock,flags);</p> 
+          <p>return&nbsp;-EBUSY;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;add&nbsp;new&nbsp;interrupt&nbsp;at&nbsp;end&nbsp;of&nbsp;irq&nbsp;queue&nbsp;*/</p> 
+          <p>do&nbsp;{</p> 
+          <p>p&nbsp;=&nbsp;&amp;old-&gt;next;</p> 
+          <p>old&nbsp;=&nbsp;*p;</p> 
+          <p>}&nbsp;while&nbsp;(old);</p> 
+          <p>shared&nbsp;=&nbsp;1;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>*p&nbsp;=&nbsp;new;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!shared)&nbsp;{</p> 
+          <p>desc-&gt;depth&nbsp;=&nbsp;0;</p> 
+          <p>desc-&gt;status&nbsp;&amp;=&nbsp;~(IRQ_DISABLED&nbsp;|&nbsp;IRQ_AUTODETECT&nbsp;|&nbsp;IRQ_WAITING);</p> 
+          <p>desc-&gt;handler-&gt;startup(irq);</p> 
+          <p>}</p> 
+          <p>spin_unlock_irqrestore(&amp;desc-&gt;lock,flags);</p> 
+          <p>&nbsp;</p> 
+          <p>register_irq_proc(irq);</p> 
+          <p>return&nbsp;0;</p> 
+          <p>}</p> 
+          <p>函数比较好理解，就不细说了。</p> 
+          <p>&nbsp;</p> 
+          <p>The&nbsp;End.</p> 
+         </div> 
+         <p> 
+          <!--EndFragment--></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-591 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

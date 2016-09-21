@@ -1,0 +1,985 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-772 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-772" class="post-772 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-设备驱动（四、PCI中断与内存资源分配）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=772" title="下午 5:30" rel="bookmark"><time class="entry-date" datetime="2013-01-12T17:30:44+00:00" pubdate>12 一月, 2013</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=772#comments" title="Comment on Linux内核-设备驱动（四、PCI中断与内存资源分配）">4 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p>热烈庆祝Magicscience科技研究小组成立^_^</p> 
+         <h2>PCI中断：</h2> 
+         <p>PCI总线上共有INTA~INTD四条中断请求线，凡是能产生中断请求的设备，其中断请求必定连接在其中的一条上。在“PCI总线概述”中我们已经看到了如下的寄存器：</p> 
+         <p><b>3cH Interrupt Line </b><b>中断线寄存器</b></p> 
+         <p><b>3dH Interrupt Pin </b><b>中断引脚寄存器</b></p> 
+         <p>当时我们是这样解释的：</p> 
+         <p>中断连线和中断引脚分别记录了此设备使用的中断号和记录此PCI设备使用的引脚号，在PCI中采用的INTA,INTB,INTC,INTD信号向处理器发送请求，并且引脚与处理器的中断控制器相连接，在PCI中使用了中断共享机制来保证中断不冲突。在硬件上中断信号在系统一侧用电阻接高，而要产生中断的板卡上利用三极管的集电极将信号拉低。这样不管有几块板产生中断，中断信号都是低；而只有当所有板卡的中断都得到处理后，中断信号才会回复高电平。在软件上采用了中断链的方法，中断A是X号，中断处理程序指针指向A的处理程序，后来检测中断B也使用X，那么就将X号中断处理程序指向B，将B处理程序的结束指向A，这样以来，当发生X中断的时候系统就先检测是不是B中断，如果不是就接着检查A这样就实现了中断共享。</p> 
+         <p>也就是寄存器PCI_INTERRUPT_PIN的内容（1~4）表示连接在INTA~INTD中的哪条线上。按照PCI的总线规格书的规定，凡是单功能PCI模块的中断请求都应该连接在INTA上，多功能模块（一个物理设备上面带着多个逻辑设备）才允许使用INTA之外的其他中断请求线。在Linux中让若干设备共用同一条中断请求输入线，在配备有PCI总线的PC机母板一般都采用一种可编程中断请求路径互连器（router，通常与PCI-ISA桥集成在同一芯片中），由软件设置4条PCI中断请求线与中断控制器的中断请求输入线之间的互连。毛老先生的书中给出了以下图示：</p> 
+         <p><a href="http://codelifeliwan.github.io/?attachment_id=773" rel="attachment wp-att-773"><img class="aligncenter size-full wp-image-773" alt="1" src="uploads/2013/01/11.jpg" width="903" height="463"></a></p> 
+         <p>事实上，PCI总线的4根中断请求输入线与路径互连器的连接是硬件厂商为我们设置好了的，母板的BIOS通常会提供一个“中断请求路径表”来告知我们这个连接情况。</p> 
+         <p>在内核中，“中断请求路径表”的数据结构为irq_routing_table，定义在arch/i386/kernel/pci-i386.h中：</p> 
+         <p>struct irq_info {</p> 
+         <p>/*</p> 
+         <p>*逻辑设备号（包括总线号、设备号与功能号）</p> 
+         <p>*/</p> 
+         <p>u8 bus, devfn; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Bus, device and function */</p> 
+         <p>/*</p> 
+         <p>*4条中断请求线与路径互连器的输入线连接情况</p> 
+         <p>*/</p> 
+         <p>struct {</p> 
+         <p>u8 link;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* IRQ line ID, chipset dependent, 0=not routed */</p> 
+         <p>u16 bitmap;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Available IRQs */</p> 
+         <p>} __attribute__((packed)) irq[4];</p> 
+         <p>u8 slot;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Slot number, 0=onboard */</p> 
+         <p>u8 rfu;</p> 
+         <p>} __attribute__((packed));</p> 
+         <p>&nbsp;</p> 
+         <p>struct irq_routing_table {</p> 
+         <p>/*</p> 
+         <p>*PIRQ_SIGNATURE是4个固定的特殊字符</p> 
+         <p>*/</p> 
+         <p>u32 signature; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* PIRQ_SIGNATURE should be here */</p> 
+         <p>/*</p> 
+         <p>*PIRQ_VERSION是版本号，2.4内核中为0x0100</p> 
+         <p>*/</p> 
+         <p>u16 version;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* PIRQ_VERSION */</p> 
+         <p>/*</p> 
+         <p>*表大小</p> 
+         <p>*/</p> 
+         <p>u16 size;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Table size in bytes */</p> 
+         <p>/*</p> 
+         <p>*中断路径互连器通常与PCI-ISA桥集成在同一芯片中，并且也作为PCI设备</p> 
+         <p>*连接在PCI总线上，这两个字段指明了该设备所在位置</p> 
+         <p>*/</p> 
+         <p>u8 rtr_bus, rtr_devfn;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Where the interrupt router lies */</p> 
+         <p>/*</p> 
+         <p>*exclusive_irqs为一个位图，位图中为1的位表示中断控制器的相应</p> 
+         <p>*输入应该为专用，而避免为多个中断源所共用</p> 
+         <p>*/</p> 
+         <p>u16 exclusive_irqs; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* IRQs devoted exclusively to PCI usage */</p> 
+         <p>/*</p> 
+         <p>*本芯片的提供者及其产品编号</p> 
+         <p>*/</p> 
+         <p>u16 rtr_vendor, rtr_device;&nbsp;&nbsp;&nbsp; /* Vendor and device ID of interrupt router */</p> 
+         <p>u32 miniport_data;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Crap */</p> 
+         <p>u8 rfu[11];</p> 
+         <p>u8 checksum; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Modulo 256 checksum must give zero */</p> 
+         <p>struct irq_info slots[0];</p> 
+         <p>} __attribute__((packed));</p> 
+         <p>事实上，irq_routing_table数据结构只代表中断请求路径表的头部，它表明了这个继承芯片的部分信息，真正的中断请求路径表是irq_info结构。对于系统中每条PCI中的每个模块，路径表中都有一个irq_info数据结构，结构总给出了4条中断请求线与路径互连器输入线的连接，同时还有个位图，说明了可供选择的连接对象。irq_info数据结构紧邻在irq_routing_table后面。</p> 
+         <p>在内核中，有个全局指针pirq_table，指向中断请求路径表的irq_routing_table结构。</p> 
+         <p>对于Linux内核来说，需要进行以下步骤来初始化PCI中断：</p> 
+         <p>1、找到中断请求路径表的irq_routing_table并且根据此找到所有的irq_info结构。</p> 
+         <p>2、因为在前面初始化的时候只扫描了一棵PCI树，这里因为irq_info数组中的存储了所有总线号，所以这里要扫描出来所有的总线树。</p> 
+         <p>3、处理中断路径互连器，找到其pci_dev结构和驱动函数。</p> 
+         <p>4、将每个中断请求通过路径互连器连接到中断控制器的某条中断请求输入线上。</p> 
+         <p>做完了这些之后，PCI中断的初始化就完成了。</p> 
+         <p>下面就来看看具体的操作：</p> 
+         <p>为了看起来方便，我们画出函数调用关系图如下：</p> 
+         <p><a href="http://codelifeliwan.github.io/?attachment_id=774" rel="attachment wp-att-774"><img class="aligncenter size-full wp-image-774" alt="2" src="uploads/2013/01/2.jpg" width="576" height="204"></a></p> 
+         <p>总初始化函数是pcibios_irq_init()，定义在arch/i386/kernel/pci-irq.c中：</p> 
+         <p>void __init pcibios_irq_init(void)</p> 
+         <p>{</p> 
+         <p>DBG(“PCI: IRQ init\n”);</p> 
+         <p>pirq_table = pirq_find_routing_table();&nbsp; //寻找中断请求路径表</p> 
+         <p>#ifdef CONFIG_PCI_BIOS</p> 
+         <p>if (!pirq_table &amp;&amp; (pci_probe &amp; PCI_BIOS_IRQ_SCAN))</p> 
+         <p>pirq_table = pcibios_get_irq_routing_table();</p> 
+         <p>#endif</p> 
+         <p>if (pirq_table) {</p> 
+         <p>pirq_peer_trick();&nbsp;&nbsp; //扫描中断请求路径表和其他PCI树</p> 
+         <p>pirq_find_router();&nbsp; //处理路径互连器</p> 
+         <p>if (pirq_table-&gt;exclusive_irqs) {</p> 
+         <p>int i;</p> 
+         <p>for (i=0; i&lt;16; i++)</p> 
+         <p>if (!(pirq_table-&gt;exclusive_irqs &amp; (1 &lt;&lt; i)))</p> 
+         <p>pirq_penalty[i] += 100;</p> 
+         <p>}</p> 
+         <p>/* If we’re using the I/O APIC, avoid using the PCI IRQ routing table */</p> 
+         <p>if (io_apic_assign_pci_irqs)</p> 
+         <p>pirq_table = NULL;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>pirq_table是一个全局指针，它指向中断请求路径表的表头，函数首先找到表头然后再找表里面的irq_info结构。</p> 
+         <p>寻找表头的函数pirq_find_routing_table()定义在arch/i386/kernel/pci-irq.c中：</p> 
+         <p>static struct irq_routing_table * __init pirq_find_routing_table(void)</p> 
+         <p>{</p> 
+         <p>u8 *addr;</p> 
+         <p>struct irq_routing_table *rt;</p> 
+         <p>int i;</p> 
+         <p>u8 sum;</p> 
+         <p>&nbsp;</p> 
+         <p>/*</p> 
+         <p>*路径表的起点一定是与16字节对齐的，所以每次加16</p> 
+         <p>*/</p> 
+         <p>for(addr = (u8 *) __va(0xf0000); addr &lt; (u8 *) __va(0x100000); addr += 16) {</p> 
+         <p>rt = (struct irq_routing_table *) addr;</p> 
+         <p>if (rt-&gt;signature != PIRQ_SIGNATURE ||</p> 
+         <p>rt-&gt;version != PIRQ_VERSION ||</p> 
+         <p>rt-&gt;size % 16 ||</p> 
+         <p>rt-&gt;size &lt; sizeof(struct irq_routing_table))</p> 
+         <p>continue;</p> 
+         <p>sum = 0;</p> 
+         <p>for(i=0; i&lt;rt-&gt;size; i++)</p> 
+         <p>sum += addr[i];</p> 
+         <p>if (!sum) {</p> 
+         <p>DBG(“PCI: Interrupt Routing Table found at 0x%p\n”, rt);</p> 
+         <p>return rt;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>return NULL;</p> 
+         <p>}</p> 
+         <p>寻找irq_info和其他总线树的函数pirq_peer_trick()定义在arch/i386/kernel/pci-irq.c中：</p> 
+         <p>/*</p> 
+         <p>*&nbsp; If we have a IRQ routing table, use it to search for peer host</p> 
+         <p>*&nbsp; bridges.&nbsp; It’s a gross hack, but since there are no other known</p> 
+         <p>*&nbsp; ways how to get a list of buses, we have to go this way.</p> 
+         <p>*/</p> 
+         <p>&nbsp;</p> 
+         <p>static void __init pirq_peer_trick(void)</p> 
+         <p>{</p> 
+         <p>struct irq_routing_table *rt = pirq_table;</p> 
+         <p>u8 busmap[256];&nbsp;&nbsp;&nbsp; //所有总线号</p> 
+         <p>int i;</p> 
+         <p>struct irq_info *e;</p> 
+         <p>&nbsp;</p> 
+         <p>memset(busmap, 0, sizeof(busmap));</p> 
+         <p>//循环扫描所有irq_info</p> 
+         <p>for(i=0; i &lt; (rt-&gt;size – sizeof(struct irq_routing_table)) / sizeof(struct irq_info); i++) {</p> 
+         <p>e = &amp;rt-&gt;slots[i];</p> 
+         <p>#ifdef DEBUG</p> 
+         <p>{</p> 
+         <p>int j;</p> 
+         <p>DBG(“%02x:%02x slot=%02x”, e-&gt;bus, e-&gt;devfn/8, e-&gt;slot);</p> 
+         <p>for(j=0; j&lt;4; j++)</p> 
+         <p>DBG(” %d:%02x/%04x”, j, e-&gt;irq[j].link, e-&gt;irq[j].bitmap);</p> 
+         <p>DBG(“\n”);</p> 
+         <p>}</p> 
+         <p>#endif</p> 
+         <p>busmap[e-&gt;bus] = 1;</p> 
+         <p>}</p> 
+         <p>for(i=1; i&lt;256; i++)</p> 
+         <p>/*</p> 
+         <p>*&nbsp; It might be a secondary bus, but in this case its parent is already</p> 
+         <p>*&nbsp; known (ascending bus order) and therefore pci_scan_bus returns immediately.</p> 
+         <p>*/</p> 
+         <p>if (busmap[i] &amp;&amp; pci_scan_bus(i, pci_root_bus-&gt;ops, NULL))&nbsp; //扫面所有总线</p> 
+         <p>printk(“PCI: Discovered primary peer bus %02x [IRQ]\n”, i);</p> 
+         <p>pcibios_last_bus = -1;&nbsp;&nbsp;&nbsp; //表示已经扫描完所有PCI总线</p> 
+         <p>}</p> 
+         <p>中断路径互连器由一个数据结构irq_router代表，定义于arch/i386/kernel/pci-irq.c中：</p> 
+         <p>struct irq_router {</p> 
+         <p>char *name;&nbsp;&nbsp;&nbsp; //名字</p> 
+         <p>u16 vendor, device;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //设备制造商标识等</p> 
+         <p>/*</p> 
+         <p>*驱动函数</p> 
+         <p>*/</p> 
+         <p>int (*get)(struct pci_dev *router, struct pci_dev *dev, int pirq);</p> 
+         <p>int (*set)(struct pci_dev *router, struct pci_dev *dev, int pirq, int new);</p> 
+         <p>};</p> 
+         <p>设置中断路径互连器所在的芯片结构函数pirq_find_router()也在同一文件中：</p> 
+         <p>static void __init pirq_find_router(void)</p> 
+         <p>{</p> 
+         <p>struct irq_routing_table *rt = pirq_table;</p> 
+         <p>struct irq_router *r;</p> 
+         <p>&nbsp;</p> 
+         <p>#ifdef CONFIG_PCI_BIOS</p> 
+         <p>if (!rt-&gt;signature) {</p> 
+         <p>printk(“PCI: Using BIOS for IRQ routing\n”);</p> 
+         <p>pirq_router = &amp;pirq_bios_router;</p> 
+         <p>return;</p> 
+         <p>}</p> 
+         <p>#endif</p> 
+         <p>/* fall back to default router if nothing else found */</p> 
+         <p>/*</p> 
+         <p>*内核中定义了一个irq_router结构的数组pirq_routers[]，里面包含了各种芯片：</p> 
+         <p>*static struct irq_router pirq_routers[] = {</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “PIIX”, PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371FB_0, pirq_piix_get, pirq_piix_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “PIIX”, PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371SB_0, pirq_piix_get, pirq_piix_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “PIIX”, PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371AB_0, pirq_piix_get, pirq_piix_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “PIIX”, PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371MX,&nbsp;&nbsp; pirq_piix_get, pirq_piix_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “PIIX”, PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443MX_0, pirq_piix_get, pirq_piix_set },</p> 
+         <p>*</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “ALI”, PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M1533, pirq_ali_get, pirq_ali_set },</p> 
+         <p>*</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “VIA”, PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_0, pirq_via_get, pirq_via_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “VIA”, PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C596, pirq_via_get, pirq_via_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “VIA”, PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686, pirq_via_get, pirq_via_set },</p> 
+         <p>*</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “OPTI”, PCI_VENDOR_ID_OPTI, PCI_DEVICE_ID_OPTI_82C700, pirq_opti_get, pirq_opti_set },</p> 
+         <p>*</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “NatSemi”, PCI_VENDOR_ID_CYRIX, PCI_DEVICE_ID_CYRIX_5520, pirq_cyrix_get, pirq_cyrix_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “SIS”, PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, pirq_sis_get, pirq_sis_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “VLSI 82C534″, PCI_VENDOR_ID_VLSI, PCI_DEVICE_ID_VLSI_82C534, pirq_vlsi_get, pirq_vlsi_set },</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “ServerWorks”, PCI_VENDOR_ID_SERVERWORKS, PCI_DEVICE_ID_SERVERWORKS_OSB4,</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; pirq_serverworks_get, pirq_serverworks_set },</p> 
+         <p>*</p> 
+         <p>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { “default”, 0, 0, NULL, NULL }</p> 
+         <p>*};</p> 
+         <p>*此外，内核中还有个全局的指针pirq_router，用来指向中断路径互连器的</p> 
+         <p>*irq_router数据结构</p> 
+         <p>*/</p> 
+         <p>pirq_router = pirq_routers + sizeof(pirq_routers) / sizeof(pirq_routers[0]) – 1;//先置成default</p> 
+         <p>&nbsp;</p> 
+         <p>pirq_router_dev = pci_find_slot(rt-&gt;rtr_bus, rt-&gt;rtr_devfn);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //查找本设备</p> 
+         <p>if (!pirq_router_dev) {</p> 
+         <p>DBG(“PCI: Interrupt router not found at %02x:%02x\n”, rt-&gt;rtr_bus, rt-&gt;rtr_devfn);</p> 
+         <p>return;</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>for(r=pirq_routers; r-&gt;vendor; r++) {&nbsp;&nbsp; //查找本设备的irq_router</p> 
+         <p>/* Exact match against router table entry? Use it! */</p> 
+         <p>if (r-&gt;vendor == rt-&gt;rtr_vendor &amp;&amp; r-&gt;device == rt-&gt;rtr_device) {</p> 
+         <p>pirq_router = r;</p> 
+         <p>break;</p> 
+         <p>}</p> 
+         <p>/* Match against router device entry? Use it as a fallback */</p> 
+         <p>if (r-&gt;vendor == pirq_router_dev-&gt;vendor &amp;&amp; r-&gt;device == pirq_router_dev-&gt;device) {</p> 
+         <p>pirq_router = r;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>printk(“PCI: Using IRQ router %s [%04x/%04x] at %s\n”,</p> 
+         <p>pirq_router-&gt;name,</p> 
+         <p>pirq_router_dev-&gt;vendor,</p> 
+         <p>pirq_router_dev-&gt;device,</p> 
+         <p>pirq_router_dev-&gt;slot_name);</p> 
+         <p>}</p> 
+         <p>回到上一篇的pcibios_init()中：</p> 
+         <p>void __init pcibios_init(void)</p> 
+         <p>{</p> 
+         <p>struct pci_ops *bios = NULL;</p> 
+         <p>struct pci_ops *dir = NULL;</p> 
+         <p>&nbsp;</p> 
+         <p>#ifdef CONFIG_PCI_BIOS</p> 
+         <p>if ((pci_probe &amp; PCI_PROBE_BIOS) &amp;&amp; ((bios = pci_find_bios()))) {</p> 
+         <p>pci_probe |= PCI_BIOS_SORT;</p> 
+         <p>pci_bios_present = 1;</p> 
+         <p>}</p> 
+         <p>#endif</p> 
+         <p>#ifdef CONFIG_PCI_DIRECT</p> 
+         <p>if (pci_probe &amp; (PCI_PROBE_CONF1 | PCI_PROBE_CONF2))</p> 
+         <p>dir = pci_check_direct();</p> 
+         <p>#endif</p> 
+         <p>if (dir)</p> 
+         <p>pci_root_ops = dir;</p> 
+         <p>else if (bios)</p> 
+         <p>pci_root_ops = bios;</p> 
+         <p>else {</p> 
+         <p>printk(“PCI: No PCI bus detected\n”);</p> 
+         <p>return;</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>printk(“PCI: Probing PCI hardware\n”);</p> 
+         <p>pci_root_bus = pci_scan_bus(0, pci_root_ops, NULL);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //扫描枚举总线和设备</p> 
+         <p>&nbsp;</p> 
+         <p>pcibios_irq_init();&nbsp;&nbsp; //PCI的中断初始化</p> 
+         <p>pcibios_fixup_peer_bridges();</p> 
+         <p>pcibios_fixup_irqs();</p> 
+         <p>pcibios_resource_survey();</p> 
+         <p>&nbsp;</p> 
+         <p>#ifdef CONFIG_PCI_BIOS</p> 
+         <p>if ((pci_probe &amp; PCI_BIOS_SORT) &amp;&amp; !(pci_probe &amp; PCI_NO_SORT))</p> 
+         <p>pcibios_sort();</p> 
+         <p>#endif</p> 
+         <p>}</p> 
+         <p>初始化完中断以后就使用函数pcibios_fixup_peer_beidges()进行对总线的枚举，不过在中断初始化的时候将pcibios_last_bus设置为了-1表示已经枚举过了，所以这个函数在这里实际上是不起什么作用的，函数定义于arch/i386/kernel/pci-pc.c中：</p> 
+         <p>/*</p> 
+         <p>* Discover remaining PCI buses in case there are peer host bridges.</p> 
+         <p>* We use the number of last PCI bus provided by the PCI BIOS.</p> 
+         <p>*/</p> 
+         <p>static void __init pcibios_fixup_peer_bridges(void)</p> 
+         <p>{</p> 
+         <p>int n;</p> 
+         <p>struct pci_bus bus;</p> 
+         <p>struct pci_dev dev;</p> 
+         <p>u16 l;</p> 
+         <p>&nbsp;</p> 
+         <p>if (pcibios_last_bus &lt;= 0 || pcibios_last_bus &gt;= 0xff)</p> 
+         <p>return;</p> 
+         <p>DBG(“PCI: Peer bridge fixup\n”);</p> 
+         <p>for (n=0; n &lt;= pcibios_last_bus; n++) {</p> 
+         <p>if (pci_bus_exists(&amp;pci_root_buses, n))</p> 
+         <p>continue;</p> 
+         <p>bus.number = n;</p> 
+         <p>bus.ops = pci_root_ops;</p> 
+         <p>dev.bus = &amp;bus;</p> 
+         <p>for(dev.devfn=0; dev.devfn&lt;256; dev.devfn += 8)</p> 
+         <p>if (!pci_read_config_word(&amp;dev, PCI_VENDOR_ID, &amp;l) &amp;&amp;</p> 
+         <p>l != 0x0000 &amp;&amp; l != 0xffff) {</p> 
+         <p>DBG(“Found device at %02x:%02x [%04x]\n”, n, dev.devfn, l);</p> 
+         <p>printk(“PCI: Discovered peer bus %02x\n”, n);</p> 
+         <p>pci_scan_bus(n, pci_root_ops, NULL);</p> 
+         <p>break;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>函数不解释了。</p> 
+         <p>再回到pcibios_init()中，接下来就是使用函数pcibios_fixup_irqs()来进行中断请求路径互连。</p> 
+         <p>众所周知，中断控制器一共有16条中断输入线，但是这16条并不是随便用的，有的部分是专用的，比如时钟中断等是不可更改的。所以这里的互连器不能连接到此类的中断输入线上；另一方面，还得让中断能均匀分布到不同的中断请求线上，所以内核为此设立了一个数组pirq_penalty[]，表示惩罚量，惩罚量越小就越优先选择：</p> 
+         <p>/*</p> 
+         <p>* Never use: 0, 1, 2 (timer, keyboard, and cascade)</p> 
+         <p>* Avoid using: 13, 14 and 15 (FP error and IDE).</p> 
+         <p>* Penalize: 3, 4, 6, 7, 12 (known ISA uses: serial, floppy, parallel and mouse)</p> 
+         <p>*/</p> 
+         <p>unsigned int pcibios_irq_mask = 0xfff8;</p> 
+         <p>&nbsp;</p> 
+         <p>static int pirq_penalty[16] = {</p> 
+         <p>1000000, 1000000, 1000000, 1000, 1000, 0, 1000, 1000,</p> 
+         <p>0, 0, 0, 0, 1000, 100000, 100000, 100000</p> 
+         <p>};</p> 
+         <p>数组的大小为16，表示16条中断线，部分元素定义成了1000000表示不能使用。Pcibios_irq_mask是全局屏蔽位图，定义为0xfff8表示0、1、和2和中断不可使用。</p> 
+         <p>函数代码在arch/i386/kernel/pci-irq.c中：</p> 
+         <p>void __init pcibios_fixup_irqs(void)</p> 
+         <p>{</p> 
+         <p>struct pci_dev *dev;</p> 
+         <p>u8 pin;</p> 
+         <p>&nbsp;</p> 
+         <p>DBG(“PCI: IRQ fixup\n”);</p> 
+         <p>pci_for_each_dev(dev) {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //枚举设备</p> 
+         <p>/*</p> 
+         <p>* If the BIOS has set an out of range IRQ number, just ignore it.</p> 
+         <p>* Also keep track of which IRQ’s are already in use.</p> 
+         <p>*/</p> 
+         <p>if (dev-&gt;irq &gt;= 16) {</p> 
+         <p>DBG(“%s: ignoring bogus IRQ %d\n”, dev-&gt;slot_name, dev-&gt;irq);</p> 
+         <p>dev-&gt;irq = 0;</p> 
+         <p>}</p> 
+         <p>/* If the IRQ is already assigned to a PCI device, ignore its ISA use penalty */</p> 
+         <p>/*</p> 
+         <p>*若一个中断已经使用，那么将其重置为0和其他的中断请求输入线一样</p> 
+         <p>*重新接受选择</p> 
+         <p>*/</p> 
+         <p>if (pirq_penalty[dev-&gt;irq] &gt;= 100 &amp;&amp; pirq_penalty[dev-&gt;irq] &lt; 100000)</p> 
+         <p>pirq_penalty[dev-&gt;irq] = 0;</p> 
+         <p>pirq_penalty[dev-&gt;irq]++;</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>pci_for_each_dev(dev) {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //枚举设备</p> 
+         <p>pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &amp;pin);</p> 
+         <p>#ifdef CONFIG_X86_IO_APIC</p> 
+         <p>//这里不关心</p> 
+         <p>#endif</p> 
+         <p>/*</p> 
+         <p>* Still no IRQ? Try to lookup one…</p> 
+         <p>*/</p> 
+         <p>/*</p> 
+         <p>*如果从寄存器PCI_INTERRUPT_PIN中读出的内容不是0就表示</p> 
+         <p>*该设备有中断功能，此时若dev-&gt;irq不为0则表示已经连接并且</p> 
+         <p>*已经知道了与哪一条中断输入新相连接了，若为0则通过函数</p> 
+         <p>*pcibios_lookup_irq()来寻找</p> 
+         <p>*/</p> 
+         <p>if (pin &amp;&amp; !dev-&gt;irq)</p> 
+         <p>pcibios_lookup_irq(dev, 0);</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>寻找和设置中断请求输入线的函数pcibios_lookup_irq()定义在arch/i386/kernel/pci-irq.c中：</p> 
+         <p>需要说明的是：若已经知道了一个设备的中断请求输入线已经连接到了路径互连器的哪一条输入线，并且发现这条路已经在路径互连器中连接到了中断控制器，也就知道了或者发现了该设备中断的最终去向，但是如果在路径互连器中未连接，那么就由这个函数的第二个参数决定，这里设置成0表示若未连接就先留着再说。</p> 
+         <p>static int pcibios_lookup_irq(struct pci_dev *dev, int assign)</p> 
+         <p>{</p> 
+         <p>u8 pin;</p> 
+         <p>struct irq_info *info;</p> 
+         <p>int i, pirq, newirq;</p> 
+         <p>int irq = 0;</p> 
+         <p>u32 mask;</p> 
+         <p>struct irq_router *r = pirq_router;</p> 
+         <p>struct pci_dev *dev2;</p> 
+         <p>char *msg = NULL;</p> 
+         <p>&nbsp;</p> 
+         <p>if (!pirq_table)</p> 
+         <p>return 0;</p> 
+         <p>&nbsp;</p> 
+         <p>/* Find IRQ routing entry */</p> 
+         <p>/*</p> 
+         <p>*获得设备的中断请求是连接在哪一条中断请求线上的</p> 
+         <p>*/</p> 
+         <p>pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &amp;pin);</p> 
+         <p>if (!pin) {</p> 
+         <p>DBG(” -&gt; no interrupt pin\n”);</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>pin = pin – 1;&nbsp;&nbsp; //将其设置为从0开始</p> 
+         <p>DBG(“IRQ for %s:%d”, dev-&gt;slot_name, pin);</p> 
+         <p>/*</p> 
+         <p>*从BIOS的中断路径表中找到所在总线和插槽的路径信息</p> 
+         <p>*/</p> 
+         <p>info = pirq_get_info(dev);</p> 
+         <p>if (!info) {</p> 
+         <p>DBG(” -&gt; not found in routing table\n”);</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>pirq = info-&gt;irq[pin].link;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //中断控制器的请求输入线</p> 
+         <p>mask = info-&gt;irq[pin].bitmap;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //中断允许位图</p> 
+         <p>if (!pirq) {</p> 
+         <p>DBG(” -&gt; not routed\n”);</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>DBG(” -&gt; PIRQ %02x, mask %04x, excl %04x”, pirq, mask, pirq_table-&gt;exclusive_irqs);</p> 
+         <p>mask &amp;= pcibios_irq_mask;&nbsp; //去除已经屏蔽掉的线</p> 
+         <p>&nbsp;</p> 
+         <p>/*</p> 
+         <p>* Find the best IRQ to assign: use the one</p> 
+         <p>* reported by the device if possible.</p> 
+         <p>*/</p> 
+         <p>newirq = dev-&gt;irq;</p> 
+         <p>if (!newirq &amp;&amp; assign) {</p> 
+         <p>for (i = 0; i &lt; 16; i++) {</p> 
+         <p>if (!(mask &amp; (1 &lt;&lt; i)))</p> 
+         <p>continue;</p> 
+         <p>if (pirq_penalty[i] &lt; pirq_penalty[newirq] &amp;&amp;</p> 
+         <p>!request_irq(i, pcibios_test_irq_handler, SA_SHIRQ, “pci-test”, dev)) {</p> 
+         <p>free_irq(i, dev);</p> 
+         <p>newirq = i;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>DBG(” -&gt; newirq=%d”, newirq);</p> 
+         <p>&nbsp;</p> 
+         <p>/* Check if it is hardcoded */</p> 
+         <p>/*</p> 
+         <p>*link的高4位为1表示的路径互连器的内部连接为“硬连接”，此时低4位</p> 
+         <p>*就是中断控制器的输入线号；否则就表示路径互连器的内部连接可以通过</p> 
+         <p>*get()和set()两个函数指针读出或设置，所以只要get指针非0就可以用它读出</p> 
+         <p>*连接的目标，若返回非0，那就是所连接的目标，否则就是尚未连接</p> 
+         <p>*/</p> 
+         <p>if ((pirq &amp; 0xf0) == 0xf0) {</p> 
+         <p>irq = pirq &amp; 0xf;</p> 
+         <p>DBG(” -&gt; hardcoded IRQ %d\n”, irq);</p> 
+         <p>msg = “Hardcoded”;</p> 
+         <p>if (dev-&gt;irq &amp;&amp; dev-&gt;irq != irq) {</p> 
+         <p>printk(“IRQ routing conflict in pirq table! Try ‘pci=autoirq’\n”);</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>} else if (r-&gt;get &amp;&amp; (irq = r-&gt;get(pirq_router_dev, dev, pirq))) {</p> 
+         <p>DBG(” -&gt; got IRQ %d\n”, irq);</p> 
+         <p>msg = “Found”;</p> 
+         <p>/* We refuse to override the dev-&gt;irq information. Give a warning! */</p> 
+         <p>if (dev-&gt;irq &amp;&amp; dev-&gt;irq != irq) {</p> 
+         <p>printk(“IRQ routing conflict in pirq table! Try ‘pci=autoirq’\n”);</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>} else if (newirq &amp;&amp; r-&gt;set &amp;&amp; (dev-&gt;class &gt;&gt; 8) != PCI_CLASS_DISPLAY_VGA) {</p> 
+         <p>DBG(” -&gt; assigning IRQ %d”, newirq);</p> 
+         <p>if (r-&gt;set(pirq_router_dev, dev, pirq, newirq)) {</p> 
+         <p>eisa_set_level_irq(newirq);</p> 
+         <p>DBG(” … OK\n”);</p> 
+         <p>msg = “Assigned”;</p> 
+         <p>irq = newirq;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>if (!irq) {</p> 
+         <p>DBG(” … failed\n”);</p> 
+         <p>if (newirq &amp;&amp; mask == (1 &lt;&lt; newirq)) {</p> 
+         <p>msg = “Guessed”;</p> 
+         <p>irq = newirq;</p> 
+         <p>} else</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>printk(“PCI: %s IRQ %d for device %s\n”, msg, irq, dev-&gt;slot_name);</p> 
+         <p>&nbsp;</p> 
+         <p>/*</p> 
+         <p>*与其他共用一条中断请求输入线的设备共享此信息</p> 
+         <p>*/</p> 
+         <p>/* Update IRQ for all devices with the same pirq value */</p> 
+         <p>pci_for_each_dev(dev2) {</p> 
+         <p>pci_read_config_byte(dev2, PCI_INTERRUPT_PIN, &amp;pin);</p> 
+         <p>if (!pin)</p> 
+         <p>continue;</p> 
+         <p>pin–;</p> 
+         <p>info = pirq_get_info(dev2);</p> 
+         <p>if (!info)</p> 
+         <p>continue;</p> 
+         <p>if (info-&gt;irq[pin].link == pirq) {</p> 
+         <p>dev2-&gt;irq = irq;</p> 
+         <p>pirq_penalty[irq]++;</p> 
+         <p>if (dev != dev2)</p> 
+         <p>printk(“PCI: The same IRQ used for device %s\n”, dev2-&gt;slot_name);</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>return 1;</p> 
+         <p>}</p> 
+         <p>函数pirq_get_info()定义在arch/i386/kernel/pci-irq.c中：</p> 
+         <p>static struct irq_info *pirq_get_info(struct pci_dev *dev)</p> 
+         <p>{</p> 
+         <p>struct irq_routing_table *rt = pirq_table;</p> 
+         <p>int entries = (rt-&gt;size – sizeof(struct irq_routing_table)) / sizeof(struct irq_info);</p> 
+         <p>struct irq_info *info;</p> 
+         <p>&nbsp;</p> 
+         <p>for (info = rt-&gt;slots; entries–; info++)</p> 
+         <p>if (info-&gt;bus == dev-&gt;bus-&gt;number &amp;&amp; PCI_SLOT(info-&gt;devfn) == PCI_SLOT(dev-&gt;devfn))</p> 
+         <p>return info;</p> 
+         <p>return NULL;</p> 
+         <p>}</p> 
+         <p>至此，PCI的中断讲完了。</p> 
+         <h2>地址分配：</h2> 
+         <p>关于地址的分配，我们前面将resource数据结构的时候也讲了不少，在这接着前面的讲。</p> 
+         <p>每个PCI设备都通过其配置寄存器组提供各个区间的起始地址和区间大小，但是这些可能都是设备内部的地址或者是由BIOS分配的总线地址。所以对于前者，需要在一个统一的总线地址空间为这些区间分配地址并建立映射，而对于后者则要加以验证和确认，并建立与之相应的数据结构。</p> 
+         <p>CPU只能访问由内存映射机制提供的地址（？），那么就需要将总线地址通过内存映射机制映射成虚拟地址以供CPU访问。</p> 
+         <p>数据结构resource就不说了。</p> 
+         <p>在最初时，系统中只有两个区间，一个代表着I/O地址空间，另一个代表这内存地址，对于I/O地址空间只能通过I/O指令访问，对于内存地址空间则通过访内存地址指令访问。这两个地址区间定义于kernel/resource.c中：</p> 
+         <p>struct resource ioport_resource = { “PCI IO”, 0x0000, IO_SPACE_LIMIT, IORESOURCE_IO };</p> 
+         <p>struct resource iomem_resource = { “PCI mem”, 0x00000000, 0xffffffff, IORESOURCE_MEM };</p> 
+         <p>在为主PCI总线建立pci_bus结构时，它的两个区间指针一个指向ioport_resource，表示需要I/O地址区间就从ioport_resource中分配；另一个指向iomem_resource，表示如果需要内存地址区间就从iomem_resource中分配。</p> 
+         <p>对于普通的PCI设备，其pci_dev结构中的开头6个地址区间是设备上可能有的区间，第7个区间是可能有的扩充ROM区间。如果这个设备是PCI桥，则后面还有4个区间，pci_bus结构中的4个resource指针就分别指向这四个区间。PCI桥本身并不使用这些区间，二是把这些区间作为地址过滤的窗口，第一个窗口用于I/O地址，第二个窗口用于存储器地址，第三个窗口用于“可预取”存储器地址区间，第四个窗口用于扩充ROM区间。次层总线上所有设备使用的区间都必须从这些窗口中分配。就这样一层一层往下分配，最顶层的来自于ioport_resource和iomem_resource。</p> 
+         <p>回到pcibios_init()中，在做完了中断相关的处理之后就是通过函数pcibios_resource_survey()来对总线地址进行确认与分配，为了理解方便，我们也给出函数调用关系图：</p> 
+         <p align="center"><a href="http://codelifeliwan.github.io/?attachment_id=775" rel="attachment wp-att-775"><img class="aligncenter size-full wp-image-775" alt="3" src="uploads/2013/01/3.jpg" width="936" height="466"></a></p> 
+         <p>函数pcibios_resource_survey定义在arch/i386/kernel/pci-i386.c中：</p> 
+         <p>void __init pcibios_resource_survey(void)</p> 
+         <p>{</p> 
+         <p>DBG(“PCI: Allocating resources\n”);</p> 
+         <p>pcibios_allocate_bus_resources(&amp;pci_root_buses);&nbsp;&nbsp;&nbsp;&nbsp; //为所有PCI总线和PCI桥分配资源</p> 
+         <p>pcibios_allocate_resources(0);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //为PCI设备分配资源</p> 
+         <p>pcibios_allocate_resources(1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //为PCI设备分配资源</p> 
+         <p>pcibios_assign_resources();</p> 
+         <p>}</p> 
+         <p>函数pcibios_allocate_bus_resources()用来为每条PCI总线分配地址资源，代码在pci-i386.c中：</p> 
+         <p>static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)</p> 
+         <p>{</p> 
+         <p>//最开始的参数就是PCI树的树根</p> 
+         <p>struct list_head *ln;</p> 
+         <p>struct pci_bus *bus;</p> 
+         <p>struct pci_dev *dev;</p> 
+         <p>int idx;</p> 
+         <p>struct resource *r, *pr;</p> 
+         <p>&nbsp;</p> 
+         <p>/* Depth-First Search on bus tree */</p> 
+         <p>for (ln=bus_list-&gt;next; ln != bus_list; ln=ln-&gt;next) {</p> 
+         <p>bus = pci_bus_b(ln);</p> 
+         <p>if ((dev = bus-&gt;self)) {</p> 
+         <p>/*</p> 
+         <p>*&nbsp;&nbsp;&nbsp; #define PCI_ROM_RESOURCE 6</p> 
+         <p>*&nbsp;&nbsp;&nbsp; #define PCI_BRIDGE_RESOURCES 7</p> 
+         <p>*&nbsp;&nbsp;&nbsp; #define PCI_NUM_RESOURCES 11</p> 
+         <p>*/</p> 
+         <p>for (idx = PCI_BRIDGE_RESOURCES; idx &lt; PCI_NUM_RESOURCES; idx++) {</p> 
+         <p>r = &amp;dev-&gt;resource[idx];</p> 
+         <p>if (!r-&gt;start)</p> 
+         <p>continue;</p> 
+         <p>/*</p> 
+         <p>*若一个设备有了资源需求，则需要先查看其父节点是否拥有其所需要的</p> 
+         <p>*地址资源，r是所需区间的resource结构</p> 
+         <p>*/</p> 
+         <p>pr = pci_find_parent_resource(dev, r);</p> 
+         <p>if (!pr || request_resource(pr, r) &lt; 0)&nbsp;&nbsp;&nbsp; //使用函数request_resource()分配</p> 
+         <p>printk(KERN_ERR “PCI: Cannot allocate resource region %d of bridge %s\n”, idx, dev-&gt;slot_name);</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>pcibios_allocate_bus_resources(&amp;bus-&gt;children);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //深度优先遍历PCI树</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>函数pci_find_parent_resource()定义在drivers/pci/pci.c中：</p> 
+         <p>/**</p> 
+         <p>* pci_find_parent_resource – return resource region of parent bus of given region</p> 
+         <p>* @dev: PCI device structure contains resources to be searched</p> 
+         <p>* @res: child resource record for which parent is sought</p> 
+         <p>*</p> 
+         <p>*&nbsp; For given resource region of given device, return the resource</p> 
+         <p>*&nbsp; region of parent bus the given region is contained in or where</p> 
+         <p>*&nbsp; it should be allocated from.</p> 
+         <p>*/</p> 
+         <p>struct resource *</p> 
+         <p>pci_find_parent_resource(const struct pci_dev *dev, struct resource *res)</p> 
+         <p>{</p> 
+         <p>const struct pci_bus *bus = dev-&gt;bus; //父总线节点</p> 
+         <p>int i;</p> 
+         <p>struct resource *best = NULL;</p> 
+         <p>&nbsp;</p> 
+         <p>for(i=0; i&lt;4; i++) { //扫描PCI桥所在总线的4个区间</p> 
+         <p>struct resource *r = bus-&gt;resource[i];</p> 
+         <p>if (!r)</p> 
+         <p>continue;</p> 
+         <p>if (res-&gt;start &amp;&amp; !(res-&gt;start &gt;= r-&gt;start &amp;&amp; res-&gt;end &lt;= r-&gt;end))</p> 
+         <p>continue; /* Not contained ，地址范围要相符合*/</p> 
+         <p>if ((res-&gt;flags ^ r-&gt;flags) &amp; (IORESOURCE_IO | IORESOURCE_MEM))</p> 
+         <p>continue; /* Wrong type ，类型要符合（内存空间还是I/O区间）*/</p> 
+         <p>if (!((res-&gt;flags ^ r-&gt;flags) &amp; IORESOURCE_PREFETCH))</p> 
+         <p>return r;&nbsp; /* Exact match ，完全匹配*/</p> 
+         <p>if ((res-&gt;flags &amp; IORESOURCE_PREFETCH) &amp;&amp; !(r-&gt;flags &amp; IORESOURCE_PREFETCH))</p> 
+         <p>best = r;/*Approximating prefetchable by non-prefetchable ，可预取最好符合*/</p> 
+         <p>}</p> 
+         <p>return best;</p> 
+         <p>}</p> 
+         <p>若找到了所需的地址空间，则通过函数request_resource()来进行分配，这个函数是定义在kernel/resource.c中：</p> 
+         <p>int request_resource(struct resource *root, struct resource *new)</p> 
+         <p>{</p> 
+         <p>struct resource *conflict;</p> 
+         <p>&nbsp;</p> 
+         <p>write_lock(&amp;resource_lock);</p> 
+         <p>conflict = __request_resource(root, new);</p> 
+         <p>write_unlock(&amp;resource_lock);</p> 
+         <p>return conflict ? -EBUSY : 0;</p> 
+         <p>}</p> 
+         <p>加了锁后，真正的实现是在同一文件的__request_resource()中：</p> 
+         <p>static struct resource * __request_resource(struct resource *root, struct resource *new)</p> 
+         <p>{</p> 
+         <p>unsigned long start = new-&gt;start;</p> 
+         <p>unsigned long end = new-&gt;end;</p> 
+         <p>struct resource *tmp, **p;</p> 
+         <p>&nbsp;</p> 
+         <p>if (end &lt; start)</p> 
+         <p>return root;</p> 
+         <p>if (start &lt; root-&gt;start)</p> 
+         <p>return root;</p> 
+         <p>if (end &gt; root-&gt;end)</p> 
+         <p>return root;</p> 
+         <p>p = &amp;root-&gt;child;</p> 
+         <p>for (;;) {</p> 
+         <p>tmp = *p;</p> 
+         <p>if (!tmp || tmp-&gt;start &gt; end) {</p> 
+         <p>new-&gt;sibling = tmp;</p> 
+         <p>*p = new;</p> 
+         <p>new-&gt;parent = root;</p> 
+         <p>return NULL;</p> 
+         <p>}</p> 
+         <p>p = &amp;tmp-&gt;sibling;</p> 
+         <p>if (tmp-&gt;end &lt; start)</p> 
+         <p>continue;</p> 
+         <p>return tmp;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>分配过程很简单，就不说了。</p> 
+         <p>回到函数pcibios_resource_survery()中，在为PCI桥分配好了资源以后，就可以调用pcibios_allocate_resources()为PCI设备分配资源了。这里分两次调用，第一次调用对已经生效的区间进行分配和对扩充ROM区间进行关闭，第二次则对未生效的地址区间进行分配。</p> 
+         <p>函数pcibios_allocate_resources()定义在arch/i386/kernel/pci-i386.c中：</p> 
+         <p>static void __init pcibios_allocate_resources(int pass)</p> 
+         <p>{</p> 
+         <p>struct pci_dev *dev;</p> 
+         <p>int idx, disabled;</p> 
+         <p>u16 command;</p> 
+         <p>struct resource *r, *pr;</p> 
+         <p>&nbsp;</p> 
+         <p>pci_for_each_dev(dev) {</p> 
+         <p>pci_read_config_word(dev, PCI_COMMAND, &amp;command);</p> 
+         <p>for(idx = 0; idx &lt; 6; idx++) {</p> 
+         <p>r = &amp;dev-&gt;resource[idx];</p> 
+         <p>if (r-&gt;parent)&nbsp; /* Already allocated ，parent不为空，已经分配过*/</p> 
+         <p>continue;</p> 
+         <p>if (!r-&gt;start)&nbsp;&nbsp;&nbsp; /* Address not assigned at all ，start为0，不需分配或无法满足*/</p> 
+         <p>continue;</p> 
+         <p>if (r-&gt;flags &amp; IORESOURCE_IO) //分配I/O地址空间</p> 
+         <p>disabled = !(command &amp; PCI_COMMAND_IO);</p> 
+         <p>else&nbsp; //需要分配内存空间</p> 
+         <p>disabled = !(command &amp; PCI_COMMAND_MEMORY);</p> 
+         <p>if (pass == disabled) {</p> 
+         <p>DBG(“PCI: Resource %08lx-%08lx (f=%lx, d=%d, p=%d)\n”,</p> 
+         <p>r-&gt;start, r-&gt;end, r-&gt;flags, disabled, pass);</p> 
+         <p>pr = pci_find_parent_resource(dev, r);</p> 
+         <p>/*</p> 
+         <p>*若不能在当前地址上从父节点分配到所需的地址资源，则</p> 
+         <p>*这并不是由于父节点中资源短缺，二是由于起始地址要求</p> 
+         <p>*不能满足造成的，所以先平移到0处，然后重新调整</p> 
+         <p>*/</p> 
+         <p>if (!pr || request_resource(pr, r) &lt; 0) {</p> 
+         <p>printk(KERN_ERR “PCI: Cannot allocate resource region %d of device %s\n”, idx, dev-&gt;slot_name);</p> 
+         <p>/* We’ll assign a new address later */</p> 
+         <p>r-&gt;end -= r-&gt;start;</p> 
+         <p>r-&gt;start = 0;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>/*</p> 
+         <p>*关闭扩展ROM区间</p> 
+         <p>*/</p> 
+         <p>if (!pass) {</p> 
+         <p>r = &amp;dev-&gt;resource[PCI_ROM_RESOURCE];</p> 
+         <p>if (r-&gt;flags &amp; PCI_ROM_ADDRESS_ENABLE) {</p> 
+         <p>/* Turn the ROM off, leave the resource region, but keep it unregistered. */</p> 
+         <p>u32 reg;</p> 
+         <p>DBG(“PCI: Switching off ROM of %s\n”, dev-&gt;slot_name);</p> 
+         <p>r-&gt;flags &amp;= ~PCI_ROM_ADDRESS_ENABLE;</p> 
+         <p>pci_read_config_dword(dev, dev-&gt;rom_base_reg, &amp;reg);</p> 
+         <p>pci_write_config_dword(dev, dev-&gt;rom_base_reg, reg &amp; ~PCI_ROM_ADDRESS_ENABLE);</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>对于不能在原有起始地址上分配到所需地址资源的区间，也就是起始地址为0的区间（事实上是前面处理不了的区间），要通过pcibios_assign_resources()加以分配。这个函数定义于arch/i386/kernel/pci-i386.c中：</p> 
+         <p>static void __init pcibios_assign_resources(void)</p> 
+         <p>{</p> 
+         <p>struct pci_dev *dev;</p> 
+         <p>int idx;</p> 
+         <p>struct resource *r;</p> 
+         <p>&nbsp;</p> 
+         <p>pci_for_each_dev(dev) {</p> 
+         <p>int class = dev-&gt;class &gt;&gt; 8;</p> 
+         <p>&nbsp;</p> 
+         <p>/* Don’t touch classless devices and host bridges */</p> 
+         <p>if (!class || class == PCI_CLASS_BRIDGE_HOST)</p> 
+         <p>continue;</p> 
+         <p>&nbsp;</p> 
+         <p>for(idx=0; idx&lt;6; idx++) {</p> 
+         <p>r = &amp;dev-&gt;resource[idx];</p> 
+         <p>&nbsp;</p> 
+         <p>/*</p> 
+         <p>*&nbsp; Don’t touch IDE controllers and I/O ports of video cards!</p> 
+         <p>*/</p> 
+         <p>if ((class == PCI_CLASS_STORAGE_IDE &amp;&amp; idx &lt; 4) ||</p> 
+         <p>(class == PCI_CLASS_DISPLAY_VGA &amp;&amp; (r-&gt;flags &amp; IORESOURCE_IO)))</p> 
+         <p>continue;</p> 
+         <p>&nbsp;</p> 
+         <p>/*</p> 
+         <p>*&nbsp; We shall assign a new address to this resource, either because</p> 
+         <p>*&nbsp; the BIOS forgot to do so or because we have decided the old</p> 
+         <p>*&nbsp; address was unusable for some reason.</p> 
+         <p>*/</p> 
+         <p>if (!r-&gt;start &amp;&amp; r-&gt;end)</p> 
+         <p>pci_assign_resource(dev, idx);</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>if (pci_probe &amp; PCI_ASSIGN_ROMS) {</p> 
+         <p>r = &amp;dev-&gt;resource[PCI_ROM_RESOURCE];</p> 
+         <p>r-&gt;end -= r-&gt;start;</p> 
+         <p>r-&gt;start = 0;</p> 
+         <p>if (r-&gt;end)</p> 
+         <p>pci_assign_resource(dev, PCI_ROM_RESOURCE);</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>函数真正的主体是pci_assign_resource()，这个函数定义在drivers/pci/setup-res.c中：</p> 
+         <p>int</p> 
+         <p>pci_assign_resource(struct pci_dev *dev, int i)</p> 
+         <p>{</p> 
+         <p>const struct pci_bus *bus = dev-&gt;bus; //此设备所在总线</p> 
+         <p>struct resource *res = dev-&gt;resource + i;&nbsp;&nbsp;&nbsp; //需要分配的resource</p> 
+         <p>unsigned long size, min;</p> 
+         <p>&nbsp;</p> 
+         <p>size = res-&gt;end – res-&gt;start + 1;</p> 
+         <p>/*</p> 
+         <p>*对所分配的区间的位置进行限制，I/O地址区间不得低于4KB，内存不得低于256MB</p> 
+         <p>*&nbsp;&nbsp;&nbsp; #define PCIBIOS_MIN_IO&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1000</p> 
+         <p>*&nbsp;&nbsp;&nbsp; #define PCIBIOS_MIN_MEM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x10000000</p> 
+         <p>*/</p> 
+         <p>min = (res-&gt;flags &amp; IORESOURCE_IO) ? PCIBIOS_MIN_IO : PCIBIOS_MIN_MEM;</p> 
+         <p>&nbsp;</p> 
+         <p>/* First, try exact prefetching match.. */</p> 
+         <p>/*</p> 
+         <p>*第一次调用，表示要求在“可预取”方面相符</p> 
+         <p>*/</p> 
+         <p>if (pci_assign_bus_resource(bus, dev, res, size, min, IORESOURCE_PREFETCH, i) &lt; 0) {</p> 
+         <p>/*</p> 
+         <p>* That failed.</p> 
+         <p>*</p> 
+         <p>* But a prefetching area can handle a non-prefetching</p> 
+         <p>* window (it will just not perform as well).</p> 
+         <p>*/</p> 
+         <p>/*</p> 
+         <p>*如果不行，则要放宽“可预取”的要求，但是仅限于设备上的“可预取”</p> 
+         <p>*即用于存储器的情况</p> 
+         <p>*/</p> 
+         <p>if (!(res-&gt;flags &amp; IORESOURCE_PREFETCH) || pci_assign_bus_resource(bus, dev, res, size, min, 0, i) &lt; 0) {</p> 
+         <p>printk(KERN_ERR “PCI: Failed to allocate resource %d for %s\n”, i, dev-&gt;name);</p> 
+         <p>return -EBUSY;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>DBGC((”&nbsp; got res[%lx:%lx] for resource %d of %s\n”, res-&gt;start,</p> 
+         <p>res-&gt;end, i, dev-&gt;name));</p> 
+         <p>&nbsp;</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>函数通过函数pci_assign_bus_resource()来进行从所在的总线上分配地址空间，这个函数定义在drivers/pci/setup-res.c中：</p> 
+         <p>/*</p> 
+         <p>* Given the PCI bus a device resides on, try to</p> 
+         <p>* find an acceptable resource allocation for a</p> 
+         <p>* specific device resource..</p> 
+         <p>*/</p> 
+         <p>static int pci_assign_bus_resource(const struct pci_bus *bus,</p> 
+         <p>struct pci_dev *dev,</p> 
+         <p>struct resource *res,</p> 
+         <p>unsigned long size,</p> 
+         <p>unsigned long min,</p> 
+         <p>unsigned int type_mask,</p> 
+         <p>int resno)</p> 
+         <p>{</p> 
+         <p>int i;</p> 
+         <p>&nbsp;</p> 
+         <p>type_mask |= IORESOURCE_IO | IORESOURCE_MEM;</p> 
+         <p>for (i = 0 ; i &lt; 4; i++) {</p> 
+         <p>struct resource *r = bus-&gt;resource[i];</p> 
+         <p>if (!r)</p> 
+         <p>continue;</p> 
+         <p>&nbsp;</p> 
+         <p>/* type_mask must match */</p> 
+         <p>if ((res-&gt;flags ^ r-&gt;flags) &amp; type_mask)</p> 
+         <p>continue;</p> 
+         <p>&nbsp;</p> 
+         <p>/* We cannot allocate a non-prefetching resource from a pre-fetching area */</p> 
+         <p>if ((r-&gt;flags &amp; IORESOURCE_PREFETCH) &amp;&amp; !(res-&gt;flags &amp; IORESOURCE_PREFETCH))</p> 
+         <p>continue;</p> 
+         <p>&nbsp;</p> 
+         <p>/* Ok, try it out.. */</p> 
+         <p>if (allocate_resource(r, res, size, min, -1, size, pcibios_align_resource, dev) &lt; 0)</p> 
+         <p>continue;</p> 
+         <p>&nbsp;</p> 
+         <p>/* Update PCI config space.&nbsp; */</p> 
+         <p>pcibios_update_resource(dev, r, res, resno);</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>return -EBUSY;</p> 
+         <p>}</p> 
+         <p>分配函数allocate_resource()定义在kernel/resource.c中：</p> 
+         <p>int allocate_resource(struct resource *root, struct resource *new,</p> 
+         <p>unsigned long size,</p> 
+         <p>unsigned long min, unsigned long max,</p> 
+         <p>unsigned long align,</p> 
+         <p>void (*alignf)(void *, struct resource *, unsigned long),</p> 
+         <p>void *alignf_data)</p> 
+         <p>{</p> 
+         <p>int err;</p> 
+         <p>&nbsp;</p> 
+         <p>write_lock(&amp;resource_lock);</p> 
+         <p>err = find_resource(root, new, size, min, max, align, alignf, alignf_data);</p> 
+         <p>if (err &gt;= 0 &amp;&amp; __request_resource(root, new))</p> 
+         <p>err = -EBUSY;</p> 
+         <p>write_unlock(&amp;resource_lock);</p> 
+         <p>return err;</p> 
+         <p>}</p> 
+         <p>主体是函数find_resource()，定义于kernel/resource.c中：</p> 
+         <p>/*</p> 
+         <p>* Find empty slot in the resource tree given range and alignment.</p> 
+         <p>*/</p> 
+         <p>static int find_resource(struct resource *root, struct resource *new,</p> 
+         <p>unsigned long size,</p> 
+         <p>unsigned long min, unsigned long max,</p> 
+         <p>unsigned long align,</p> 
+         <p>void (*alignf)(void *, struct resource *, unsigned long),</p> 
+         <p>void *alignf_data)</p> 
+         <p>{</p> 
+         <p>struct resource *this = root-&gt;child;</p> 
+         <p>&nbsp;</p> 
+         <p>new-&gt;start = root-&gt;start;</p> 
+         <p>for(;;) {</p> 
+         <p>if (this)</p> 
+         <p>new-&gt;end = this-&gt;start;</p> 
+         <p>else</p> 
+         <p>new-&gt;end = root-&gt;end;</p> 
+         <p>if (new-&gt;start &lt; min)</p> 
+         <p>new-&gt;start = min;</p> 
+         <p>if (new-&gt;end &gt; max)</p> 
+         <p>new-&gt;end = max;</p> 
+         <p>new-&gt;start = (new-&gt;start + align – 1) &amp; ~(align – 1);</p> 
+         <p>if (alignf)</p> 
+         <p>alignf(alignf_data, new, size);</p> 
+         <p>if (new-&gt;start &lt; new-&gt;end &amp;&amp; new-&gt;end – new-&gt;start + 1 &gt;= size) {</p> 
+         <p>new-&gt;end = new-&gt;start + size – 1;</p> 
+         <p>return 0;</p> 
+         <p>}</p> 
+         <p>if (!this)</p> 
+         <p>break;</p> 
+         <p>new-&gt;start = this-&gt;end + 1;</p> 
+         <p>this = this-&gt;sibling;</p> 
+         <p>}</p> 
+         <p>return -EBUSY;</p> 
+         <p>}</p> 
+         <p>调整函数pcibios_align_resource()定义在arch/i386/kernel/pci-i386.c中：</p> 
+         <p>void</p> 
+         <p>pcibios_align_resource(void *data, struct resource *res, unsigned long size)</p> 
+         <p>{</p> 
+         <p>if (res-&gt;flags &amp; IORESOURCE_IO) {</p> 
+         <p>unsigned long start = res-&gt;start;</p> 
+         <p>&nbsp;</p> 
+         <p>if (start &amp; 0x300) {</p> 
+         <p>start = (start + 0x3ff) &amp; ~0x3ff;</p> 
+         <p>res-&gt;start = start;</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>分配比较简单，就是不断寻找空闲空间进行比较与调整。函数比较简单，不多说了。</p> 
+         <p>如果这次分配成功，则调用pcibios_update_resource()来将起始地址设置到目标设备中。从而建立起映射地址，函数pcibios_update_resource()定义在arch/i386/kernel/pci-i386.c中：</p> 
+         <p>void</p> 
+         <p>pcibios_update_resource(struct pci_dev *dev, struct resource *root,</p> 
+         <p>struct resource *res, int resource)</p> 
+         <p>{</p> 
+         <p>/*</p> 
+         <p>*这里的参数res指向目标设备上目标区间的resource数据结构，start就是</p> 
+         <p>*分配的起始地址，resource表明是设备中的哪个区间</p> 
+         <p>*/</p> 
+         <p>u32 new, check;</p> 
+         <p>int reg;</p> 
+         <p>&nbsp;</p> 
+         <p>new = res-&gt;start | (res-&gt;flags &amp; PCI_REGION_FLAG_MASK);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //最后4位用于控制目的</p> 
+         <p>if (resource &lt; 6) {</p> 
+         <p>reg = PCI_BASE_ADDRESS_0 + 4*resource;</p> 
+         <p>} else if (resource == PCI_ROM_RESOURCE) {</p> 
+         <p>res-&gt;flags |= PCI_ROM_ADDRESS_ENABLE;</p> 
+         <p>new |= PCI_ROM_ADDRESS_ENABLE;</p> 
+         <p>reg = dev-&gt;rom_base_reg;</p> 
+         <p>} else {</p> 
+         <p>/* Somebody might have asked allocation of a non-standard resource */</p> 
+         <p>return;</p> 
+         <p>}</p> 
+         <p>pci_write_config_dword(dev, reg, new);&nbsp;&nbsp;&nbsp;&nbsp; //写入区间地址</p> 
+         <p>/*</p> 
+         <p>*在配置寄存器组的命令寄存器里有两个控制位PCI_COMMAND_IO和</p> 
+         <p>*PCI_COMMAND_MEMORY，它们控制着这个设备的所有I/O地址区间</p> 
+         <p>*和存储器地址区间，为1才能使区间真正连接到PCI总线上，这个操作留给</p> 
+         <p>*了设备驱动程序，这里只是打印出一个信息</p> 
+         <p>*/</p> 
+         <p>pci_read_config_dword(dev, reg, &amp;check);</p> 
+         <p>if ((new ^ check) &amp; ((new &amp; PCI_BASE_ADDRESS_SPACE_IO) ? PCI_BASE_ADDRESS_IO_MASK : PCI_BASE_ADDRESS_MEM_MASK)) {</p> 
+         <p>printk(KERN_ERR “PCI: Error while updating region ”</p> 
+         <p>“%s/%d (%08x != %08x)\n”, dev-&gt;slot_name, resource,</p> 
+         <p>new, check);</p> 
+         <p>}</p> 
+         <p>}</p> 
+         <p>&nbsp;</p> 
+         <p>至此，PCI全部完。</p> 
+         <p>&nbsp;</p> 
+         <p>The End.</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-772 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

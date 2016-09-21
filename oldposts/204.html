@@ -1,0 +1,123 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-204 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-204" class="post-204 post type-post status-publish format-standard hentry category-uncategorized tag-reserved"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">[转载]MySQL的AUTO_INCREMENT</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=204" title="下午 3:46" rel="bookmark"><time class="entry-date" datetime="2011-10-31T15:46:18+00:00" pubdate>31 十月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=204#respond" title="Comment on [转载]MySQL的AUTO_INCREMENT">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div class="blogzz_abstract borderc" style="padding-top:15px;margin:20px 0; border:none; border-top:1px dotted #ccc;"> 
+          <div class="blogzz_ainfo" style="margin-bottom:12px;"> 
+           <span style="margin-right:25px;"><strong>原文地址：</strong><a target="_blank" href="http://blog.sina.com.cn/s/blog_4d02c72e010096od.html" title="MySQL的AUTO_INCREMENT">MySQL的AUTO_INCREMENT</a></span> 
+           <span><strong>作者：</strong><a href="http://blog.sina.com.cn/u/1292027694" title="小于" target="_blank">小于</a></span> 
+          </div> 
+          <div class="blogzz_acon"> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>用法:</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>CREATE<br> TABLE test<br> (<br> id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,<br> username VARCHAR(15) NOT NULL<br> )<br> AUTO_INCREMENT = 100;</strong></font></p> 
+           <p> <font style="FONT-SIZE: 18px" color="#003399"><strong>在<u>数据库</u>应用，我们经常要用到唯一编号，以标识记录。在MySQL中可通过数据列的AUTO_INCREMENT属性来自动生成。MySQL支持多种数据表，每种数据表的自增属性都有差异，这里将介绍各种数据表里的数据列自增属性。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>ISAM表</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>如果把一个NULL插入到一个AUTO_INCREMENT数据列里去，MySQL将自动生成下一个序列编号。编号从1开始，并1为基数递增。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>把0插入AUTO_INCREMENT数据列的效果与插入NULL值一样。但不建议这样做，还是以插入NULL值为好。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>当插入记录时，没有为AUTO_INCREMENT明确指定值，则等同插入NULL值。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>当插入记录时，如果为AUTO_INCREMENT数据列明确指定了一个数值，则会出现两种情况，情况一，如果插入的值与已有的编号重复，则会出现出错信息，因为AUTO_INCREMENT数据列的值必须是唯一的；情况二，如果插入的值大于已编号的值，则会把该插入到数据列中，并使在下一个编号将从这个新值开始递增。也就是说，可以跳过一些编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>如果自增序列的最大值被删除了，则在插入新记录时，该值被重用。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>如果用UPDATE命令更新自增列，如果列值与已有的值重复，则会出错。如果大于已有值，则下一个编号从该值开始递增。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>如果用replace命令基于AUTO_INCREMENT数据列里的值来修改数据表里的现有记录，即AUTO_INCREMENT数据列出现在了<br> replace命令的where子句里，相应的AUTO_INCREMENT值将不会发生变化。但如果replace命令是通过其它的PRIMARY<br> KEY OR<br> UNIQUE索引来修改现有记录的(即AUTO_INCREMENT数据列没有出现在replace命令的where子句中)，相应的<br> AUTO_INCREMENT值–如果设置其为NULL(如没有对它赋值)的话–就会发生变化。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>last_insert_id()函数可获得自增列自动生成的最后一个编号。但该函数只与服务器的本次会话过程中生成的值有关。如果在与服务器的本次会话中尚未生成AUTO_INCREMENT值，则该函数返回0。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>其它数据表的自动编号机制都以ISAM表中的机制为基础。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>MyISAM数据表</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>删除最大编号的记录后，该编号不可重用。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>可在建表时可用“AUTO_INCREMENT=n”选项来指定一个自增的初始值。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>可用alter table table_name<br> AUTO_INCREMENT=n命令来重设自增的起始值。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>可使用复合索引在同一个数据表里创建多个相互独立的自增序列，具体做法是这样的：为数据表创建一个由多个数据列组成的PRIMARY<br> KEY OR<br> UNIQUE索引，并把AUTO_INCREMENT数据列包括在这个索引里作为它的最后一个数据列。这样，这个复合索引里，前面的那些数据列每构成一种独一无二的组合，最末尾的AUTO_INCREMENT数据列就会生成一个与该组合相对应的序列编号。[NextPage]</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>HEAP数据表</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>HEAP数据表从MySQL4.1开始才允许使用自增列。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>自增值可通过CREATE TABLE语句的<br> AUTO_INCREMENT=n选项来设置。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>可通过ALTER<br> TABLE语句的AUTO_INCREMENT=n选项来修改自增始初值。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>编号不可重用。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>HEAP数据表不支持在一个数据表中使用复合索引来生成多个互不干扰的序列编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>BDB数据表</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>不可通过CREATE TABLE OR ALTER<br> TABLE的AUTO_INCREMENT=n选项来改变自增初始值。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>可重用编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>支持在一个数据表里使用复合索引来生成多个互不干扰的序列编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>InnDB数据表</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>不可通过CREATE TABLE OR ALTER<br> TABLE的AUTO_INCREMENT=n选项来改变自增初始值。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>不可重用编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>不支持在一个数据表里使用复合索引来生成多个互不干扰的序列编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>在使用AUTO_INCREMENT时，应注意以下几点：</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>AUTO_INCREMENT是数据列的一种属性，只适用于整数类型数据列。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>设置AUTO_INCREMENT属性的数据列应该是一个正数序列，所以应该把该数据列声明为UNSIGNED，这样序列的编号个可增加一倍。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>AUTO_INCREMENT数据列必须有唯一索引，以避免序号重复。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>AUTO_INCREMENT数据列必须具备NOT<br> NULL属性。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>AUTO_INCREMENT数据列序号的最大值受该列的数据类型约束，如TINYINT数据列的最大编号是127,如加上UNSIGNED，则最大为255。一旦达到上限，AUTO_INCREMENT就会失效。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>当进行全表删除时，AUTO_INCREMENT会从1重新开始编号。全表删除的意思是发出以下两条语句时：</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>delete<br> from table_name;ortruncate table table_name<br> 这是因为进行全表操作时，MySQL实际是做了这样的优化操作：先把数据表里的所有数据和索引删除，然后重建数据表。如果想删除所有的数据行又想保留序列编号信息，可这样用一个带where的delete命令以抑制MySQL的优化：</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>delete<br> from table_name where 1;<br> 这将迫使MySQL为每个删除的数据行都做一次条件表达式的求值操作。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>强制MySQL不复用已经使用过的序列值的方法是：另外创建一个专门用来生成AUTO_INCREMENT序列的数据表，并做到永远不去删除该表的记录。当需要在主数据表里插入一条记录时，先在那个专门生成序号的表中插入一个NULL值以产生一个编号，然后，在往主数据表里插入数据时，利用<br> LAST_INSERT_ID()函数取得这个编号，并把它赋值给主表的存放序列的数据列。如：</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>insert<br> into id set id = NULL;insert into main set main_id =<br> LAST_INSERT_ID();<br> 可用alter命令给一个数据表增加一个具有AUTO_INCREMENT属性的数据列。MySQL会自动生成所有的编号。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>要重新排列现有的序列编号，最简单的方法是先删除该列，再重建该，MySQL会重新生连续的编号序列。</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>在不用AUTO_INCREMENT的情况下生成序列，可利用带参数的LAST_INSERT_ID()函数。如果用一个带参数的<br> LAST_INSERT_ID(expr)去插入或修改一个数据列，紧接着又调用不带参数的LAST_INSERT_ID()函数，则第二次函数调用返回的就是expr的值。下面演示该方法的具体操作：</strong></font></p> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>先创建一个只有一个数据行的数据表：create<br> table seq_table (id int unsigned not null);insert into seq_table<br> values (0);接着用以下操作检索出序列号：update<br> seq_table set seq = LAST_INSERT_ID( seq + 1 );select<br> LAST_INSERT_ID();通过修改seq+1中的常数值，可生成不同步长的序列，如seq+10可生成步长为10的序列。</strong></font></p> 
+           <font style="FONT-SIZE: 18px" color="#003399"><strong> </strong></font> 
+           <p><font style="FONT-SIZE: 18px" color="#003399"><strong>该方法可用于计数器，在数据表中插入多行以记录不同的计数值。再配合LAST_INSERT_ID()函数的返回值生成不同内容的计数值。这种方法的优点是不用事务或LOCK，UNLOCK表就可生成唯一的序列编号。不会影响其它客户程序的正常表操作。</strong></font></p> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-204 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

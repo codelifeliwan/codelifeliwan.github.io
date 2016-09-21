@@ -1,0 +1,116 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-195 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-195" class="post-195 post type-post status-publish format-standard hentry category-javaweb_study_notes tag-reserved"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">[转载]JSP中request对象（转）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=195" title="下午 4:04" rel="bookmark"><time class="entry-date" datetime="2011-10-21T16:04:05+00:00" pubdate>21 十月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=195#respond" title="Comment on [转载]JSP中request对象（转）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div class="blogzz_abstract borderc" style="padding-top:15px;margin:20px 0; border:none; border-top:1px dotted #ccc;"> 
+          <div class="blogzz_ainfo" style="margin-bottom:12px;"> 
+           <span style="margin-right:25px;"><strong>原文地址：</strong><a target="_blank" href="http://blog.sina.com.cn/s/blog_493309600100i83m.html" title="JSP中request对象（转）">JSP中request对象（转）</a></span> 
+           <span><strong>作者：</strong><a href="http://blog.sina.com.cn/u/1228081504" title="doingendlessly" target="_blank">doingendlessly</a></span> 
+          </div> 
+          <div class="blogzz_acon"> 
+           <div> 
+            <p>JSP中request对象</p> 
+            <p> Web是请求/响应架构的使用，浏览器发送请求时可能会将一些参数发送给服务器，服务器端负责解析请求参数就是JSP或者servlet，而servlet和jsp获得请求参数的途径就是request</p> 
+            <p>request是HttpServletRequest接口的实例，它提供如下方法来获取请求参数：</p> 
+            <p>1&nbsp;<wbr>&nbsp;<wbr> object getAttribute(String<br> name)&nbsp;<wbr> 返回指定属性的属性值 （获取request方位的属性值）</p> 
+            <p>2&nbsp;<wbr>&nbsp;<wbr> Enumeration<br> getAttributeNames()&nbsp;<wbr> 返回所有可用属性名的枚举</p> 
+            <p>3&nbsp;<wbr>&nbsp;<wbr> String<br> getCharacterEncoding()&nbsp;<wbr> 返回字符编码方式</p> 
+            <p>4&nbsp;<wbr>&nbsp;<wbr> String getParameter(String<br> name)&nbsp;<wbr> 返回name指定参数的参数值 、<br> &nbsp;<wbr>表单域所代表的请求参数是根据request的 getParameter()<br> 方法获得的：<br> &nbsp;<wbr>&nbsp;<wbr>并不是每个表单域都会生成请求参数。而是由name属性的表单域才会生成请求参数；</p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr>关于表单域和请求参数的关系遵循以下四点：<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>1.每个有name属性的表单域对应一个请求参数</p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>2.如果有多个表单域有相同的name属性，则多给表单域生成一个请求参数，只不过该请求参数有多个参数值</p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>3.表单域的name属性指定参数名，value属性指定参数值</p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>4.如果某个表单域指定disabled=”true”，则该表单域不会再生成请求参数；</p> 
+            <p>5&nbsp;<wbr>&nbsp;<wbr> Enumeration<br> getParameterNames()&nbsp;<wbr> 返回可用参数名的枚举</p> 
+            <p>6&nbsp;<wbr>&nbsp;<wbr> String[]<br> getParameterValues(String name)&nbsp;<wbr><br> 返回包含参数name的所有值的数组</p> 
+            <p>7&nbsp;<wbr>&nbsp;<wbr> String<br> getServerName()&nbsp;<wbr> 返回接受请求的服务器主机名</p> 
+            <p>8&nbsp;<wbr>&nbsp;<wbr> int<br> getServerPort()&nbsp;<wbr> 返回服务器接受此请求所用的端口号</p> 
+            <p>9&nbsp;<wbr>&nbsp;<wbr> String<br> getRemoteAddr()&nbsp;<wbr> 返回发送此请求的客户端IP地址</p> 
+            <p>10&nbsp;<wbr>&nbsp;<wbr> String<br> getRemoteHost()&nbsp;<wbr> 返回发送此请求的客户端主机名</p> 
+            <p>11&nbsp;<wbr>&nbsp;<wbr> void setAttribute(String<br> key,Object obj)&nbsp;<wbr><br> 设置属性的属性值（将obj设置成request范围的属性值）</p> 
+            <p>12&nbsp;<wbr>&nbsp;<wbr> String getRealPath(String<br> path)&nbsp;<wbr> 返回一虚拟路径的真实路径</p> 
+            <p>13&nbsp;<wbr> Map getParameterMap()&nbsp;<wbr><br> :获取所有请求参数名和参数值所组成的Map对象</p> 
+            <p> 客户端发送请求通常分两种情况：get/post：默认使用get（但是一般都要使用post）</p> 
+            <p>1. get是从服务器上获取数据，post是向服务器传送数据。<br> 2.<br> get是把参数数据队列加到提交表单的ACTION属性所指的URL中，值和表单内各个字段一一对应，在URL中可以看到。post是通过HTTP<br> post机制，将表单内各个字段与其内容放置在HTML<br> HEADER内一起传送到ACTION属性所指的URL地址。用户看不到这个过程。<br> 3.<br> 对于get方式，服务器端用Request.QueryString获取变量的值，对于post方式，服务器端用Request.Form获取提交的数据。</p> 
+            <p>4.<br> get传送的数据量较小，不能大于2KB。post传送的数据量较大，一般被默认为不受限制。但理论上，IIS4中最大量为80KB，IIS5中为100KB。</p> 
+            <p>5. get安全性非常低，post安全性较高。</p> 
+            <p>获得请求值：</p> 
+            <p> 请求方式：&lt;%=request.getMethod()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 请求的资源：&lt;%=request.getRequestURI()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 请求用的协议：&lt;%=request.getProtocol()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 请求的文件名：&lt;%=request.getServletPath()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 请求的服务器的IP：&lt;%=request.getServerName()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 请求服务器的端口：&lt;%=request.getServerPort()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 客户端IP地址：&lt;%=request.getRemoteAddr()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 客户端主机名：&lt;%=request.getRemoteHost()%&gt;&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+            <p>&nbsp;<wbr>&nbsp;<wbr><br> 表单提交来的值：&lt;%=request.getParameter(“qwe”)%&gt;</p> 
+            <p>执行forward和include<br> &nbsp;<wbr>forward(ServletRequest request ,ServletResponse<br> response):执行forward<br> &nbsp;<wbr>include(ServletRequest request ,ServletResponse<br> response):执行include</p> 
+            <p>&nbsp;<wbr>例如： 将a.jsp include 到本页面：<br> &nbsp;<wbr>getRequestDispathcher(“/a.jsp”).include(request,response);</p> 
+            <p>&nbsp;<wbr>将请求forward到a.jsp<br> &nbsp;<wbr>getRequestDispathcher(“/a.jsp”).forward(request,response);</p> 
+           </div> 
+           <p>&nbsp;<wbr></p> 
+           <p>&nbsp;<wbr></p> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-195 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

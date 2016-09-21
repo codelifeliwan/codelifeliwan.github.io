@@ -1,0 +1,204 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-25 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-25" class="post-25 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10790&nbsp;–&nbsp;How&nbsp;Many&nbsp;Points&nbsp;of&nbsp;Intersection?&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=25" title="下午 7:44" rel="bookmark"><time class="entry-date" datetime="2011-05-18T19:44:34+00:00" pubdate>18 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=25#respond" title="Comment on UVA&nbsp;10790&nbsp;–&nbsp;How&nbsp;Many&nbsp;Points&nbsp;of&nbsp;Intersection?&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目意思就是上面给出N个点，下面给出M个点，上面的每一个点跟下面的给一个点都有连线，求连线的交点数。</p> 
+         <div>
+           题目很简单就是等差数列求和，就列举下面是三个点的就是（0+1+2）+(0+1+2+0+1+2)+(0+1+2+0+1+2+0+1+2)…然后就是求和。 
+         </div> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font size="5" color="#C0FFFF"><a name="SECTION0001000000000000000000">How Many Points of<br> Intersection?</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> We have two rows. There are&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i></span>&nbsp;<wbr>dots<br> on the top row and&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i></span>&nbsp;<wbr>dots<br> on the bottom row. We draw line segments connecting every dot on<br> the top row with every dot on the bottom row. The dots are arranged<br> in such a way that the number of internal intersections among the<br> line segments is maximized. To achieve this goal we must not allow<br> more than two line segments to intersect in a point. The<br> intersection points on the top row and the bottom are not included<br> in our count; we can allow more than two line segments to intersect<br> on those two rows. Given the value of&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i></span>&nbsp;<wbr>and&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i></span>,<br> your task is to compute<span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">P</i>(<i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i>,&nbsp;</span><wbr><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i>),<br> the number of intersections in between the two rows. For example,<br> in the following figure&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i>&nbsp;</span><wbr>=<br> 2&nbsp;<wbr>and&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i>&nbsp;</span><wbr>=<br> 3. This figure illustrates that<span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">P</i>(2,<br> 3) = 3</span>.</p> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <div align="center" style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> 
+           <img border="0" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/107/p10790.jpg" alt="epsfbox{p10790.eps}" title="UVA&nbsp;<wbr>10790&nbsp;<wbr>-&nbsp;<wbr>How&nbsp;<wbr>Many&nbsp;<wbr>Points&nbsp;<wbr>of&nbsp;<wbr>Intersection?&nbsp;<wbr>解题报告"> 
+           <wbr>10790&nbsp; 
+           <wbr>-&nbsp; 
+           <wbr>How&nbsp; 
+           <wbr>Many&nbsp; 
+           <wbr>Points&nbsp; 
+           <wbr>of&nbsp; 
+           <wbr>Intersection?&nbsp; 
+           <wbr>解题报告” /&gt; 
+          </div> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001001000000000000000">Input</a>&nbsp;<wbr></font></h2> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> Each line in the input will contain two positive<br> integers&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i></span>&nbsp;<wbr>(&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;">0<br> &lt;&nbsp;</span><wbr><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i><img width="18" height="30" align="middle" border="0" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/107/10790img2.png" alt="$ le$" title="UVA&nbsp;<wbr>10790&nbsp;<wbr>-&nbsp;<wbr>How&nbsp;<wbr>Many&nbsp;<wbr>Points&nbsp;<wbr>of&nbsp;<wbr>Intersection?&nbsp;<wbr>解题报告"><wbr>10790&nbsp;<wbr>-&nbsp;<wbr>How&nbsp;<wbr>Many&nbsp;<wbr>Points&nbsp;<wbr>of&nbsp;<wbr>Intersection?&nbsp;<wbr>解题报告” /&gt;20000) and&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i></span>&nbsp;<wbr>(&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;">0<br> &lt;&nbsp;</span><wbr><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i><img width="18" height="30" align="middle" border="0" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/107/10790img2.png" alt="$ le$" title="UVA&nbsp;<wbr>10790&nbsp;<wbr>-&nbsp;<wbr>How&nbsp;<wbr>Many&nbsp;<wbr>Points&nbsp;<wbr>of&nbsp;<wbr>Intersection?&nbsp;<wbr>解题报告"><wbr>10790&nbsp;<wbr>-&nbsp;<wbr>How&nbsp;<wbr>Many&nbsp;<wbr>Points&nbsp;<wbr>of&nbsp;<wbr>Intersection?&nbsp;<wbr>解题报告” /&gt;20000). Input is terminated by a line where<br> both<span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i></span>&nbsp;<wbr>and&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i></span>&nbsp;<wbr>are<br> zero. This case should not be processed. You will need to process<br> at most 1200 sets of inputs.</p> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001002000000000000000">Output</a>&nbsp;<wbr></font></h2> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> For each line of input, print in a line the serial of output<br> followed by the value of&nbsp;<wbr><span style="font-family: 'Century schoolbook', serif;"><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">P</i>(<i style="font-family: 'Century schoolbook', serif; font-weight: bold;">a</i>,&nbsp;</span><wbr><i style="font-family: 'Century schoolbook', serif; font-weight: bold;">b</i>).<br> Look at the output for sample input for details. You can assume<br> that the output for the test cases will fit<br> in&nbsp;<wbr><b>64-bit</b>&nbsp;<wbr>signed<br> integers.</p> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;<wbr></font></h2> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<span style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;">2 2&nbsp;<wbr></span>
+</pre> 
+          <pre>
+2 3&nbsp;<wbr>
+</pre> 
+          <pre>
+3 3&nbsp;<wbr>
+</pre> 
+          <pre>
+0 0
+</pre> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: normal;">
+Case 1: 1&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: normal;">
+Case 2: 3&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: normal;">
+Case 3: 9
+</pre> 
+          <pre style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: normal;">
+<br>
+</pre> 
+          <pre style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: bold;">
+代码：
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">#include&lt;iostream&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">#include&lt;cmath&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">#include&lt;fstream&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">using namespace std;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">int main()</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>int mark=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>long long a,b;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>while(cin&gt;&gt;a&gt;&gt;b)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>mark++;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>if(0==a&amp;&amp;0==b)break;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>cout&lt;&lt;"Case "&lt;&lt;mark&lt;&lt;": ";</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>cout&lt;&lt;b*(b-1)*a*(a-1)/4&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;"><span style="white-space:pre"> </span>return 0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 25px;">}</span></font>
+</pre> 
+          <div style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: bold;"> 
+          </div> 
+          <div style="font-family: 'Apple Garamond'; line-height: normal; font-size: medium; font-weight: normal;"> 
+          </div> 
+          <p style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-25 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

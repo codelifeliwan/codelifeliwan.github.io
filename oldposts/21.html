@@ -1,0 +1,231 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-21 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-21" class="post-21 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10161&nbsp;–&nbsp;Ant&nbsp;on&nbsp;a&nbsp;Chessboard&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=21" title="下午 2:55" rel="bookmark"><time class="entry-date" datetime="2011-05-17T14:55:38+00:00" pubdate>17 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=21#comments" title="Comment on UVA&nbsp;10161&nbsp;–&nbsp;Ant&nbsp;on&nbsp;a&nbsp;Chessboard&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目意思就是从左下角开始挨个向上再向右然后一圈一圈盘绕，数字依次加1，然后输出从左下角开始数的行号和列号。我用的方法是等差数列加二分查找，就是每一圈的总数是个以2为公差的等差数列，然后再依次计算，代码写的繁琐了点，但是AC了。。。。。</p> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <div align="center" style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> 
+           <table border="0" cellpadding="0" bgcolor="#0060F0" style="background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(0, 96, 240); background-position: initial initial; background-repeat: initial initial;"> 
+            <tbody> 
+             <tr> 
+              <td style="padding-top: 0.75pt; padding-right: 0.75pt; padding-bottom: 0.75pt; padding-left: 0.75pt;"> <p align="left" style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: left;"> <b><span lang="EN-US" style="font-size: 18pt; font-family: 宋体; color: rgb(192, 255, 255);" xml:lang="EN-US"><a name="SECTION0001000000000000000000">Problem A.Ant on a<br> Chessboard</a></span></b><b><span lang="EN-US" style="font-size: 12pt; font-family: 宋体;" xml:lang="EN-US">&nbsp;<wbr></span></b></p> </td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001002000000000000000"><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Background</span></a></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr>&nbsp;<wbr></span>One day,<br> an ant called Alice came to an M*M chessboard. She wanted to go<br> around all the grids. So she began to walk along the chessboard<br> according to this way: (you can assume that her speed is one grid<br> per second)</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr>&nbsp;<wbr></span>At the<br> first second, Alice was standing at (1,1). Firstly she went up for<br> a grid, then a grid to the right, a grid downward. After that, she<br> went a grid to the right, then two grids upward, and then two grids<br> to the left…in a word, the path was like a snake.</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr>&nbsp;<wbr></span>For<br> example, her first 25 seconds went like this:</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr>&nbsp;<wbr></span>( the<br> numbers in the grids stands for the time when she went into the<br> grids)</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr></span></span></span></p> 
+          <table border="1" cellspacing="0" cellpadding="0" align="left" style="border-collapse: collapse; border-top-style: none; border-right-style: none; border-bottom-style: none; border-left-style: none; border-width: initial; border-color: initial; font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> 
+           <tbody> 
+            <tr style="height: 14.85pt;"> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">25</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">24</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">23</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">22</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">21</span></span></p> </td> 
+            </tr> 
+            <tr style="height: 15.6pt;"> 
+             <td width="30" valign="top" style="width: 22.75pt; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">10</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">11</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">12</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">13</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">20</span></span></p> </td> 
+            </tr> 
+            <tr style="height: 14.85pt;"> 
+             <td width="30" valign="top" style="width: 22.75pt; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">9</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">8</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">7</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">14</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 14.85pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">19</span></span></p> </td> 
+            </tr> 
+            <tr style="height: 15.6pt;"> 
+             <td width="30" valign="top" style="width: 22.75pt; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">2</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">3</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">6</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">15</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 15.6pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">18</span></span></p> </td> 
+            </tr> 
+            <tr style="height: 20.25pt;"> 
+             <td width="30" valign="top" style="width: 22.75pt; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 20.25pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">1</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 20.25pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">4</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 20.25pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">5</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 20.25pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">16</span></span></p> </td> 
+             <td width="30" valign="top" style="width: 22.75pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 0.5pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 0.5pt; padding-top: 0cm; padding-right: 5.4pt; padding-bottom: 0cm; padding-left: 5.4pt; height: 20.25pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> <span><span lang="EN-US" xml:lang="EN-US">17</span></span></p> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">5</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">4</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">3</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">2</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">1</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">1<span>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr></span>2<span>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr></span>3<span>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span>4<span>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr></span><span>&nbsp;<wbr>&nbsp;<wbr></span>5</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">At the<br> 8<sup>th</sup>&nbsp;<wbr>second , she was at (2,3), and at<br> 20<sup>th</sup>&nbsp;<wbr>second, she was at<br> (5,4).</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">Your task is to decide<br> where she was at a given time.</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">(you can assume that M is<br> large enough)</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <span><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Input</span></span></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr>&nbsp;<wbr></span>Input file<br> will contain several lines, and each line contains a number<br> N(1&lt;=N&lt;=2*10^9), which stands for the<br> time. The file will be ended with a line that contains a number<br> 0.</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <span><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Output</span></span></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US"><span>&nbsp;<wbr>&nbsp;<wbr></span>For each<br> input situation you should print a line with two numbers (x, y),<br> the column and the row number, there must be only a space between<br> them.</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <span><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Sample Input</span></span></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">8</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">20</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">25</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">0</span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></span></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <span><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Sample Output</span></span></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US">2 3</span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US">5 4</span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US">1 5</span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US"><br></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; font-weight: normal; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US"><br></span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; line-height: normal;"> <span lang="EN-US" xml:lang="EN-US">代码：</span></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> &nbsp;<wbr></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> &nbsp;<wbr></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> </p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> #include&lt;iostream&gt;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> #include&lt;fstream&gt;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> #include&lt;cmath&gt;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> using namespace std;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> </p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> </p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> int main()</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> // freopen(“test.txt”,”r”,stdin);</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> long N;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> while(cin&gt;&gt;N&amp;&amp;N)</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> long begin=0,end=1000000000;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> long mark=0;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> while(begin&lt;end)</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> double mid=(begin+end)/2;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> if(N&gt;double(((mid-1)*(mid-1))/4)&amp;&amp;N&lt;=(double)((mid)*(mid)/4))</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> mark=(mid-1)/2;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> break;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> else if(N&lt;=(double)(((mid-1)*(mid-1))/4))</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> end=mid;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> else if(N&gt;(double)((mid)*(mid))/4)</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> begin=mid;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> //<br> cout&lt;&lt;mark&lt;&lt;endl;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> long mark1=mark;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> // long mark1=2*mark-1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> mark=(1+(2*mark-1))*(mark)/2;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> //<br> cout&lt;&lt;mark&lt;&lt;”<br> “&lt;&lt;mark1&lt;&lt;endl;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> long x,y;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> if(mark%2==0)</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> if(N-mark&lt;=mark1+1)</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> x=mark1+1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> y=N-mark;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> else</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> x=(1+mark1)*(1+mark1)-N+1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> y=mark1+1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> else</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> if(N-mark&lt;=mark1+1)</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> x=N-mark;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> y=mark1+1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> else</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> {</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> x=mark1+1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> y=(mark1+1)*(mark1+1)-N+1;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> cout&lt;&lt;x&lt;&lt;”<br> “&lt;&lt;y&lt;&lt;endl;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> return 0;</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify;"> }</p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10.5pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt; text-align: justify; line-height: normal;"> </p> 
+          <p>&nbsp;<wbr></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-21 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

@@ -1,0 +1,492 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-221 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-221" class="post-221 post type-post status-publish format-standard hentry category-my_operating_system tag-operating_system"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">保护模式——从分段到分页</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=221" title="下午 11:14" rel="bookmark"><time class="entry-date" datetime="2012-03-23T23:14:28+00:00" pubdate>23 三月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=221#respond" title="Comment on 保护模式——从分段到分页">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="text-indent:2em;"> 
+          <h1 align="center" style="text-indent: 2em;"><span style="font-size: 14px; font-weight: normal; line-height: 21px;">其实很早以前就想写这个关于分页模式的了，可是自己还是有点东西没弄的太明白，今天也是终于写出来了，关于上一篇讲分段机制的，一博友还夸了我一下，另我有点小激动，开博客三年来第一次啊！谢谢那位博友，也同时给我很大鼓励，觉得就是每天抱着一大堆天书，没人指导的也值了！</span></h1> 
+          <p>当然也免不了会有错误，但是以后会开一个错误更正章，专门负责更正错误。</p> 
+          <p><font color="#FF0000">关于分段模式和分页模式的关系，分页是在分段的基础上进行的，具体关系请见：</font><span style="color: rgb(255, 0, 0); line-height: 21px; text-indent: 2em;">内存管理–三个地址，分页与分段的关系</span><a href="http://blog.sina.com.cn/s/blog_6730a3aa01010z8m.html">http://blog.sina.com.cn/s/blog_6730a3aa01010z8m.html</a></p> 
+          <p> 大家都知道，我们现在的内存现在都是几个GB，上一章也说了是为了提高寻址范围而有了保护模式，那么在保护模式下分段模式下总感觉内存定位不是很好，其实单单是使用分段的话也能实现应有的功能。而分页模式就为内存提供了更加细致的划分，每个页是4KB，每个也都能准确的寻址定位到具体的字节。这样细致的划分也就很啥啥啥了。</p> 
+          <p>那么首先来介绍下分页机制的原理，分页机制采用的是三级寻址，为了好理解，我们用一个比喻：</p> 
+          <p> 我们平时看书的时候要想看哪个具体内容，也就是哪一页，我们首先找到目录里面的哪一章，然后在找到的章中找到哪一节，然后我们再到找到的节中具体的找到哪一页。那么，这其中就用到了三个“地址”，章、节和页。</p> 
+          <p> 类似的，在内存分页机制也是这样的（引用老师说的话就是当计算机的东西困扰人的时候，计算机工作者就会想到实际生活，看，这个就是实际生活的例子），我们把一页内存（4KB）比喻成书的一节（注意不是一页，而是一节，可以把具体的字节（具体地址）看成是书的一页），保存这些内存页的地址的地方我们成为页表，实际是内存里面的一张表（先记住！！！），我们把保存所有页表地址的地方比喻成为章，我们成为页目录表，也就是说页目录表里面存的是很多页表的地址，页表里面存的是很多页地址（你明白了吗？:-)），实际上页目录表和页表都是内存里面的表，是实际存在内存里面的。那么现在你就会问了，页目录表是怎么寻到的？其实页目录表的首地址是在一个固定的寄存器中存存着的，硬件会自动识别:-)。那么，现在寻到4KB的页了以后是不是还是需要一个地址来寻到具体的地址，也就是定位到哪一个字节？是的:-)。现在来理清一下寻址方式：</p> 
+          <p><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s1.sinaimg.cn/orignal/6730a3aahbbf3e4dbc600" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s1.sinaimg.cn/middle/6730a3aahbbf3e4dbc600&amp;690" width="508" height="367" name="image_operate_3701332556113180" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a></p> 
+          <div style="text-align: center;"></div> 
+          <p>好了，了解了分页机制的大致过程之后我们再来看点专业的东西：</p> 
+          <p>首先，我们来看看保存页目录表的寄存器：</p> 
+          <h2>CR3控制寄存器：</h2> 
+          <p>还记得上一章说的CR0吗？跟这个差不多，80X86一共有五个控制寄存器：CR0～CR4，现在我们看看前四个：</p> 
+          <p><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s1.sinaimg.cn/orignal/6730a3aatbbea8b56d080" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s1.sinaimg.cn/middle/6730a3aatbbea8b56d080&amp;690" width="690" height="212" name="image_operate_51301332516231189" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a></p> 
+          <p>前三个暂时不说，看 CR3，CR3的后20位保存的是页目录表的地址的高20位，也就是说页目录表的地址的低12位必须位0。</p> 
+          <p>然后再来说说传说中的线性地址和物理地址，还有一种地址怕弄乱在此不说，<font color="#FF0000">线性地址说通俗点就是我们程序里面写的地址（事实上线性地址是由分段模式翻译过来的地址，具体请见：内存管理–三个地址，分页与分段的关系</font><a href="http://blog.sina.com.cn/s/blog_6730a3aa01010z8m.html">http://blog.sina.com.cn/s/blog_6730a3aa01010z8m.html</a><font color="#FF0000" style="text-indent: 2em;">）</font><span style="text-indent: 2em;">，物理地址就是内存里面的实际地址，保护分页模式下线性地址经过一系列翻译后翻译成物理地址，然后才可访问，那么我们在程序里面写的线性地址格式如下：</span></p> 
+          <table border="1" cellspacing="0" cellpadding="0"> 
+           <tbody> 
+            <tr> 
+             <td valign="top" width="151"> <p>22～31位：A段</p> </td> 
+             <td valign="top" width="170"> <p>12～21位：B段</p> </td> 
+             <td valign="top" width="236"> <p>0～11位：C段</p> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p> 为了防止头晕，我们不使用那些专业术语，我们直接使用A、B、C段来表示，A段存的数据指示的是页目录表里面的哪一项，单位为（个），注意，不是字节！！！B段存的数据指示的是页表里面的哪一项，单位为（个），C段指示的是页内的偏移量，单位为（字节）。</p> 
+          <p> 值得说明的是：内存里面可以有很多页目录表，一般4GB以内，一个页目录表就够用了，一个页目录表指向很多页表，一个页表指向很多页，从上面可以看出，一个页目录表总共最多可以指向2^10=1024个页表，一个页表最多可以指向2^10=1024个页，每个页有2^12=4KB.实际上，一个页目录表里面的项有4字节，一个页表里面的项也是4个字节。所以一页内存可以存储一个页目录表或者一个页表。</p> 
+          <p>我们再来看看页目录表里面的一项，我们就称为页表项，一个页表项占4个字节，格式如下：</p> 
+          <p><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s7.sinaimg.cn/orignal/6730a3aatbbea8ea60f76" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s7.sinaimg.cn/middle/6730a3aatbbea8ea60f76&amp;690" name="image_operate_11401332516011017" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a></p> 
+          <p>其中 12～31位存的是页表的基地址，其他的下面介绍。</p> 
+          <p>页表里面的一项称为页表项，格式如下：</p> 
+          <p><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s1.sinaimg.cn/orignal/6730a3aat79310e5d14a0" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s1.sinaimg.cn/middle/6730a3aat79310e5d14a0&amp;690" name="image_operate_47711332516061441" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a></p> 
+          <p>其中 12～31位存的是页的基地址，其他的位同页表项一样：</p> 
+          <p>如下摘自《Linux0.11源码分析》：</p> 
+          <p>&nbsp;<wbr><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s14.sinaimg.cn/orignal/6730a3aatbbea92b7c74d" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s14.sinaimg.cn/middle/6730a3aatbbea92b7c74d&amp;690" name="image_operate_14761332516161367" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a><br> <a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s7.sinaimg.cn/orignal/6730a3aatbbea97d8cd56" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s7.sinaimg.cn/middle/6730a3aatbbea97d8cd56&amp;690" name="image_operate_38931332516194767" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a></p> 
+          <p><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa01010xre&amp;url=http://s15.sinaimg.cn/orignal/6730a3aatbbea9ae30cde" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s15.sinaimg.cn/middle/6730a3aatbbea9ae30cde&amp;690" width="690" height="347" name="image_operate_37821332516211445" alt="保护模式鈥斺敶臃侄蔚椒忠" title="保护模式鈥斺敶臃侄蔚椒忠"></a></p> 
+          <p></p> 
+          <p>下面就总结看看寻址：</p> 
+          <p>从上面可以知道，基地址位20位，就是说基地址后面20位为0.</p> 
+          <p>延续上面的A、B、C段，我们称页目录项的物理地址部分位X1，页表项的物理地址部分为X2，那么：</p> 
+          <p>页表基地址位：</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> X1*8+A*4，</p> 
+          <p>因为A的单位为个数，一个位4字节，所以要乘以4.</p> 
+          <p>页基地址位：</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> X2*8+B*4</p> 
+          <p>物理地址位</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 页基地址+C</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 即：</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> X2*8+B*4+C</p> 
+          <p>设置好这些后我们再设置一个东西，那就是CR0的pg位，pg=0时不启用分页机制，当pg=1时才启用分页机制。</p> 
+          <p> 设置好分页机制以后，内存地址从线性地址到物理地址的转换是由硬件负责的，我们不用管，剩下的就是软件控制内存什么的了，现在不知道该写什么了，等想到了再继续写。</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>下面是代码：代码说明后来加上（电脑没电了。。。。。）</p> 
+          <h3>boot.asm:</h3> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> org 0x7c00</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp start</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> SETUPSEG equ 0x9000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> DATASEG&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> equ 0x8000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ROOT_DEV db&nbsp;<wbr> 0</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>start:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,cs</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ss,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [ROOT_DEV],dl</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call load_msg</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,DATASEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [0],dl</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,cs</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>load_setup:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,SETUPSEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xor bx,bx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x0202</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dl,[ROOT_DEV]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dh,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,0x0002</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x13</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jnc&nbsp;<wbr> ok_load_setup</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dx,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x13</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp load_setup</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>ok_load_setup:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp SETUPSEG:0x0000</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> load_msg:&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call load_curser</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,loadmessage</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,18</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bp,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x1301</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bx,0x000c</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>load_curser:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ah,0x03</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xor bh,bh</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p> loadmessage&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> db&nbsp;<wbr> “Booting diers…”</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> db&nbsp;<wbr> 13,10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> times&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 510-($-$$)&nbsp;<wbr> db&nbsp;<wbr> 0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0xaa55</p> 
+          <p>&nbsp;<wbr></p> 
+          <h3>setup.asm:</h3> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> org 0x0000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp start</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> SETUPSEG equ 0x9000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> DATASEG&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> equ 0x8000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> SETSEG&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> equ 0x0400</p> 
+          <p>gdtaddr:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 40</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x3000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p>gdt:</p> 
+          <p>null_table:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0,0,0,0</p> 
+          <p>system_code_table:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x2000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x9a00</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x00c0</p> 
+          <p>system_data_table:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x2000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x9200</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x00c0</p> 
+          <p>user_code_table:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0xffff</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0xfa00</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x02cf</p> 
+          <p>user_data_table:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0xffff</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0xf200</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x02cf</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>idtaddr:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>start:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call load_msg</p> 
+          <p>load_jump:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,DATASEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dl,[0]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,SETUPSEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bx,SETSEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ah,0x02</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,1</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dh,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,0x0004</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x13</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jnc&nbsp;<wbr> load_set</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dx,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x13</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp start</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>load_set:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x1100</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xor bx,bx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dl,[0]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ah,0x02</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x08</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dh,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,0x0005</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x13</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jnc&nbsp;<wbr> ok_load</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dx,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x13</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp load_set</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>ok_load:</p> 
+          <p>;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p> 
+          <p>;;; hadware read here.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; get memory size.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,DATASEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ah,0x88</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x15</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [1],ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; set curser show message.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,’a’</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [3],al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x04</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [4],al</p> 
+          <p>;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; open A20.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call open_a20</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; no interrupts allowed.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cli</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; mov set file to 0x0000:0x0000.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call move_jump</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; move gdt to 0x00003000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call move_gdt</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; set gdt.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> lgdt [gdtaddr]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; set idt empty.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> lidt [idtaddr]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; init 8259A.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call init_8259a</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; set cr0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call set_cr0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ;; jump to set program.</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp 0x8:0x0</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>move_gdt:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cld</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x0000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> di,0x3000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,cs</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> si,gdt</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,20</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> rep movsw</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>load_msg:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call load_curser</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,cs</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,loadmessage</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,16</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bp,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x1301</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bx,0x000c</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>load_curser:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ah,0x03</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xor bh,bh</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> int&nbsp;<wbr> 0x10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>open_a20:</p> 
+          <p>o:&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dx,0x92</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,02</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out dx,al</p> 
+          <p>t:&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dx,92h</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> in&nbsp;<wbr>&nbsp;<wbr> al,dx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> and al,02</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jz&nbsp;<wbr>&nbsp;<wbr> o</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>move_jump:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cld</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,SETUPSEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> si,SETSEG</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> xor di,di</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cx,256</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> rep movsw</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>init_8259a:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x11</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0x20,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0xa0,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x20</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0x21,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x28</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0xa1,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x04</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0x21,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x02</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0xa1,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0x01</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0x21,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0xa1,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,0xff</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0x21,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> out 0xa1,al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> call io_delay</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>io_delay:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bx,bx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bx,bx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> bx,bx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>set_cr0:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> eax,cr0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> or&nbsp;<wbr>&nbsp;<wbr> eax,1</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cr0,eax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ret</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p>loadmessage:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> db&nbsp;<wbr> “Setup diers…”</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> db&nbsp;<wbr> 13,10</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> times&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 1024-($-$$) db&nbsp;<wbr> 0</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>&nbsp;<wbr></p> 
+          <h3>jump.asm:</h3> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [BITS 32]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> org 0x0</p> 
+          <p>set_cr0:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> eax,cr0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> and eax,0x7fffffff</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cr0,eax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp start</p> 
+          <p>start:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>show:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> al,[0x80003]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ah,[0x80004]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [0xb8000],al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [0xb8001],ah</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> inc&nbsp;<wbr> al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> inc&nbsp;<wbr> ah</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [0x80003],al</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [0x80004],ah</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> &nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp 0x8:0x11000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> times&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 512-($-$$)&nbsp;<wbr> db&nbsp;<wbr> 0</p> 
+          <p>&nbsp;<wbr></p> 
+          <h3>set.asm:</h3> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [BITS 32]</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp start</p> 
+          <p>&nbsp;<wbr></p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> PAGEDIR&nbsp;<wbr>&nbsp;<wbr> equ 0x00001000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> PAGES equ 0x00100000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> INT_DESC_TABLE&nbsp;<wbr>&nbsp;<wbr> equ<br> 0x00002000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> GLOBAL_DESC_TABLE equ 0x00003000</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>_idt:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0800</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x2000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>_gdt:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 40</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x3000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> dw&nbsp;<wbr> 0x0000</p> 
+          <p>start:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ax,0x10</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ds,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> es,ax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ss,ax</p> 
+          <p>set_page_dir:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> esi,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> eax,0</p> 
+          <p>s1:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ebx,PAGES+7</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> add ebx,eax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [PAGEDIR+esi],ebx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> add eax,4096</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> add esi,4</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cmp esi,4096</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jz&nbsp;<wbr>&nbsp;<wbr> end_set_page_dir</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp s1</p> 
+          <p>end_set_page_dir:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> esi,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ecx,0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ebx,0x00008000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> eax,0x00008e00</p> 
+          <p>set_int_table:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [INT_DESC_TABLE+esi],ebx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> add esi,4</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> [INT_DESC_TABLE+esi],eax</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> add esi,4</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> inc&nbsp;<wbr> ecx</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cmp ecx,512</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jz&nbsp;<wbr>&nbsp;<wbr> set_int_end</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp set_int_table</p> 
+          <p>set_int_end:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> lidt [_idt]</p> 
+          <p>open_pages:</p> 
+          <p>set_cr3:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> eax,0x00001000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cr3,eax</p> 
+          <p>set_cr0:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> eax,cr0</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> or&nbsp;<wbr>&nbsp;<wbr> eax,0x80000000</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> mov&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> cr0,eax</p> 
+          <p>open_pages_end:</p> 
+          <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> jmp $</p> 
+          <p>&nbsp;<wbr></p> 
+          <p>操作系统文章更正地址：<a href="http://blog.sina.com.cn/s/blog_6730a3aa01010xrc.html">http://blog.sina.com.cn/s/blog_6730a3aa01010xrc.html</a></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-221 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

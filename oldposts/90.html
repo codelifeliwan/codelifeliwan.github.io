@@ -1,0 +1,414 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-90 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-90" class="post-90 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;327&nbsp;–&nbsp;Evaluating&nbsp;Simple&nbsp;C&nbsp;Expressions&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=90" title="下午 5:00" rel="bookmark"><time class="entry-date" datetime="2011-07-25T17:00:04+00:00" pubdate>25 七月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=90#respond" title="Comment on UVA&nbsp;327&nbsp;–&nbsp;Evaluating&nbsp;Simple&nbsp;C&nbsp;Expressions&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 此题意思很简单，就是初始的a为1，b为2.。。。。在给定的运算中输出运算数的结果和各变量最终结果。</p> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font color="#C0FFFF" size="5">Evaluating Simple C<br> Expressions</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p>The task in this problem is to evaluate a sequence of simple C<br> expressions, buy you need not know C to solve the problem! Each of<br> the expressions will appear on a line by itself and will contain no<br> more than 110 characters. The expressions to be evaluated will<br> contain only simple integer variables and a limited set of<br> operators; there will be no constants in the expressions. There are<br> 26 variables which may appear in our simple expressions, namely<br> those with the names <tt>a</tt> through <tt>z</tt> (lower-case<br> letters only). At the beginning of evaluation of each expression,<br> these 26 variables will have the integer values 1 through 26,<br> respectively (that is, <tt>a = 1</tt>, <tt>b = 2</tt>, …, <tt>n =<br> 14</tt>, <tt>o = 15</tt>, …, <tt>z = 26</tt>). Each variable will<br> appear at most once in an expression, and many variables may not be<br> used at all.</p> 
+          <p>The operators that may appear in expressions include the binary<br> (two-operand) <tt>+</tt> and <tt>-</tt>, with the usual<br> interpretation. Thus the expression <tt>a + c - d + b</tt> has the<br> value 2 (computed as <tt>1 + 3 - 4 + 2</tt>). The only other<br> operators that may appear in expressions are <tt>++</tt> and<br> <tt>--</tt>. These are unary (one-operand) operators, and may<br> appear before or after any variable. When the <tt>++</tt> operator<br> appears before a variable, that variable’s value is incremented (by<br> one) before the variable’s value is used in determining the value<br> of the entire expression. Thus the value of the expression <tt>++c<br> - b</tt> is 2, with <tt>c</tt> being incremented to 4 prior to<br> evaluating the entire expression. When the <tt>++</tt> operator<br> appears after a variable, that variable is incremented (again, by<br> one) after its value is used to determine the value of the entire<br> expression. Thus the value of the expression <tt>c++ - b</tt> is 1,<br> but <tt>c</tt> is incremented after the complete expression is<br> evaluated; its value will still be 4. The <tt>--</tt> operator can<br> also be used before or after a variable to decrement (by one) the<br> variable; its placement before or after the variable has the same<br> significance as for the <tt>++</tt> operator. Thus the expression<br> <tt>--c + b--</tt> has the value 4, with variables <tt>c</tt> and<br> <tt>b</tt> having the values 2 and 1 following the evaluation of<br> the expression.</p> 
+          <p>Here’s another, more algorithmic, approach to explaining the<br> <tt>++</tt> and <tt>--</tt> operators. We’ll consider only the<br> <tt>++</tt> operator, for brevity:</p> 
+          <ol> 
+           <li>Identify each variable that has a <tt>++</tt> operator before<br> it. Write a simple assignment statement that increments the value<br> of each such variable, and remove the <tt>++</tt> operator from<br> before that variable in the expression.</li> 
+           <li>In a similar manner, identify each variable that has a<br> <tt>++</tt> operator after it. Write a simple assignment statement<br> that increments the value of each of these, and remove the<br> <tt>++</tt> operator from after that variable in the<br> expression.</li> 
+           <li>Now the expression has no <tt>++</tt> operators before or after<br> any variables. Write the statement that evaluates the remaining<br> expression after those statements written in step 1, and before<br> those written in step 2.</li> 
+           <li>Execute the statements generated in step 1, then those<br> generated in step 3, and finally the one generated in step 2, in<br> that order.</li> 
+          </ol> 
+          <p>Using this approach, evaluating the expression <tt>++a +<br> b++</tt> is equivalent to computing</p> 
+          <ul> 
+           <li><tt>a = a + 1</tt> (from step 1 of the algorithm)</li> 
+           <li><tt>expression = a + b</tt> (from step 3)</li> 
+           <li><tt>b = b + 1</tt> (from step 2)</li> 
+          </ul> 
+          <p>where expression would receive the value of the complete<br> expression.</p> 
+          <h2><a name="SECTION0001001000000000000000"><font color="#0070E8">Input and<br> Output</font></a></h2> 
+          <p>Your program is to read expressions, one per line, until the end<br> of the file is reached. Display each expression exactly as it was<br> read, then display the value of the entire expression, and on<br> separate lines, the value of each variable after the expression was<br> evaluated. Do not display the value of variables that were not used<br> in the expression. The samples shown below illustrate the desired<br> <em>exact</em> output format.</p> 
+          <p>Blanks are to be ignored in evaluating expressions, and you are<br> assured that ambiguous expressions like <tt>a+++b</tt> (ambiguous<br> because it could be treated as <tt>a++ + b</tt> or <tt>a +<br> ++b</tt>) will not appear in the input. Likewise, <tt>++</tt> or<br> <tt>--</tt> operators will never appear both before and after a<br> single variable. Thus expressions like <tt>++a++</tt> will not be<br> in the input data.</p> 
+          <h2><a name="SECTION0001002000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <pre>
+a + b
+</pre> 
+          <pre>
+b - z
+</pre> 
+          <pre>
+a+b--+c++
+</pre> 
+          <pre>
+c+f--+--a
+</pre> 
+          <pre>
+f-- + c-- + d-++e
+</pre> 
+          <h2><a name="SECTION0001003000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <pre>
+Expression: a + b
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> value = 3
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> a = 1
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> b = 2
+</pre> 
+          <pre>
+Expression: b - z
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> value = -24
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> b = 2
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> z = 26
+</pre> 
+          <pre>
+Expression: a+b--+c++
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> value = 6
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> a = 1
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> b = 1
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> c = 4
+</pre> 
+          <pre>
+Expression: c+f--+--a
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> value = 9
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> a = 0
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> c = 3
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> f = 5
+</pre> 
+          <pre>
+Expression: f-- + c-- + d-++e
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> value = 7
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> c = 2
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> d = 4
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> e = 6
+</pre> 
+          <pre>
+&nbsp;<wbr> &nbsp;<wbr> f = 5
+</pre> 
+          <div></div> 
+          <div></div> 
+          <div>
+            代码： 
+          </div> 
+          <div> 
+           <div></div> 
+           <div>
+             #include&lt;iostream&gt; 
+           </div> 
+           <div>
+             #include&lt;cstring&gt; 
+           </div> 
+           <div>
+             #include&lt;cstdio&gt; 
+           </div> 
+           <div>
+             #include&lt;fstream&gt; 
+           </div> 
+           <div>
+             using namespace std; 
+           </div> 
+           <div>
+             char S[1000]; 
+           </div> 
+           <div>
+             char S1[1000]; 
+           </div> 
+           <div>
+             int mark[30]; 
+           </div> 
+           <div>
+             int number[30]; 
+           </div> 
+           <div></div> 
+           <div>
+             bool is_zimu(char c){ 
+           </div> 
+           <div>
+             return 
+            <br> (c&gt;=’a’&amp;&amp;c&lt;=’z’); 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div></div> 
+           <div>
+             int main() 
+           </div> 
+           <div>
+             { 
+           </div> 
+           <div>
+             // freopen(“test.txt”,”r”,stdin); 
+           </div> 
+           <div>
+             while(cin.getline(S,1000)){ 
+           </div> 
+           <div>
+             memset(mark,0,sizeof(mark)); 
+           </div> 
+           <div>
+             memset(number,0,sizeof(0)); 
+           </div> 
+           <div>
+             for(int i=1;i&lt;=26;i++){ 
+           </div> 
+           <div>
+             number[i]=i; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             int result=0; 
+           </div> 
+           <div>
+             int len=strlen(S); 
+           </div> 
+           <div>
+             int len1=0; 
+           </div> 
+           <div>
+             int pre=0; 
+           </div> 
+           <div>
+             for(int i=0;i&lt;len;i++){ 
+           </div> 
+           <div>
+             if(S[i]!=’ ‘){ 
+           </div> 
+           <div>
+             S1[len1++]=S[i]; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             S1[len1]=’ '; 
+           </div> 
+           <div>
+             for(int i=0;i&lt;len1;i++){ 
+           </div> 
+           <div>
+             if(is_zimu(S1[i])){ 
+           </div> 
+           <div>
+             mark[S1[i]-‘a’+1]=1; 
+           </div> 
+           <div>
+             if(i&gt;=2&amp;&amp;(S1[i-1]==S1[i-2])){ 
+           </div> 
+           <div>
+             if(S1[i-1]==’+’){ 
+           </div> 
+           <div>
+             number[S1[i]-‘a’+1]+=1; 
+           </div> 
+           <div>
+             }else{ 
+           </div> 
+           <div>
+             number[S1[i]-‘a’+1]-=1; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             pre=i-3; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             if(pre&lt;=0||S1[pre]==’+’){ 
+           </div> 
+           <div>
+             result+=number[S1[i]-‘a’+1]; 
+           </div> 
+           <div>
+             pre=i+1; 
+           </div> 
+           <div>
+             }else if(S1[pre]==’-‘){ 
+           </div> 
+           <div>
+             result-=number[S1[i]-‘a’+1]; 
+           </div> 
+           <div>
+             pre=i+1; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             if(i&lt;=len1-3&amp;&amp;S1[i+1]==S1[i+2]){ 
+           </div> 
+           <div>
+             if(S1[i+1]==’+’){ 
+           </div> 
+           <div>
+             number[S1[i]-‘a’+1]+=1; 
+           </div> 
+           <div>
+             }else{ 
+           </div> 
+           <div>
+             number[S1[i]-‘a’+1]-=1; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             pre=i+3; 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             cout&lt;&lt;“Expression: 
+            <br> “&lt;&lt;S&lt;&lt;endl; 
+           </div> 
+           <div>
+             cout&lt;&lt;” &nbsp; 
+            <wbr> 
+            <br> &nbsp; 
+            <wbr>value = 
+            <br> “&lt;&lt;result&lt;&lt;endl; 
+           </div> 
+           <div>
+             for(int i=1;i&lt;=26;i++){ 
+           </div> 
+           <div>
+             if(mark[i]==1){ 
+           </div> 
+           <div>
+             printf(” &nbsp; 
+            <wbr> &nbsp; 
+            <wbr>%c = 
+            <br> %dn”,i+’a’-1,number[i]); 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             } 
+           </div> 
+           <div>
+             return 0; 
+           </div> 
+           <div>
+             } 
+           </div> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-90 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

@@ -1,0 +1,409 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-18 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-18" class="post-18 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;120&nbsp;–&nbsp;Stacks&nbsp;of&nbsp;Flapjacks解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=18" title="下午 4:56" rel="bookmark"><time class="entry-date" datetime="2011-05-16T16:56:01+00:00" pubdate>16 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=18#comments" title="Comment on UVA&nbsp;120&nbsp;–&nbsp;Stacks&nbsp;of&nbsp;Flapjacks解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目意思就是给出n个数（输入比较恶心，得用字符串输入，然后得自己转换）然后是输出从第后面数第n1个开始，从数组元素的第一个开始到从后面数的第n1个元素反转，输出每次的n1，使数组最后是按升序排列的。</p> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font size="5" color="#C0FFFF">Stacks of Flapjacks</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001001000000000000000"><font color="#0070E8">Background</font></a></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> Stacks and Queues are often considered the bread and butter of data<br> structures and find use in architecture, parsing, operating<br> systems, and discrete event simulation. Stacks are also important<br> in the theory of formal languages.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> This problem involves both butter and sustenance in the form of<br> pancakes rather than bread in addition to a finicky server who<br> flips pancakes according to a unique, but complete set of<br> rules.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001002000000000000000"><font color="#0070E8">The<br> Problem</font></a></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> Given a stack of pancakes, you are to write a program that<br> indicates how the stack can be sorted so that the largest pancake<br> is on the bottom and the smallest pancake is on the top. The size<br> of a pancake is given by the pancake’s diameter. All pancakes in a<br> stack have different diameters.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> Sorting a stack is done by a sequence of pancake “flips”. A flip<br> consists of inserting a spatula between two pancakes in a stack and<br> flipping (reversing) the pancakes on the spatula (reversing the<br> sub-stack). A flip is specified by giving the position of the<br> pancake on the bottom of the sub-stack to be flipped (relative to<br> the whole stack). The pancake on the bottom of the whole stack has<br> position 1 and the pancake on the top of a stack<br> of&nbsp;<wbr><i>n</i>&nbsp;<wbr>pancakes has<br> position&nbsp;<wbr><i>n</i>.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> A stack is specified by giving the diameter of each pancake in the<br> stack in the order in which the pancakes appear.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> For example, consider the three stacks of pancakes below (in which<br> pancake 8 is the top-most pancake of the left stack):</p> 
+          <pre>
+<span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">         8           7           2
+         4           6           5
+         6           4           8
+         7           8           4
+         5           5           6
+         2           2           7</span>
+</pre> 
+          <p><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">The<br> stack on the left can be transformed to the stack in the middle<br> via</span><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"><em>flip(3)</em></span><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">.<br> The middle stack can be transformed into the right stack via the<br> command</span><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"><em>flip(1)</em></span><span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">.</span></p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001003000000000000000"><font color="#0070E8">The<br> Input</font></a></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> The input consists of a sequence of stacks of pancakes. Each stack<br> will consist of between 1 and 30 pancakes and each pancake will<br> have an integer diameter between 1 and 100. The input is terminated<br> by end-of-file. Each stack is given as a single line of input with<br> the top pancake on a stack appearing first on a line, the bottom<br> pancake appearing last, and all pancakes separated by a space.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001004000000000000000"><font color="#0070E8">The<br> Output</font></a></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> For each stack of pancakes, the output should echo the original<br> stack on one line, followed by some sequence of flips that results<br> in the stack of pancakes being sorted so that the largest diameter<br> pancake is on the bottom and the smallest on top. For each stack<br> the sequence of flips should be terminated by a 0 (indicating no<br> more flips necessary). Once a stack is sorted, no more flips should<br> be made.</p> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001005000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<span style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;">1 2 3 4 5&nbsp;<wbr></span>
+</pre> 
+          <pre>
+5 4 3 2 1&nbsp;<wbr>
+</pre> 
+          <pre>
+5 1 2 3 4
+</pre> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001006000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <p style="font-family: 'Ar pL UKai Cn'; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+1 2 3 4 5&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+0&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+5 4 3 2 1&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+1 0&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+5 1 2 3 4&nbsp;<wbr>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+1 2 0
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: normal;">
+<br>
+</pre> 
+          <pre style="font-family: 'Ar pL UKai Cn'; line-height: normal; font-size: medium; font-weight: bold;">
+代码：
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;iostream&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;fstream&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;algorithm&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#include&lt;cstring&gt;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">#define maxn 1000</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">using namespace std;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int num[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">char S[maxn];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int N;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">void turn_back(int begin,int end)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;(end+1)/2;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int tmp=num[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>num[i]=num[end-i-1];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>num[end-i-1]=tmp;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">void chuli(int n)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(n==1){cout&lt;&lt;"0"&lt;&lt;endl;return;}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int max=num[0];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int n1=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=1;i&lt;n;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(num[i]&gt;max)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>max=num[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>n1=i;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(n1==0)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;N-n+1&lt;&lt;" ";</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>turn_back(0,n);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>chuli(n-1);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>else if(n1==n-1)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>chuli(n-1);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>else</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;N-n1&lt;&lt;" ";</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>turn_back(0,n1+1);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>chuli(n);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int read()</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int re=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int len=strlen(S);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int tmp=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;len;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(i&amp;&amp;S[i]==' '&amp;&amp;S[i-1]!=' ')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>num[re++]=tmp;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(S[i]!=' ')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>tmp=10*tmp+S[i]-'0';</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(i==len-1&amp;&amp;S[i]!=' ')</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>num[re++]=tmp;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return re;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">int main()</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>while(cin.getline(S,maxn,'n'))</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;S&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int n;<span style="white-space:pre"> </span>//n is the number of characters</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>n=read();</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>N=n;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>chuli(n);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return 0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-18 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

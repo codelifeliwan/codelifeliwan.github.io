@@ -1,0 +1,336 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-146 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-146" class="post-146 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;531&nbsp;–&nbsp;Compromise&nbsp;（DP,LCS打印路径）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=146" title="下午 1:36" rel="bookmark"><time class="entry-date" datetime="2011-08-13T13:36:02+00:00" pubdate>13 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=146#respond" title="Comment on UVA&nbsp;531&nbsp;–&nbsp;Compromise&nbsp;（DP,LCS打印路径）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目：</p> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font color="#C0FFFF" size="5"><a name="SECTION0001000000000000000000">Compromise</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p>In a few months the European Currency Union will become a<br> reality. However, to join the club, the Maastricht criteria must be<br> fulfilled, and this is not a trivial task for the countries (maybe<br> except for Luxembourg). To enforce that Germany will fulfill the<br> criteria, our government has so many wonderful options (raise<br> taxes, sell stocks, revalue the gold reserves,…) that it is<br> really hard to choose what to do.</p> 
+          <p> Therefore the German government requires a program for the<br> following task:</p> 
+          <p> Two politicians each enter their proposal of what to do. The<br> computer then outputs the longest common subsequence of words that<br> occurs in both proposals. As you can see, this is a totally fair<br> compromise (after all, a common sequence of words is something what<br> both people have in mind).</p> 
+          <p> Your country needs this program, so your job is to write it for<br> us.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001001000000000000000">Input<br> Specification</a>&nbsp;<wbr></font></h2> 
+          <p>The input file will contain several test cases.</p> 
+          <p>Each test case consists of two texts. Each text is given as a<br> sequence of lower-case words, separated by whitespace, but with no<br> punctuation. Words will be less than 30 characters long. Both texts<br> will contain less than 100 words and will be terminated by a line<br> containing a single ‘<tt>#</tt>‘.</p> 
+          <p>Input is terminated by end of file.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001002000000000000000">Output<br> Specification</a>&nbsp;<wbr></font></h2> 
+          <p>For each test case, print the longest common subsequence of words<br> occuring in the two texts. If there is more than one such sequence,<br> any one is acceptable. Separate the words by one blank. After the<br> last word, output a newline character.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;<wbr></font></h2> 
+          <pre>
+die einkommen der landwirte
+</pre> 
+          <pre>
+sind fuer die abgeordneten ein buch mit sieben siegeln
+</pre> 
+          <pre>
+um dem abzuhelfen
+</pre> 
+          <pre>
+muessen dringend alle subventionsgesetze verbessert werden
+</pre> 
+          <pre>
+#
+</pre> 
+          <pre>
+die steuern auf vermoegen und einkommen
+</pre> 
+          <pre>
+sollten nach meinung der abgeordneten
+</pre> 
+          <pre>
+nachdruecklich erhoben werden
+</pre> 
+          <pre>
+dazu muessen die kontrollbefugnisse der finanzbehoerden
+</pre> 
+          <pre>
+dringend verbessert werden
+</pre> 
+          <pre>
+#
+</pre> 
+          <h2><font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <pre>
+die einkommen der abgeordneten muessen dringend verbessert werden
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+char S1[105][35];
+</pre> 
+          <pre>
+char S2[105][35];
+</pre> 
+          <pre>
+char re[105][35];
+</pre> 
+          <pre>
+int a[105][105];
+</pre> 
+          <pre>
+int mark[105][105];
+</pre> 
+          <pre>
+int num1,num2;
+</pre> 
+          <pre>
+int k;
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+void print_path(int len1,int len2){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(len1==0||len2==0)return ;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(strcmp(S1[len1-1],S2[len2-1])==0){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>print_path(len1-1,len2-1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>strcpy(re[k++],S1[len1-1]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else if(mark[len1][len2]==len1*num1+len2-1)print_path(len1,len2-1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else if(mark[len1][len2]==(len1-1)*num1+len2)print_path(len1-1,len2);
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;S1[0]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int len1=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;S1[len1]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(S1[len1][0]=='#')break;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>len1++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int len2=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;S2[len2]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(S2[len2][0]=='#')break;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>len2++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(a,0,sizeof(a));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(mark,-1,sizeof(mark));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;=len1;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=1;j&lt;=len2;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(strcmp(S1[i-1],S2[j-1])==0){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>a[i][j]=a[i-1][j-1]+1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>mark[i][j]=(i-1)*len1+(j-1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else if(a[i-1][j]&gt;=a[i][j-1]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>a[i][j]=a[i-1][j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>mark[i][j]=(i-1)*len1+j;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}else if(a[i-1][j]&lt;a[i][j-1]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>a[i][j]=a[i][j-1];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>mark[i][j]=i*len1+j-1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>num1=len1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>num2=len2;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>k=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>print_path(len1,len2);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;re[0];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;k;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;" "&lt;&lt;re[i];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>cout&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-146 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

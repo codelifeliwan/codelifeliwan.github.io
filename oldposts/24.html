@@ -1,0 +1,279 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-24 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-24" class="post-24 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;107&nbsp;–&nbsp;The&nbsp;Cat&nbsp;in&nbsp;the&nbsp;Hat&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=24" title="下午 8:18" rel="bookmark"><time class="entry-date" datetime="2011-05-17T20:18:05+00:00" pubdate>17 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=24#respond" title="Comment on UVA&nbsp;107&nbsp;–&nbsp;The&nbsp;Cat&nbsp;in&nbsp;the&nbsp;Hat&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 这个题。。。坑爹呢！！！</p> 
+         <div>
+           题目意思就是小猫的帽子里面有n个小猫，高度为上一个小猫的1/(n+1)，然后再依次n个…直到最后一个高度为1的为止。 
+         </div> 
+         <div>
+           题目给出第一个小猫的高度个最后高度为1的小猫个数，输出不工作的小猫的个数和小猫的总高度。 
+         </div> 
+         <div>
+           这个题就是数学公式： 
+         </div> 
+         <div>
+           设输入a和p，设每个小猫帽子里面有n个小猫，层数为k，则： 
+         </div> 
+         <div>
+           n^k=p 
+         </div> 
+         <div>
+           (n+1)^k=a 
+         </div> 
+         <div>
+           然后就是解方程，精度卡的非常厉害，最后实在没办法了，看了网上一兄弟的。。。。。谢谢啊！还有得注意特殊情况的处理。 
+         </div> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font size="5" color="#C0FFFF">The<br> Cat in the Hat</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001001000000000000000"><font color="#0070E8">Background</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> (An homage to Theodore Seuss Geisel)</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> The Cat in the Hat is a nasty creature,<br> But the striped hat he is wearing has a rather nifty feature.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> With one flick of his wrist he pops his top off.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Do you know what’s inside that Cat’s hat?<br> A bunch of small cats, each with its own striped hat.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Each little cat does the same as line three,<br> All except the littlest ones, who just say “Why me?”</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Because the littlest cats have to clean all the grime,<br> And they’re tired of doing it time after time!</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001002000000000000000"><font color="#0070E8">The<br> Problem</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> A clever cat walks into a messy room which he needs to clean.<br> Instead of doing the work alone, it decides to have its helper cats<br> do the work. It keeps its (smaller) helper cats inside its hat.<br> Each helper cat also has helper cats in its own hat, and so on.<br> Eventually, the cats reach a smallest size. These smallest cats<br> have no additional cats in their hats. These unfortunate smallest<br> cats have to do the cleaning.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> The number of cats inside each (non-smallest) cat’s hat is a<br> constant,&nbsp;<wbr><i>N</i>. The height of these<br> cats-in-a-hat is&nbsp;<wbr><img width="30" height="31" align="middle" alt="tex2html_wrap_inline35" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/1/107img1.gif" title="UVA&nbsp;<wbr>107&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>Cat&nbsp;<wbr>in&nbsp;<wbr>the&nbsp;<wbr>Hat&nbsp;<wbr>解题报告"><wbr>107&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>Cat&nbsp;<wbr>in&nbsp;<wbr>the&nbsp;<wbr>Hat&nbsp;<wbr>解题报告” /&gt;&nbsp;<wbr>times<br> the height of the cat whose hat they are in.</p> 
+          <blockquote style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> 
+           <p> The smallest cats are of height one;&nbsp;<wbr><br> these are the cats that get the work done.</p> 
+          </blockquote> 
+          <p><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">All<br> heights are positive integers.</span></p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Given the height of the initial cat and the number of worker cats<br> (of height one), find the number of cats that are not doing any<br> work (cats of height greater than one) and also determine the sum<br> of all the cats’ heights (the height of a stack of all cats<br> standing one on top of another).</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001003000000000000000"><font color="#0070E8">The<br> Input</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> The input consists of a sequence of cat-in-hat specifications. Each<br> specification is a single line consisting of two positive integers,<br> separated by white space. The first integer is the height of the<br> initial cat, and the second integer is the number of worker<br> cats.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> A pair of 0’s on a line indicates the end of input.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001004000000000000000"><font color="#0070E8">The<br> Output</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> For each input line (cat-in-hat specification), print the number of<br> cats that are not working, followed by a space, followed by the<br> height of the stack of cats. There should be one output line for<br> each input line other than the “0 0” that terminates input.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001005000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">216 125&nbsp;<wbr></span>
+</pre> 
+          <pre>
+5764801 1679616&nbsp;<wbr>
+</pre> 
+          <pre>
+0 0
+</pre> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001006000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+31 671&nbsp;<wbr>
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+335923 30275911
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+<br>
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+<br>
+</pre> 
+          <pre style="font-family: simsun; font-weight: bold; line-height: normal; font-size: medium;">
+代码：
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;iostream&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;cmath&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;fstream&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">using namespace std;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">int main()</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int a,p;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>while(cin&gt;&gt;a&gt;&gt;p)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(0==a&amp;&amp;0==p)break;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(a==p&amp;&amp;p==1)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;"0 1"&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>continue;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int k=1;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(k=1;;k++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if((int)(pow(1+pow(p,1.0/k),k)+0.1)&gt;=a)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>break;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int n=(int)(pow(p*1.0,1.0/k)+0.1);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int re=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int re1=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;k;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re+=(int)(pow(n*1.0,i)+0.1);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re1+=((int)(pow(n*1.0,i)+0.1)/(pow(n+1,i))*a);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>re1+=p;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;(int)re&lt;&lt;" "&lt;&lt;(int)re1&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return 0;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <div style="font-family: simsun; line-height: normal; font-size: medium;">
+            网上有一兄弟不是使用数学公式的，膜拜一下！！！ 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-24 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

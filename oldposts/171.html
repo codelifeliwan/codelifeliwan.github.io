@@ -1,0 +1,132 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-171 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-171" class="post-171 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java&nbsp;接口基本概念</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=171" title="下午 6:22" rel="bookmark"><time class="entry-date" datetime="2011-09-16T18:22:09+00:00" pubdate>16 九月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=171#respond" title="Comment on Java&nbsp;接口基本概念">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <h1><font face="DejaVu Sans Condensed, sans-serif">Java</font>学习笔记</h1> 
+         <p></p> 
+         <p>接口：</p> 
+         <p>在<font face="DejaVu Serif Condensed, serif">java</font>中，接口可以理解成一种特殊的类，里面完全是公共的抽象方法和全局常量组成。</p> 
+         <p>声明接口使用<font face="DejaVu Serif Condensed, serif">interface</font>关键字例如：</p> 
+         <p><font face="DejaVu Serif Condensed, serif">interface<br> C{}</font></p> 
+         <p>使用接口使用<font face="DejaVu Serif Condensed, serif">implements</font>关键字：</p> 
+         <p><font face="DejaVu Serif Condensed, serif">class B extends A<br> implements C{}</font></p> 
+         <p>这里，<font face="DejaVu Serif Condensed, serif">B</font>类是有<font face="DejaVu Serif Condensed, serif">A</font>类派生来的，且继承了接口<font face="DejaVu Serif Condensed, serif">C</font>。</p> 
+         <p><font face="DejaVu Serif Condensed, serif">C</font>里面的所有方法须在<font face="DejaVu Serif Condensed, serif">B</font>类中具体实现。</p> 
+         <p>看如下程序：</p> 
+         <p style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>class</b></font><font color="#000000">Main<br> {</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>static</b></font><font color="#7F0055"><b>void</b></font><font color="#000000">main(String<br> args[]){</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">B<br> b=</font><font color="#7F0055"><b>new</b></font><font color="#000000">B();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">b.fun();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>abstract</b></font><font color="#7F0055"><b>class</b></font><font color="#000000">A{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>static</b></font><font color="#7F0055"><b>final</b></font><font color="#000000">String</font><br> <font color="#0000C0"><i>s1</i></font><font color="#000000">=</font><font color="#2A00FF">“Hello “</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>int</b></font><font color="#0000C0">a</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">String</font><br> <font color="#0000C0">b</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>abstract</b></font><font color="#7F0055"><b>int</b></font><font color="#000000">getA();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>class</b></font><font color="#000000">B</font><br> <font color="#7F0055"><b>extends</b></font><font color="#000000">A</font> <font color="#7F0055"><b>implements</b></font><font color="#000000">C{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>int</b></font><font color="#000000">getA(){</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>return</b></font><font color="#0000C0">a</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>void</b></font><font color="#000000">fun(){</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">System.</font><font color="#0000C0"><i>out</i></font><font color="#000000">.println(</font><font color="#0000C0"><i>s1</i></font><font color="#000000">+</font><font color="#0000C0"><i>s</i></font><font color="#000000">);</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>interface</b></font><font color="#000000">C{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">String</font><br> <font color="#0000C0"><i>s</i></font><font color="#000000">=</font><font color="#2A00FF">“World”</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>void</b></font><font color="#000000">fun();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="DejaVu Serif Condensed, serif"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">程序输出”</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">Hello World”</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">，程序不解释。</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">那么我现在看看把</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">A</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">中的</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">s1</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">改成</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">s</font></font></font></font><font color="#000000"><font face="Monospace"><font size="2">：</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100wsv0&amp;url=http://s13.sinaimg.cn/orignal/6730a3aagad0c60da05cc" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s13.sinaimg.cn/middle/6730a3aagad0c60da05cc&amp;690" name="image_operate_45481316168593326" alt="Java&nbsp;<wbr>接口基本概念"><wbr>接口基本概念” TITLE=”Java&nbsp;<wbr>接口基本概念” /&gt;</a></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">程序出错了，很明显，两个全局变量命名冲突了。下面不解释了。。。。。</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#800000"><font face="Monospace"><font size="2">注：一个类可以继承多了接口</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">!</font></font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">接口的继承：</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">接口不能继承类，但是可以通过</font></font><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">extends</font></font></font><font face="Monospace"><font size="2">关键字继承多个接口：</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2"><font color="#7F0055"><b>interface</b></font><font color="#000000">C{</font></font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#000000">String</font><br> <font color="#0000C0"><i>s</i></font><font color="#000000">=</font><font color="#2A00FF">“World”</font><font color="#000000">;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>public</b></font><font color="#7F0055"><b>void</b></font><font color="#000000">fun();</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>interface</b></font><font color="#000000">D</font><br> <font color="#7F0055"><b>extends</b></font><font color="#000000">C,E{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>int</b></font><font color="#0000C0"><i>aaa</i></font><font color="#000000">=10;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="Monospace"><font size="2">}</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>interface</b></font><font color="#000000">E{</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font face="Monospace"><font size="2"><font color="#7F0055"><b>int</b></font><font color="#0000C0"><i>ccc</i></font><font color="#000000">=0;</font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"><font color="#000000"><font face="DejaVu Serif Condensed, serif"><font face="Monospace"><font size="2">}</font></font></font></font></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+         <p align="left" style="margin-bottom: 0cm"></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-171 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

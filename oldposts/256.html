@@ -1,0 +1,262 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-256 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-256" class="post-256 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes tag-linux"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核–内存管理（二、数据结构说明）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=256" title="下午 3:48" rel="bookmark"><time class="entry-date" datetime="2012-09-06T15:48:46+00:00" pubdate>6 九月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=256#respond" title="Comment on Linux内核–内存管理（二、数据结构说明）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div> 
+          <h1></h1> 
+          <p>在<span style="font-family: 'Times New Roman';">Linux2.4</span><span style="font-family: 宋体;">内核中，内存管理是比较复杂的，所以数据结构也就比较复杂，当然这里说的管理还是指的页式管理。</span></p> 
+          <p>最底层的数据结构当然就是最基本的页目录表和页表之类，定义在<span style="font-family: 'Times New Roman';">include/asm-i386/page.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>typedef&nbsp;struct&nbsp;{&nbsp;unsigned&nbsp;long&nbsp;pte_low;&nbsp;}&nbsp;pte_t;</p> 
+          <p>typedef&nbsp;struct&nbsp;{&nbsp;unsigned&nbsp;long&nbsp;pmd;&nbsp;}&nbsp;pmd_t;</p> 
+          <p>typedef&nbsp;struct&nbsp;{&nbsp;unsigned&nbsp;long&nbsp;pgd;&nbsp;}&nbsp;pgd_t;</p> 
+          <p>其中，<span style="font-family: 'Times New Roman';">pte_t</span><span style="font-family: 宋体;">是页表项，</span><span style="font-family: 'Times New Roman';">pgd_t</span><span style="font-family: 宋体;">是页目录项，</span><span style="font-family: 'Times New Roman';">pmd_t</span><span style="font-family: 宋体;">是中间项（在此不用）。</span></p> 
+          <p>紧随下面还定义了一个数据结构：</p> 
+          <p>typedef&nbsp;struct&nbsp;{&nbsp;unsigned&nbsp;long&nbsp;pgprot;&nbsp;}&nbsp;pgprot_t;</p> 
+          <p>pgprot_t<span style="font-family: 宋体;">是用来说明保护结构的，只用到低</span><span style="font-family: 'Times New Roman';">12</span><span style="font-family: 宋体;">位，因为像</span><span style="font-family: 'Times New Roman';">pte_t</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">pgd_t</span><span style="font-family: 宋体;">的高</span><span style="font-family: 'Times New Roman';">20</span><span style="font-family: 宋体;">位存物理地址，低</span><span style="font-family: 'Times New Roman';">12</span><span style="font-family: 宋体;">位存储的是一些属性等，</span><span style="font-family: 'Times New Roman';">pgprot_t</span><span style="font-family: 宋体;">就是用来说明这些属性的，当把一个物理地址的低</span><span style="font-family: 'Times New Roman';">12</span><span style="font-family: 宋体;">位清</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">再与</span><span style="font-family: 'Times New Roman';">pgprot_t</span><span style="font-family: 宋体;">相“或”就得出</span><span style="font-family: 'Times New Roman';">pte_t</span><span style="font-family: 宋体;">或者</span><span style="font-family: 'Times New Roman';">pgd_t</span><span style="font-family: 宋体;">项的值。其中页表</span><span style="font-family: 'Times New Roman';">/</span><span style="font-family: 宋体;">页目录表中的低</span><span style="font-family: 'Times New Roman';">12</span><span style="font-family: 宋体;">位属性如下所示</span><span style="font-family: 'Times New Roman';">(include/asm-i386/pgtable.h)</span><span style="font-family: 宋体;">：</span></p> 
+          <p>#define&nbsp;_PAGE_PRESENT 0x001</p> 
+          <p>#define&nbsp;_PAGE_RW 0x002</p> 
+          <p>#define&nbsp;_PAGE_USER 0x004</p> 
+          <p>#define&nbsp;_PAGE_PWT 0x008</p> 
+          <p>#define&nbsp;_PAGE_PCD 0x010</p> 
+          <p>#define&nbsp;_PAGE_ACCESSED 0x020</p> 
+          <p>#define&nbsp;_PAGE_DIRTY 0x040</p> 
+          <p>#define&nbsp;_PAGE_PSE 0x080 /*&nbsp;4&nbsp;MB&nbsp;(or&nbsp;2MB)&nbsp;page,&nbsp;Pentium+,&nbsp;if&nbsp;present..&nbsp;*/</p> 
+          <p>#define&nbsp;_PAGE_GLOBAL 0x100 /*&nbsp;Global&nbsp;TLB&nbsp;entry&nbsp;PPro+&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;_PAGE_PROTNONE 0x080 /*&nbsp;If&nbsp;not&nbsp;present&nbsp;*/</p> 
+          <p>其中<span style="font-family: 'Times New Roman';">0x080</span><span style="font-family: 宋体;">位在此不用。</span></p> 
+          <h2>1<span style="font-family: 黑体;">、物理空间管理</span></h2> 
+          <p>在系统中，每个物理页面都有一个记录信息与之相对应，在内核中的数据结构就是<span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">，定义于</span><span style="font-family: 'Times New Roman';">include/linux/mm.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>typedef&nbsp;struct&nbsp;page&nbsp;{</p> 
+          <p>struct&nbsp;list_head&nbsp;list;</p> 
+          <p>struct&nbsp;address_space&nbsp;*mapping;</p> 
+          <p>unsigned&nbsp;long&nbsp;index;</p> 
+          <p>struct&nbsp;page&nbsp;*next_hash;</p> 
+          <p>atomic_t&nbsp;count;</p> 
+          <p>unsigned&nbsp;long&nbsp;flags; /*&nbsp;atomic&nbsp;flags,&nbsp;some&nbsp;possibly&nbsp;updated&nbsp;asynchronously&nbsp;*/</p> 
+          <p>struct&nbsp;list_head&nbsp;lru;</p> 
+          <p>unsigned&nbsp;long&nbsp;age;</p> 
+          <p>wait_queue_head_t&nbsp;wait;</p> 
+          <p>struct&nbsp;page&nbsp;**pprev_hash;</p> 
+          <p>struct&nbsp;buffer_head&nbsp;*&nbsp;buffers;</p> 
+          <p>void&nbsp;*virtual;&nbsp;/*&nbsp;non-NULL&nbsp;if&nbsp;kmapped&nbsp;*/</p> 
+          <p>struct&nbsp;zone_struct&nbsp;*zone;</p> 
+          <p>}&nbsp;mem_map_t;</p> 
+          <p>在内存中，<span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">使用</span><span style="font-family: 'Times New Roman';">list_head</span><span style="font-family: 宋体;">数据结构组成一个双向循环链表，</span><span style="font-family: 'Times New Roman';">list_head</span><span style="font-family: 宋体;">是一个通用的数据结构，贯穿在</span><span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">的内核连接上，它只有两个指针定义如下：</span></p> 
+          <p>struct&nbsp;list_head{</p> 
+          <p>struct&nbsp;list_head&nbsp;*next,*prev;</p> 
+          <p>};</p> 
+          <p>在<span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">数据结构中</span><span style="font-family: 'Times New Roman';">mapping</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">index</span><span style="font-family: 宋体;">都和文件和内存交换有关，在后面会详解。</span><span style="font-family: 'Times New Roman';">next_hash</span><span style="font-family: 宋体;">是自身指针，将自身连接成一个链表。</span><span style="font-family: 'Times New Roman';">atomic_t</span><span style="font-family: 宋体;">实际上就是</span><span style="font-family: 'Times New Roman';">int</span><span style="font-family: 宋体;">型，</span><span style="font-family: 'Times New Roman';">count</span><span style="font-family: 宋体;">可以理解为目前正在使用的本块内存的程序数量（实际上是</span>用于页面交换的计数<span style="font-family: 'Times New Roman';">,</span><span style="font-family: 宋体;">若页面为空闲则为</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">，分配就赋值</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">，</span>每建立或恢复一次映射就加<span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">，断开映射就减一&nbsp;</span>）。<span style="font-family: 'Times New Roman';">flags</span><span style="font-family: 宋体;">是标志页面的状态的标志。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">中有一个非常重要的</span><span style="font-family: 'Times New Roman';">struct&nbsp;zone_struct&nbsp;*zone</span><span style="font-family: 宋体;">，这是指向所属管理区的指针，在计算机中，整个内存区被分成</span><span style="font-family: 'Times New Roman';">ZONE_DMA</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">ZONE_NORMAL</span><span style="font-family: 宋体;">（或者还有</span><span style="font-family: 'Times New Roman';">ZONE_HIGHMEM</span><span style="font-family: 宋体;">，用于管理超过</span><span style="font-family: 'Times New Roman';">1GB</span><span style="font-family: 宋体;">的内存空间）。</span><span style="font-family: 'Times New Roman';">ZONE_DMA</span><span style="font-family: 宋体;">里面的页面是专供</span><span style="font-family: 'Times New Roman';">DMA</span><span style="font-family: 宋体;">使用的。</span><span style="font-family: 'Times New Roman';">DMA</span><span style="font-family: 宋体;">使用的内存区间是不需要经过内存映射的，而是外设直接访问内存地址，而且</span><span style="font-family: 'Times New Roman';">DMA</span><span style="font-family: 宋体;">要求地址连续并且地址数值较小，要单独加以管理。</span></p> 
+          <p>在系统初始化的时候就根据系统内存大小建立了一个<span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">类型的数组，每个</span><span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">数据结构代表着一个页面，数组的下标就是实际物理内存的页面号。</span></p> 
+          <p>对于每个管理区都有一个数据结构与之相对应，定义在<span style="font-family: 'Times New Roman';">include/linux/mmzone.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>typedef&nbsp;struct&nbsp;zone_struct&nbsp;{</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Commonly&nbsp;accessed&nbsp;fields:</p> 
+          <p>*/</p> 
+          <p>spinlock_t lock;</p> 
+          <p>unsigned&nbsp;long offset;</p> 
+          <p>unsigned&nbsp;long free_pages;</p> 
+          <p>unsigned&nbsp;long inactive_clean_pages;</p> 
+          <p>unsigned&nbsp;long inactive_dirty_pages;</p> 
+          <p>unsigned&nbsp;long pages_min,&nbsp;pages_low,&nbsp;pages_high;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;free&nbsp;areas&nbsp;of&nbsp;different&nbsp;sizes</p> 
+          <p>*/</p> 
+          <p>struct&nbsp;list_head inactive_clean_list;</p> 
+          <p>free_area_t free_area[MAX_ORDER];</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;rarely&nbsp;used&nbsp;fields:</p> 
+          <p>*/</p> 
+          <p>char *name;</p> 
+          <p>unsigned&nbsp;long size;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Discontig&nbsp;memory&nbsp;support&nbsp;fields.</p> 
+          <p>*/</p> 
+          <p>struct&nbsp;pglist_data *zone_pgdat;</p> 
+          <p>unsigned&nbsp;long zone_start_paddr;</p> 
+          <p>unsigned&nbsp;long zone_start_mapnr;</p> 
+          <p>struct&nbsp;page *zone_mem_map;</p> 
+          <p>}&nbsp;zone_t;</p> 
+          <p>当初始化完成管理区建立完成以后，某个页面就永久属于某个管理区，不能更改。其中<span style="font-family: 'Times New Roman';">offset</span><span style="font-family: 宋体;">是指在</span><span style="font-family: 'Times New Roman';">mem_map</span><span style="font-family: 宋体;">中的起始页面号，从第几个物理页面开始。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">zone_struct</span><span style="font-family: 宋体;">中有一个空闲区</span><span style="font-family: 'Times New Roman';">free_area[MAX_ORDER]</span><span style="font-family: 宋体;">，它的定义也在</span><span style="font-family: 'Times New Roman';">mmzone.h</span><span style="font-family: 宋体;">中如下：</span></p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;MAX_ORDER&nbsp;10</p> 
+          <p>&nbsp;</p> 
+          <p>typedef&nbsp;struct&nbsp;free_area_struct&nbsp;{</p> 
+          <p>struct&nbsp;list_head free_list;</p> 
+          <p>unsigned&nbsp;int *map;</p> 
+          <p>}&nbsp;free_area_t;</p> 
+          <p>它是指内存中空闲区双向队列，在讲<span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">数据结构的时候有一个</span><span style="font-family: 'Times New Roman';">struct&nbsp;list_head&nbsp;list</span><span style="font-family: 宋体;">就是链接到此种队列。但是为什么是“一组”队列而不是“一个”队列呢？因为在分配内存的时候往往需要分配“一块”内存，所以对内存也要按“块”进行管理，所以除了除了要有队列来保存离散的连续长度为</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">的页面以外，还要有队列来来保持连续长度为</span><span style="font-family: 'Times New Roman';">2</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">4</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">8</span><span style="font-family: 宋体;">一直到</span><span style="font-family: 'Times New Roman';">2^MAX_ORDER</span><span style="font-family: 宋体;">的队列，所以在</span><span style="font-family: 'Times New Roman';">zone_struct</span><span style="font-family: 宋体;">中要分配一个数组，数组中的每一项保存的是连续长度为</span><span style="font-family: 'Times New Roman';">2^n</span><span style="font-family: 宋体;">的内存页面。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">zone_struct</span><span style="font-family: 宋体;">中还有一个数据结构：</span><span style="font-family: 'Times New Roman';">struct&nbsp;pglist_data</span> *zone_pgdat<span style="font-family: 宋体;">，这个数据结构也是定义在</span><span style="font-family: 'Times New Roman';">mmzone.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>typedef&nbsp;struct&nbsp;pglist_data&nbsp;{</p> 
+          <p>zone_t&nbsp;node_zones[MAX_NR_ZONES];</p> 
+          <p>zonelist_t&nbsp;node_zonelists[NR_GFPINDEX];</p> 
+          <p>struct&nbsp;page&nbsp;*node_mem_map;</p> 
+          <p>unsigned&nbsp;long&nbsp;*valid_addr_bitmap;</p> 
+          <p>struct&nbsp;bootmem_data&nbsp;*bdata;</p> 
+          <p>unsigned&nbsp;long&nbsp;node_start_paddr;</p> 
+          <p>unsigned&nbsp;long&nbsp;node_start_mapnr;</p> 
+          <p>unsigned&nbsp;long&nbsp;node_size;</p> 
+          <p>int&nbsp;node_id;</p> 
+          <p>struct&nbsp;pglist_data&nbsp;*node_next;</p> 
+          <p>}&nbsp;pg_data_t;</p> 
+          <p>其中几个常数定义如下：</p> 
+          <p>#define&nbsp;ZONE_DMA 0</p> 
+          <p>#define&nbsp;ZONE_NORMAL 1</p> 
+          <p>#define&nbsp;ZONE_HIGHMEM 2</p> 
+          <p>#define&nbsp;MAX_NR_ZONES 3</p> 
+          <p>&nbsp;</p> 
+          <p>#define&nbsp;NR_GFPINDEX 0x100</p> 
+          <p>这个数据结构是用来描述“存储节点”的，什么叫存储节点？简单的说来，我们的内存都不是均匀的，包括了<span style="font-family: 'Times New Roman';">RAM</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">ROM</span><span style="font-family: 宋体;">、显卡</span><span style="font-family: 'Times New Roman';">RAM</span><span style="font-family: 宋体;">等等还有不同</span><span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">模块上的内存等等，</span><span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">使用存储节点来对内存进行划分，使同一存储节点内的内存均匀相同。</span></p> 
+          <p>node_zones[]<span style="font-family: 宋体;">就是该节点的最多三个管理区。</span><span style="font-family: 'Times New Roman';">node_mem_map</span><span style="font-family: 宋体;">指向具体节点的</span><span style="font-family: 'Times New Roman';">page</span><span style="font-family: 宋体;">结构数组。</span><span style="font-family: 'Times New Roman';">zone_struct</span><span style="font-family: 宋体;">中的</span><span style="font-family: 'Times New Roman';">zone_pgdat</span><span style="font-family: 宋体;">指向它属于的存储节点（</span>一个管理区只属于一个存储节点？我理解为可以有多个。因为存储节点链是连续的，所以只需要提供指针。所以一个管理区可以通过指针跨越多个存储节点）。<span style="font-family: 'Times New Roman';">node_next</span><span style="font-family: 宋体;">指针将存储节点链接成一个单链队列。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">pglist_data</span><span style="font-family: 宋体;">中还有一种数据结构：</span><span style="font-family: 'Times New Roman';">zonelist_t</span><span style="font-family: 宋体;">，它也是定义在本文件中：</span></p> 
+          <p>typedef&nbsp;struct&nbsp;zonelist_struct&nbsp;{</p> 
+          <p>zone_t&nbsp;*&nbsp;zones&nbsp;[MAX_NR_ZONES+1];&nbsp;//&nbsp;NULL&nbsp;delimited</p> 
+          <p>int&nbsp;gfp_mask;</p> 
+          <p>}&nbsp;zonelist_t;</p> 
+          <p>它其实是一种策略数据结构，一个数据结构表示的是一种内存分配策略，分配内存的时候先从<span style="font-family: 'Times New Roman';">zones[0]</span><span style="font-family: 宋体;">管理区里面找符合条件的内存，找不到就从</span><span style="font-family: 'Times New Roman';">zones[1]</span><span style="font-family: 宋体;">里面找，以此类推。每一个数据结构表示一个寻找内存的顺序，每一个存储节点可以有</span><span style="font-family: 'Times New Roman';">0x100</span><span style="font-family: 宋体;">中这种寻找策略（顺序），所以在</span><span style="font-family: 'Times New Roman';">pglist_data</span><span style="font-family: 宋体;">中定义了一个数组：</span><span style="font-family: 'Times New Roman';">zonelist_t&nbsp;node_zonelists[NR_GFPINDEX]</span><span style="font-family: 宋体;">。</span></p> 
+          <p>以上说的都是物理空间管理，好了，来理清一下上面的数据结构我们用如下图来表示：</p> 
+          <p><a href="uploads/2012/09/QQ拼音截图未命名3.jpg"><img class="aligncenter size-full wp-image-564" title="QQ拼音截图未命名" src="uploads/2012/09/QQ拼音截图未命名3.jpg" alt="" width="581" height="573"></a></p> 
+          <h2>2、虚拟空间管理</h2> 
+          <p>除了物理空间管理以外，<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">的一个强大之处还在于其虚拟空间的管理。前面也说过，</span><span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">为每个进程分配了</span><span style="font-family: 'Times New Roman';">4GB</span><span style="font-family: 宋体;">的虚拟空间，其中，用户空间占了</span><span style="font-family: 'Times New Roman';">3GB</span><span style="font-family: 宋体;">。虽然当物理空间不连续的时候还是可以使用页表机制将其映射成连续的虚拟空间，但是实际上使用的时候虚拟空间也不一定是连续的。所以在</span><span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">内核中还有一个数据结构来管理成块的虚拟空间（</span><span style="font-family: 'Times New Roman';">include/linux/mm.h</span><span style="font-family: 宋体;">）：</span></p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;{</p> 
+          <p>struct&nbsp;mm_struct&nbsp;*&nbsp;vm_mm; /*&nbsp;VM&nbsp;area&nbsp;parameters&nbsp;*/</p> 
+          <p>unsigned&nbsp;long&nbsp;vm_start;</p> 
+          <p>unsigned&nbsp;long&nbsp;vm_end;</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;linked&nbsp;list&nbsp;of&nbsp;VM&nbsp;areas&nbsp;per&nbsp;task,&nbsp;sorted&nbsp;by&nbsp;address&nbsp;*/</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*vm_next;</p> 
+          <p>&nbsp;</p> 
+          <p>pgprot_t&nbsp;vm_page_prot;</p> 
+          <p>unsigned&nbsp;long&nbsp;vm_flags;</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;AVL&nbsp;tree&nbsp;of&nbsp;VM&nbsp;areas&nbsp;per&nbsp;task,&nbsp;sorted&nbsp;by&nbsp;address&nbsp;*/</p> 
+          <p>short&nbsp;vm_avl_height;</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;vm_avl_left;</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;vm_avl_right;</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;For&nbsp;areas&nbsp;with&nbsp;an&nbsp;address&nbsp;space&nbsp;and&nbsp;backing&nbsp;store,</p> 
+          <p>*&nbsp;one&nbsp;of&nbsp;the&nbsp;address_space-&gt;i_mmap{,shared}&nbsp;lists,</p> 
+          <p>*&nbsp;for&nbsp;shm&nbsp;areas,&nbsp;the&nbsp;list&nbsp;of&nbsp;attaches,&nbsp;otherwise&nbsp;unused.</p> 
+          <p>*/</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*vm_next_share;</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;**vm_pprev_share;</p> 
+          <p>&nbsp;</p> 
+          <p>struct&nbsp;vm_operations_struct&nbsp;*&nbsp;vm_ops;</p> 
+          <p>unsigned&nbsp;long&nbsp;vm_pgoff; /*&nbsp;offset&nbsp;in&nbsp;PAGE_SIZE&nbsp;units,&nbsp;*not*&nbsp;PAGE_CACHE_SIZE&nbsp;*/</p> 
+          <p>struct&nbsp;file&nbsp;*&nbsp;vm_file;</p> 
+          <p>unsigned&nbsp;long&nbsp;vm_raend;</p> 
+          <p>void&nbsp;*&nbsp;vm_private_data; /*&nbsp;was&nbsp;vm_pte&nbsp;(shared&nbsp;mem)&nbsp;*/</p> 
+          <p>};</p> 
+          <p>每一个<span style="font-family: 'Times New Roman';">vm_area_struct</span><span style="font-family: 宋体;">管理一块连续的虚拟空间（注意：不同进程的虚拟用户空间一般不互相影响），</span><span style="font-family: 'Times New Roman';">vm_start</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">vm_end</span><span style="font-family: 宋体;">分别表示虚拟空间的开始和结束地址，注意这里的开始地址</span><span style="font-family: 'Times New Roman';">vm_start</span><span style="font-family: 宋体;">是包含在自身的管理区间内的，而</span><span style="font-family: 'Times New Roman';">vm_end</span><span style="font-family: 宋体;">是不包含在内的。</span></p> 
+          <p>vm_next<span style="font-family: 宋体;">是用来连接统一进程的所有</span><span style="font-family: 'Times New Roman';">vm_area_struct</span><span style="font-family: 宋体;">虚拟链，是按照高低次序进行连接的。</span></p> 
+          <p>当一个进程的虚存块划分地较少的时候可以使用链式连接查询，但是如果太多的话这样查询效率会降低，所以在块数较多的时候采用<span style="font-family: 'Times New Roman';">AVL</span><span style="font-family: 宋体;">树进行存储，也就是平衡二叉树。</span><span style="font-family: 'Times New Roman';">vm_area_struct</span><span style="font-family: 宋体;">中的</span><span style="font-family: 'Times New Roman';">vm_avl_height</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">vm_avl_left</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">vm_avl_right</span><span style="font-family: 宋体;">都是和</span><span style="font-family: 'Times New Roman';">AVL</span><span style="font-family: 宋体;">树有关。</span></p> 
+          <p>vm_next_share<span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">vm_pprev_share</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">vm_ops</span><span style="font-family: 宋体;">等都和磁盘文件以及内存换出等有关，在以后会说到。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">vm_area_struct</span><span style="font-family: 宋体;">开头有一个定义：</span><span style="font-family: 'Times New Roman';">struct&nbsp;mm_struct&nbsp;*vm_mm</span><span style="font-family: 宋体;">这个是表明它属于哪个内存进程的内存管理。</span><span style="font-family: 'Times New Roman';">mm_struct</span><span style="font-family: 宋体;">的定义在</span><span style="font-family: 'Times New Roman';">include/linux/sched.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>struct&nbsp;mm_struct&nbsp;{</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;mmap; /*&nbsp;list&nbsp;of&nbsp;VMAs&nbsp;*/</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;mmap_avl; /*&nbsp;tree&nbsp;of&nbsp;VMAs&nbsp;*/</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;mmap_cache; /*&nbsp;last&nbsp;find_vma&nbsp;result&nbsp;*/</p> 
+          <p>pgd_t&nbsp;*&nbsp;pgd;</p> 
+          <p>atomic_t&nbsp;mm_users; /*&nbsp;How&nbsp;many&nbsp;users&nbsp;with&nbsp;user&nbsp;space?&nbsp;*/</p> 
+          <p>atomic_t&nbsp;mm_count; /*&nbsp;How&nbsp;many&nbsp;references&nbsp;to&nbsp;“struct&nbsp;mm_struct”&nbsp;(users&nbsp;count</p> 
+          <p>as&nbsp;1)&nbsp;*/</p> 
+          <p>int&nbsp;map_count; /*&nbsp;number&nbsp;of&nbsp;VMAs&nbsp;*/</p> 
+          <p>struct&nbsp;semaphore&nbsp;mmap_sem;</p> 
+          <p>spinlock_t&nbsp;page_table_lock;</p> 
+          <p>&nbsp;</p> 
+          <p>struct&nbsp;list_head&nbsp;mmlist; /*&nbsp;List&nbsp;of&nbsp;all&nbsp;active&nbsp;mm’s&nbsp;*/</p> 
+          <p>&nbsp;</p> 
+          <p>unsigned&nbsp;long&nbsp;start_code,&nbsp;end_code,&nbsp;start_data,&nbsp;end_data;</p> 
+          <p>unsigned&nbsp;long&nbsp;start_brk,&nbsp;brk,&nbsp;start_stack;</p> 
+          <p>unsigned&nbsp;long&nbsp;arg_start,&nbsp;arg_end,&nbsp;env_start,&nbsp;env_end;</p> 
+          <p>unsigned&nbsp;long&nbsp;rss,&nbsp;total_vm,&nbsp;locked_vm;</p> 
+          <p>unsigned&nbsp;long&nbsp;def_flags;</p> 
+          <p>unsigned&nbsp;long&nbsp;cpu_vm_mask;</p> 
+          <p>unsigned&nbsp;long&nbsp;swap_cnt; /*&nbsp;number&nbsp;of&nbsp;pages&nbsp;to&nbsp;swap&nbsp;on&nbsp;next&nbsp;pass&nbsp;*/</p> 
+          <p>unsigned&nbsp;long&nbsp;swap_address;</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;Architecture-specific&nbsp;MM&nbsp;context&nbsp;*/</p> 
+          <p>mm_context_t&nbsp;context;</p> 
+          <p>};</p> 
+          <p>每个进程都有一个唯一的<span style="font-family: 'Times New Roman';">mm_struct</span><span style="font-family: 宋体;">数据结构，在进程的</span><span style="font-family: 'Times New Roman';">PCB</span><span style="font-family: 宋体;">中，有一个链接到其自己的</span><span style="font-family: 'Times New Roman';">mm_struct</span><span style="font-family: 宋体;">。</span><span style="font-family: 'Times New Roman';">mm_struct</span><span style="font-family: 宋体;">是整个用户空间的抽象，也是总的控制结构。其中：</span></p> 
+          <p>mmap<span style="font-family: 宋体;">用来建立一个虚存空间的单链队列；</span></p> 
+          <p>mmap_avl<span style="font-family: 宋体;">用来建立虚存空间的</span><span style="font-family: 'Times New Roman';">AVL</span><span style="font-family: 宋体;">树；</span></p> 
+          <p>mmap_cache<span style="font-family: 宋体;">用来指向最近一次用到的虚存区间结构；</span></p> 
+          <p>pgd<span style="font-family: 宋体;">用来指向该进程的页目录表；</span></p> 
+          <p>一个进程的<span style="font-family: 'Times New Roman';">mm_struct</span><span style="font-family: 宋体;">可以为多个进程共享，</span><span style="font-family: 'Times New Roman';">mm_user</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">mm_count</span><span style="font-family: 宋体;">就是用来计数的；</span></p> 
+          <p>map_count<span style="font-family: 宋体;">用来记录进程有几个虚存空间；</span></p> 
+          <p>mmap_sem<span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">page_table_lock</span><span style="font-family: 宋体;">是用来定义</span><span style="font-family: 'Times New Roman';">P</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">V</span><span style="font-family: 宋体;">操作的信号量。</span></p> 
+          <p>另外<span style="font-family: 'Times New Roman';">start_code</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">end_code</span><span style="font-family: 宋体;">等就是该进程的代码等起始、结束地址。</span></p> 
+          <p>&nbsp;</p> 
+          <p>总的来说，一个进程的访问图如下：</p> 
+          <p><a href="uploads/2012/09/QQ拼音截图未命名4.jpg"><img class="aligncenter size-full wp-image-565" title="QQ拼音截图未命名" src="uploads/2012/09/QQ拼音截图未命名4.jpg" alt="" width="481" height="250"></a></p> 
+          <p>关于这些结构的处理方法以后再说。</p> 
+          <p>因为我自己也是新手，所以难免会有错误之处，若您发现有错误，请帮忙发送错误到<span style="font-family: 'Times New Roman';">qdtecwanli@sina.com</span><span style="font-family: 宋体;">或者直接在下面留言，谢谢！</span></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-256 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

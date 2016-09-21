@@ -1,0 +1,570 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-758 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-758" class="post-758 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-设备驱动（二、PCI总线概述及其数据结构说明）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=758" title="下午 5:39" rel="bookmark"><time class="entry-date" datetime="2012-12-31T17:39:01+00:00" pubdate>31 十二月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=758#respond" title="Comment on Linux内核-设备驱动（二、PCI总线概述及其数据结构说明）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p>PCI部分比较长，所以不得不分几部分来讲。</p> 
+         <h2>PCI概述</h2> 
+         <p>首先，在计算机处理器结构中，PCI属于局部总线，它是系统总线的延伸，用来连接外设，它和其他的总线相比具有如下显著的优势：</p> 
+         <p>1、在计算机和外设之间传输性能非常好，传输速率非常快。</p> 
+         <p>2、能够尽量独立于具体的平台，比较通用。</p> 
+         <p>3、可以方便的实现即插即用。</p> 
+         <p>PCI总线设备具有独立的地址空间，即PCI总线地址空间。该空间与存储器地址空间通过HOST主桥隔离，处理器在访问PCI设备的时候必须通过HOST主桥进行地址转换，将PCI地址空间映射到处理器需要的虚拟空间中。同理，PCI设备访问存储器时也要通过HOST主桥进行地址转换。</p> 
+         <p>一个完整的PCI总线系统中包括以下几点：</p> 
+         <p>1、HOST-PCI桥</p> 
+         <p>2、PCI总线</p> 
+         <p>3、PCI设备</p> 
+         <p>4、PCI桥</p> 
+         <p>它们之间是树形结构，主PCI总线连接着HOST-PCI桥以及外部设备、PCI-ISA或PCI-PCI桥等，PCI-PCI桥下又如同主PCI一样连接各种设备等。一棵PCI总线树上最多允许有256条总线，每条总线最多允许带32个设备。</p> 
+         <p>HOST-PCI主桥是联系处理器与PCI的桥梁，其主要功能是隔离处理器系统的存储器域和PCI总线域、管理PCI总线域，并完成处理器和PCI设备间的数据交换。同一PCI树上所有设备属于一个PCI总线域，每个总线域有一个唯一的HOST-PCI主桥，在一个处理器系统中可以存在多个总线域，每个总线树上所有PCI设备的配置空间都由HOST主桥通过配置读写总线周期访问。</p> 
+         <p>前面讲过，一棵PCI总线树上最多允许有256条总线，每条总线最多允许带32个设备。那么每个设备可以是最多8个功能的多功能板。所以，每个PCI设备由一个总线号，一个设备号和一个功能号来确定。总线号为8位，设备号为5位，功能号为3位，总共16位。事实上还有一个16位的总线域，这里不说明。</p> 
+         <p>我们在执行命令cat /proc/iomem的时候看见类似于下面一行：</p> 
+         <p>40000000-400003ff : 0000:00:1f.1</p> 
+         <p>这里，前面是地址空间范围，后面是一个16位的总线域，一个8位的总线号，一个5位的设备号，一个3位的功能号。</p> 
+         <p>每个PCI设备都有一组固定格式的寄存器，也就是配置寄存器，内核在启动的时候负责对配置寄存器进行读取与初始化等，包括设置中断号以及I/O基址等。</p> 
+         <p>配置寄存器空间格式如下：</p> 
+         <p><b>00H—01H Vendor ID </b><b>制造商标识</b></p> 
+         <p><b>02H—03H Device ID </b><b>设备标识</b></p> 
+         <p><b>04H—05H Command </b><b>命令寄存器</b></p> 
+         <p><b>06H—07H Status </b><b>状态寄存器</b></p> 
+         <p><b>08H Revision ID </b><b>版本识别号寄存器</b></p> 
+         <p><b>09H—0bH Class Code </b><b>分类代码寄存器</b></p> 
+         <p><b>0cH Cache Line Size CACHE</b><b>行长度寄存器</b></p> 
+         <p><b>0dH Latency Timer </b><b>主设备延迟时间寄存器</b></p> 
+         <p><b>0eH Header Type </b><b>头标类型寄存器</b></p> 
+         <p><b>0fH Bulit-in-teset Register </b><b>自测试寄存器</b></p> 
+         <p><b>10H—13H Base Address Register 0 </b><b>基地址寄存器0</b></p> 
+         <p><b>14H—17H Base Address Register 1 </b><b>基地址寄存器1</b></p> 
+         <p><b>18H—1bH Base Address Register 2 </b><b>基地址寄存器2</b></p> 
+         <p><b>1cH—19H Base Address Register 3 </b><b>基地址寄存器3</b></p> 
+         <p><b>20H—23H Base Address Register 4 </b><b>基地址寄存器4</b></p> 
+         <p><b>24H—27H Base Address Register 5 </b><b>基地址寄存器5</b></p> 
+         <p><b>28H—2bH Cardbus CIS Pointer </b><b>设备总线CIS</b><b>指针寄存器</b></p> 
+         <p><b>2cH—2dH Subsystem Vendor ID </b><b>子设备制造商标识</b></p> 
+         <p><b>2eH—2fH Subsystem Device ID </b><b>子设备标识</b></p> 
+         <p><b>30H—33H Expasion ROM Base Address </b><b>扩展ROM</b><b>基地址</b></p> 
+         <p><b>34H—3bH ——— </b><b>保留</b></p> 
+         <p><b>3cH Interrupt Line </b><b>中断线寄存器</b></p> 
+         <p><b>3dH Interrupt Pin </b><b>中断引脚寄存器</b></p> 
+         <p><b>3eH Min_Gnt </b><b>最小授权寄存器</b></p> 
+         <p><b>3fH Max_Lat </b><b>最大延迟寄存器</b></p> 
+         <p>其中，厂商标识是用来记录生产厂家的唯一数值，这些数值是统一分配的。</p> 
+         <p>设备标识用来标识设备的数值。</p> 
+         <p>六个基地址寄存器（PCI BAR）此设备使用的I/O与内存空间的位置等。每个BAR都与PCI设备使用的一组PCI总线地址空间对应，BAR记录这个地址空间的基地址，该地址保存的是该设备在PCI总线域的地址。在PCI复位后，该寄存器存放的是PCI设备所需使用的基地址空间的大小，这段空间是I/O还是存储空间等。系统应该首先获得BAR寄存器中的初始信息，之后根据处理器系统的配置，将合理的基地址写入相应的BAR。也可以向该寄存器中写入0xFFFFFFFF之后再读取来获得PCI设备使用的BAR空间的长度。</p> 
+         <p>中断连线和中断引脚分别记录了此设备使用的中断号和记录此PCI设备使用的引脚号，在PCI中采用的INTA,INTB,INTC,INTD信号向处理器发送请求，并且引脚与处理器的中断控制器相连接，在PCI中使用了中断共享机制来保证中断不冲突。在硬件上中断信号在系统一侧用电阻接高，而要产生中断的板卡上利用三极管的集电极将信号拉低。这样不管有几块板产生中断，中断信号都是低；而只有当所有板卡的中断都得到处理后，中断信号才会回复高电平。在软件上采用了中断链的方法，中断A是X号，中断处理程序指针指向A的处理程序，后来检测中断B也使用X，那么就将X号中断处理程序指向B，将B处理程序的结束指向A，这样以来，当发生X中断的时候系统就先检测是不是B中断，如果不是就接着检查A这样就实现了中断共享。</p> 
+         <p>头部类型寄存器表明是了哪种头部，其中0型头部就是普通的PCI设备头部，1型头部就是PCI桥头部，还有一种2型头部是用于笔记本电脑中的PCI-CardBus桥的，这里不再细说。</p> 
+         <p>上述的结构是0型头部，1型头部在Linux中定义如下：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7581"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td> 
+             <td class="code" id="p758code1"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/* Header type 1 (PCI-to-PCI bridges) */</span>
+<span style="color: #339933;">#define PCI_PRIMARY_BUS		0x18	/* Primary bus number */</span>
+<span style="color: #339933;">#define PCI_SECONDARY_BUS	0x19	/* Secondary bus number */</span>
+<span style="color: #339933;">#define PCI_SUBORDINATE_BUS	0x1a	/* Highest bus number behind the bridge */</span>
+<span style="color: #339933;">#define PCI_SEC_LATENCY_TIMER	0x1b	/* Latency timer for secondary interface */</span>
+<span style="color: #339933;">#define PCI_IO_BASE		0x1c	/* I/O range behind the bridge */</span>
+<span style="color: #339933;">#define PCI_IO_LIMIT		0x1d</span>
+<span style="color: #339933;">#define  PCI_IO_RANGE_TYPE_MASK	0x0f	/* I/O bridging type */</span>
+<span style="color: #339933;">#define  PCI_IO_RANGE_TYPE_16	0x00</span>
+<span style="color: #339933;">#define  PCI_IO_RANGE_TYPE_32	0x01</span>
+<span style="color: #339933;">#define  PCI_IO_RANGE_MASK	~0x0f</span>
+<span style="color: #339933;">#define PCI_SEC_STATUS		0x1e	/* Secondary status register, only bit 14 used */</span>
+<span style="color: #339933;">#define PCI_MEMORY_BASE		0x20	/* Memory range behind */</span>
+<span style="color: #339933;">#define PCI_MEMORY_LIMIT	0x22</span>
+<span style="color: #339933;">#define  PCI_MEMORY_RANGE_TYPE_MASK 0x0f</span>
+<span style="color: #339933;">#define  PCI_MEMORY_RANGE_MASK	~0x0f</span>
+<span style="color: #339933;">#define PCI_PREF_MEMORY_BASE	0x24	/* Prefetchable memory range behind */</span>
+<span style="color: #339933;">#define PCI_PREF_MEMORY_LIMIT	0x26</span>
+<span style="color: #339933;">#define  PCI_PREF_RANGE_TYPE_MASK 0x0f</span>
+<span style="color: #339933;">#define  PCI_PREF_RANGE_TYPE_32	0x00</span>
+<span style="color: #339933;">#define  PCI_PREF_RANGE_TYPE_64	0x01</span>
+<span style="color: #339933;">#define  PCI_PREF_RANGE_MASK	~0x0f</span>
+<span style="color: #339933;">#define PCI_PREF_BASE_UPPER32	0x28	/* Upper half of prefetchable memory range */</span>
+<span style="color: #339933;">#define PCI_PREF_LIMIT_UPPER32	0x2c</span>
+<span style="color: #339933;">#define PCI_IO_BASE_UPPER16	0x30	/* Upper half of I/O addresses */</span>
+<span style="color: #339933;">#define PCI_IO_LIMIT_UPPER16	0x32</span>
+<span style="color: #808080; font-style: italic;">/* 0x34 same as for htype 0 */</span>
+<span style="color: #808080; font-style: italic;">/* 0x35-0x3b is reserved */</span>
+<span style="color: #339933;">#define PCI_ROM_ADDRESS1	0x38	/* Same as PCI_ROM_ADDRESS, but for htype 1 */</span>
+<span style="color: #808080; font-style: italic;">/* 0x3c-0x3d are same as for htype 0 */</span>
+<span style="color: #339933;">#define PCI_BRIDGE_CONTROL	0x3e</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_PARITY	0x01	/* Enable parity detection on secondary interface */</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_SERR	0x02	/* The same for SERR forwarding */</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_NO_ISA	0x04	/* Disable bridging of ISA ports */</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_VGA	0x08	/* Forward VGA addresses */</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_MASTER_ABORT 0x20  /* Report master aborts */</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_BUS_RESET 0x40	/* Secondary bus reset */</span>
+<span style="color: #339933;">#define  PCI_BRIDGE_CTL_FAST_BACK 0x80	/* Fast Back2Back enabled on secondary interface */</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>在毛老先生的书中给出了如下的PCI树的图示：</p> 
+         <p><a href="http://codelifeliwan.github.io/?attachment_id=759" rel="attachment wp-att-759"><img class="aligncenter size-full wp-image-759" alt="1" src="uploads/2012/12/12.jpg" width="904" height="602"></a></p> 
+         <p>在i386处理器中，PCI预留了8个字节的空间用于一系列的处理，那就是0XCF8~0XCFF，实际上是两个32位的寄存器，第一个是地址寄存器0XCF8，第二个是数据寄存器0XCFC。要想访问某个设备的某个配置寄存器的时候CPU先往地址寄存器中写入目标地址，然后通过数据寄存器来读写数据。写入的目标地址格式如下：</p> 
+         <p><a href="http://codelifeliwan.github.io/?attachment_id=760" rel="attachment wp-att-760"><img class="aligncenter size-full wp-image-760" alt="2" src="uploads/2012/12/21.jpg" width="792" height="201"></a></p> 
+         <p>对于最后的寄存器地址是比较复杂的命令等，等用到的时候再说。</p> 
+         <p>&nbsp;</p> 
+         <h2>数据结构说明</h2> 
+         <p>在内核中有着一个代表着对PCI读写等操作的数据结构pci_ops，这个结构定义在include/linux/pci.h中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7582"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td> 
+             <td class="code" id="p758code2"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_ops <span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>read_byte<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u8 <span style="color: #339933;">*</span>val<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>read_word<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u16 <span style="color: #339933;">*</span>val<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>read_dword<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u32 <span style="color: #339933;">*</span>val<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>write_byte<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u8 val<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>write_word<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u16 val<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>write_dword<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u32 val<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>对于PCI命令的读写操作都是通过这个结构进行的。</p> 
+         <p>代表着PCI总线的数据结构为pci_bus，这个数据结构定义在include/linux/pci.h中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7583"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+</pre></td> 
+             <td class="code" id="p758code3"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_bus <span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> list_head node<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* node in list of buses */</span>
+	<span style="color: #993333;">struct</span> pci_bus	<span style="color: #339933;">*</span>parent<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* parent bus this bridge is on ，父总线*/</span>
+	<span style="color: #993333;">struct</span> list_head children<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* list of child buses ，子总线*/</span>
+<span style="color: #808080; font-style: italic;">/*
+ *本总线上的设备队列
+ */</span>
+	<span style="color: #993333;">struct</span> list_head devices<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* list of devices on this bus */</span>
+<span style="color: #808080; font-style: italic;">/*
+ *对于父总线来说，本总线也是一种设备，所以有此
+ */</span>
+	<span style="color: #993333;">struct</span> pci_dev	<span style="color: #339933;">*</span>self<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* bridge device as seen by parent */</span>
+<span style="color: #808080; font-style: italic;">/*
+ *地址空间
+ */</span>
+	<span style="color: #993333;">struct</span> resource	<span style="color: #339933;">*</span>resource<span style="color: #009900;">[</span><span style="color: #0000dd;">4</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* address space routed to this bus */</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/*
+ *本总线的操作数据结构
+ */</span>
+	<span style="color: #993333;">struct</span> pci_ops	<span style="color: #339933;">*</span>ops<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* configuration access functions */</span>
+	<span style="color: #993333;">void</span>		<span style="color: #339933;">*</span>sysdata<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* hook for sys-specific extension */</span>
+	<span style="color: #993333;">struct</span> proc_dir_entry <span style="color: #339933;">*</span>procdir<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* directory entry in /proc/bus/pci */</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/*
+ *总线编号，主总线PCI编号为0
+ */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	number<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* bus number */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	primary<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* number of primary bridge */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	secondary<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* number of secondary bridge */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	subordinate<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* max number of subordinate buses */</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/*
+ *部分配置空间寄存器内容
+ */</span>
+	<span style="color: #993333;">char</span>		name<span style="color: #009900;">[</span><span style="color: #0000dd;">48</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	vendor<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	device<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span>	serial<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* serial number */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	pnpver<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* Plug &amp; Play version */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	productver<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* product version */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	checksum<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* if zero - checksum passed */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span>	pad1<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>所有的pci_bus数据结构都互相连在一起，形成若干PCI总线树，每棵树的根是一个代表着“宿主-PCI桥”的pci_bus结构，内核中有一个队列头pci_root_buses，所有代表着“宿主-PCI桥”的pci_bus结构node字段挂入这个队列。同时，每个pci_bus结构又维持着两个队列：一个是devices表示所有连接在这条总线上的设备；另一个是children表示所有此总线的子总线。</p> 
+         <p>代表着PCI设备的数据结构pci_dev也定义在同一文件中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7584"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre></td> 
+             <td class="code" id="p758code4"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_dev <span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> list_head global_list<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* node in list of all PCI devices */</span>
+	<span style="color: #993333;">struct</span> list_head bus_list<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* node in per-bus list */</span>
+	<span style="color: #993333;">struct</span> pci_bus	<span style="color: #339933;">*</span>bus<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* bus this device is on */</span>
+	<span style="color: #993333;">struct</span> pci_bus	<span style="color: #339933;">*</span>subordinate<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* bus this device bridges to */</span>
+&nbsp;
+	<span style="color: #993333;">void</span>		<span style="color: #339933;">*</span>sysdata<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* hook for sys-specific extension */</span>
+	<span style="color: #993333;">struct</span> proc_dir_entry <span style="color: #339933;">*</span>procent<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* device entry in /proc/bus/pci */</span>
+&nbsp;
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span>	devfn<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* encoded device &amp; function index */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	vendor<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	device<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	subsystem_vendor<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	subsystem_device<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span>	class<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* 3 bytes: (base,sub,prog-if) */</span>
+	u8		hdr_type<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* PCI header type (`multi' flag masked out) */</span>
+	u8		rom_base_reg<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* which config register controls the ROM */</span>
+&nbsp;
+	<span style="color: #993333;">struct</span> pci_driver <span style="color: #339933;">*</span>driver<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* which driver has allocated this device */</span>
+	<span style="color: #993333;">void</span>		<span style="color: #339933;">*</span>driver_data<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* data private to the driver */</span>
+	dma_addr_t	dma_mask<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* Mask of the bits of bus address this
+					   device implements.  Normally this is
+					   0xffffffff.  You only need to change
+					   this if your device has broken DMA
+					   or supports 64-bit transfers.  */</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* device is compatible with these IDs */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> vendor_compatible<span style="color: #009900;">[</span>DEVICE_COUNT_COMPATIBLE<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> device_compatible<span style="color: #009900;">[</span>DEVICE_COUNT_COMPATIBLE<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * Instead of touching interrupt line and base address registers
+	 * directly, use the values stored here. They might be different!
+	 */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span>	irq<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> resource resource<span style="color: #009900;">[</span>DEVICE_COUNT_RESOURCE<span style="color: #009900;">]</span><span style="color: #339933;">;</span> <span style="color: #808080; font-style: italic;">/* I/O and memory regions + expansion ROMs */</span>
+	<span style="color: #993333;">struct</span> resource dma_resource<span style="color: #009900;">[</span>DEVICE_COUNT_DMA<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> resource irq_resource<span style="color: #009900;">[</span>DEVICE_COUNT_IRQ<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #993333;">char</span>		name<span style="color: #009900;">[</span><span style="color: #0000dd;">80</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* device name */</span>
+	<span style="color: #993333;">char</span>		slot_name<span style="color: #009900;">[</span><span style="color: #0000dd;">8</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* slot name */</span>
+	<span style="color: #993333;">int</span>		active<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* ISAPnP: device is active */</span>
+	<span style="color: #993333;">int</span>		ro<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* ISAPnP: read only */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span>	regs<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* ISAPnP: supported registers */</span>
+&nbsp;
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>prepare<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* ISAPnP hooks */</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>activate<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>deactivate<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>字段都很好理解，具体的联系见下图：</p> 
+         <p><a href="http://codelifeliwan.github.io/?attachment_id=761" rel="attachment wp-att-761"><img class="aligncenter size-full wp-image-761" alt="3" src="uploads/2012/12/3.jpg" width="977" height="313"></a></p> 
+         <p>在同一文件中还定义了一个数据结构pci_fixup：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7585"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+</pre></td> 
+             <td class="code" id="p758code5"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_fixup <span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> pass<span style="color: #339933;">;</span>
+	u16 vendor<span style="color: #339933;">,</span> device<span style="color: #339933;">;</span>			<span style="color: #808080; font-style: italic;">/* You can use PCI_ANY_ID here of course */</span>
+	<span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>hook<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这个数据结构用来进行修正等，对于由厂商vendor提供的设备device，需要在什么时候（pass）执行通过函数指针hook提供的函数。</p> 
+         <p>还有一个用于PCI驱动操作等的数据结构，在pci_dev中也有此字段：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7586"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td> 
+             <td class="code" id="p758code6"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_driver <span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> list_head node<span style="color: #339933;">;</span>
+	<span style="color: #993333;">char</span> <span style="color: #339933;">*</span>name<span style="color: #339933;">;</span>
+	<span style="color: #993333;">const</span> <span style="color: #993333;">struct</span> pci_device_id <span style="color: #339933;">*</span>id_table<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* NULL if wants all devices */</span>
+	<span style="color: #993333;">int</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>probe<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">,</span> <span style="color: #993333;">const</span> <span style="color: #993333;">struct</span> pci_device_id <span style="color: #339933;">*</span>id<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* New device inserted */</span>
+	<span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>remove<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* Device removed (NULL if not a hot-plug capable driver) */</span>
+	<span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>suspend<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* Device suspended */</span>
+	<span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>resume<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* Device woken up */</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>对于存储器和I/O两种地址资源的管理，内核中有一套地址资源管理机制，每一个逻辑意义上独立的连续地址区间都以一个resource数据结构代表，定义于include/linux/ioport.h中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=758&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7587"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td> 
+             <td class="code" id="p758code7"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> resource <span style="color: #009900;">{</span>
+	<span style="color: #993333;">const</span> <span style="color: #993333;">char</span> <span style="color: #339933;">*</span>name<span style="color: #339933;">;</span>
+<span style="color: #808080; font-style: italic;">/*
+ *start和end表示地址区间范围，flags是表示区间性质的一些标志位
+ */</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> start<span style="color: #339933;">,</span> end<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span>
+<span style="color: #808080; font-style: italic;">/*
+ *以下指针维持双向攀援树形结构
+ */</span>
+	<span style="color: #993333;">struct</span> resource <span style="color: #339933;">*</span>parent<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>sibling<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>child<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>对于这个数据结构，毛老先生的书上有了一个例子：假定有一块2KB的地址空间0x1000~0x17ff，这块区间已经分配给某特定的用途，假定是在一块4口串行接口卡上用作接收缓冲区，所以有了一个resource数据结构。然后对于此项的用途，又把其中的0x1000~0x11ff、0x1200~0x13ff和0x1400~0x15ff三个512字节的子区间进一步分配给了这块卡上的三个串行口，但是还剩下512字节没有分配出去，那么在2KB的resource数据结构下面就有一个3个resource结构的队列，当要为第四个串行口分配空间时，先在2KB的resuorce结构中找到该区间的顶端0x17ff，而在其子区间队列中找到已经分配的最高地址0x15ff，并且在此之前无合适的空洞可供分配，所以正好可以把这512字节分配出去。</p> 
+         <p>毛老先生书上给了如下图示：</p> 
+         <p><a href="http://codelifeliwan.github.io/?attachment_id=762" rel="attachment wp-att-762"><img class="aligncenter size-full wp-image-762" alt="4" src="uploads/2012/12/4.jpg" width="753" height="320"></a></p> 
+         <p>剩下的和中断有关的数据结构在中断单独讲。</p> 
+         <p>&nbsp;</p> 
+         <p>The End.</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-758 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>
