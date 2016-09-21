@@ -1,0 +1,73 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-819 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-819" class="post-819 post type-post status-publish format-standard hentry category-shell"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Shell编程-正则表达式和通配符</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=819" title="下午 12:20" rel="bookmark"><time class="entry-date" datetime="2013-02-28T12:20:12+00:00" pubdate>28 二月, 2013</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=819#comments" title="Comment on Shell编程-正则表达式和通配符">10 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <h2>正则表达式</h2> 
+         <p>在使用Linux里面的工具的时候，很多情况下都会使用正则表达式，比如grep、sed、awk等，当然，正则表达式也不是只有这些里面有，其他的编程语言很多也有，在这里就介绍正则表达式的用法。</p> 
+         <p>正则表达式是一种匹配方式，使用某一或者某种方式来对字符串进行匹配，基本的正则表达式的元字符集合及其意义如下所示：<br> 1、* ：匹配0或者多个在*字符之前的那个普通字符<br> 比如我们新建一个文本文件1.txt，里面输入如下：<br> hello<br> helloo<br> hhhello<br> heeeeeeeeelo<br> hlo<br> 然后我们使用grep命令进行匹配：grep “he*lo” 1.txt，然后发现输出是：<br> heeeeeeeeelo<br> hlo<br> 2、. ：匹配任意一个字符<br> 比如我们在上面的文本文档中加入一个heloo，然后使用命令grep “he..o” 1.txt来进行匹配，发现输出如下：<br> hello<br> heloo<br> helloo<br> hhhello<br> 3、^ ：匹配行首，或者后面字符的非<br> 还是2中的1.txt，我们使用命令grep “^he..o” 1.txt来进行匹配，则只剩下能匹配行首的下面输出了：<br> hello<br> heloo<br> helloo<br> 4、$ ：匹配行尾，与^正好相反<br> 我们对上述文件进行命令：grep “loo$” tmpfile，输出如下：<br> heloo<br> helloo<br> 5、[] ：表示穷举字符集合，如[0123456789]就表示所有的数字字符，当然一个方括号只代表一个字符，还可以写成[0-9]也就是0到9，多个范围区间的话可以连续写，比如所有的字母集合可以写成[a-zA-Z]，在方括号中的^符号表示“非”的意思，也就是不在此区间，而不是表示匹配行首了。<br> 比如我们新建文档2.txt，输入如下：<br> abc<br> aBc<br> a2c<br> 然后分别使用如下命令：<br> 命令：grep “a[a-zA-Z0-9]c” 2.txt<br> 输出：<br> abc<br> aBc<br> a2c<br> 命令：grep “a[^a-zA-Z]c” 2.txt<br> 输出：<br> a2c<br> 上述例子说明了所有。<br> 6、\ ：\符号是转义符，就是以字面意思来解释斜线后面的那个字符，前面一节讲过了。<br> 7、\&lt;\&gt; ：精确匹配，如\ &lt;the\&gt;就是精确匹配”the”这个单词，而不是包含”the”的单词。<br> 8、\{\} ：系列符号，与*号类似，都是表示前一个字符的重复，但是，\{\}可以指定重复次数：<br> \{n\}：表示前一个字符重复n次<br> \{n,\}：表示前一个字符至少重复n次<br> \{n,m\}：表示前一个字符出现n~m次</p> 
+         <p>当然，以上的匹配符号都是可以组合使用的，记住最初表达的意思，组合起来就不困难，另外要区分其和引用的区别和组合使用。</p> 
+         <h2>通配符</h2> 
+         <p>前面说过，以上的正则表达式都是给Linux中的工具使用的，有的软件工具还会支持更多的正则表达式，但是Linux的shell本身是不支持正则表达式的，Linux的shell本身只支持一些通配符，在shell的通配符中，*表示任意位的任意字符而不是重复前面的字符了，我们都用过诸如命令ls -l /dev/sda*之类的命令，也都了解。<br> 另外还有?字符代表一个任意字符，^代表取反，[]与正则表达式类似，代表一个范围，例如[a-h]*.awk代表以a~h之内的字母开头，后缀名为awk的文件。<br> 在通配符表示中，花括号{}表示一组匹配的字符集，比如我们可以直接列出/dev中以sda开头的文件和/etc中以init开头的文件：<br> ls -l {/dev/sda*,/etc/init*}<br> 这样，用法就清楚了。</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-819 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

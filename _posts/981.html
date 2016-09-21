@@ -1,0 +1,181 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-981 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-981" class="post-981 post type-post status-publish format-standard hentry category-puppet"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Puppet学习笔记（一）：Puppet基础</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=981" title="下午 9:26" rel="bookmark"><time class="entry-date" datetime="2014-10-08T21:26:15+00:00" pubdate>8 十月, 2014</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=981#respond" title="Comment on Puppet学习笔记（一）：Puppet基础">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p>此文适用于有一定Linux基础的人。</p> 
+         <p>&nbsp;</p> 
+         <ol> 
+          <li><strong>什么是</strong><strong>puppet</strong></li> 
+         </ol> 
+         <p>Puppet翻译过来是人偶的意思，puppet是一个开源的新一代的集中化配置管理工具，采用服务器-客户机的方式管理一群机器，是系统化运维的利器。</p> 
+         <p>Puppet基于Ruby语言开发，使用puppet的人不需要学Ruby，使用puppet的自定义语言即可。开发Puppet的人需要学习Ruby。</p> 
+         <p>Puppet支持各种平台，包括各种Linux、UNIX、Windows平台，本教程基于CentOS 6。</p> 
+         <p>Puppet采用C/S星状的结构，所有的客户端和一个或几个服务器交互。每个客户端周期的（默认半个小时，我们使用10分钟）向服务器发送请求，获得其最新的配置信息，保证和该配置信息同步。每个puppet客户端每半小时(可以设置)连接一次服务器端，下载最新的配置文件,并且严格按照配置文件来配置服务器。配置完成以后，Puppet客户端可以反馈给服务器端一个消息。如果出错，也会给服务器端反馈一个消息。</p> 
+         <ol start="2"> 
+          <li><strong>Puppet</strong><strong>的安装</strong></li> 
+         </ol> 
+         <p>Puppet基于Ruby，所以安装之前都需要安装Ruby，但是使用yum安装的话可以自动寻找依赖包安装。</p> 
+         <p>推荐使用Puppet 3以上版本。</p> 
+         <p>初学者最好准备两个虚拟机，一个是Server，一个是Client。</p> 
+         <p>在服务器上执行如下：</p> 
+         <pre>
+# 必须是RHEL系操作系统才有效
+# 安装PuppetLab和EPEL官方源
+rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
+# 开始安装
+yum install -y puppet puppet-server
+# 打开相关端口
+lokkit -p 8139:tcp
+lokkit -s http
+lokkit -p 8140:tcp
+</pre> 
+         <p>在客户机执行如下：</p> 
+         <pre>
+# 安装所需的软件源
+rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
+# 安装Puppet客户端
+yum -y install puppet
+# 打开nrpe端口5666
+lokkit -p 5666:tcp
+</pre> 
+         <p>这样，我们的puppet就安装好了，当然非初学者也可以使用其他方式安装。</p> 
+         <ol start="3"> 
+          <li><strong>第一个</strong><strong>puppet</strong><strong>程序</strong></li> 
+         </ol> 
+         <p>安装完了以后，我们来进行一下基本配置。</p> 
+         <p>首先在服务器端和客户端的hosts里面加上对方的domain。如何加以及如何改hosts这里就不赘述了。</p> 
+         <p>安装完成以后我们会发现在/etc里面多出来一个puppet目录，这就是我们主要的工作目录。</p> 
+         <p>我们先在服务器机器上启动puppet的Server：</p> 
+         <pre>
+/etc/init.d/puppetmaster start
+</pre> 
+         <p>其次，我们在客户端的/etc/puppet/puppet.conf配置文件中加上</p> 
+         <pre>
+server = 服务器端domain
+</pre> 
+         <p>然后在客户端机器上启动puppet：</p> 
+         <pre>
+/etc/init.d/puppet start
+</pre> 
+         <p>然后运行：</p> 
+         <pre>
+puppet agent --test
+</pre> 
+         <p>完成与server的交互签名认证。</p> 
+         <p>若没在配置文件中指明server的host，则运行</p> 
+         <pre>
+puppet agent --test --server 服务器domain
+</pre> 
+         <p>出现任何错误请上网查找解决方案。</p> 
+         <p>好了，我们的基本配置就是如此，下面我们编写一个测试程序，此程序在服务器端编写，由服务器端指定在客户端的/tmp下生成一个文件testpuppet.txt，文件内容是程序员万年不变的hello world。</p> 
+         <p>以下所有操作除非特别说明，否则都在server上执行。</p> 
+         <p>首先，我们创建目录：</p> 
+         <pre>
+mkdir –p /etc/puppet/modules/test/{manifests,templates,files}
+</pre> 
+         <p>然后进入目录：</p> 
+         <pre>
+cd /etc/puppet/modules/test/manifests
+</pre> 
+         <p>创建并编辑文件：</p> 
+         <pre>
+vim init.pp
+</pre> 
+         <p>然后使用puppet语言写入以下内容：</p> 
+         <pre>
+#表示在客户机创建一个文件/tmp/testpuppet.txt并写入hello world
+class test{
+file {“/tmp/testpuppet.txt”: content =&gt; “hello world”;}
+}
+</pre> 
+         <p>然后我们创建测试节点文件：</p> 
+         <pre>
+vim /etc/puppet/manifests/testnode.pp
+</pre> 
+         <p>填入以下内容：</p> 
+         <pre>
+node ‘客户机domain’ {
+#加载test类
+include test
+}
+</pre> 
+         <p>然后将测试节点载入到puppet:</p> 
+         <pre>
+vim /etc/puppet/manifests/site.pp
+</pre> 
+         <p>追加一行：</p> 
+         <pre>
+import “testnode.pp”
+</pre> 
+         <p>至此，配置完毕。</p> 
+         <p>然后我们在客户机上运行：</p> 
+         <pre>
+puppet agent --test
+</pre> 
+         <p>然后会看到客户机的/tmp下会出现一个testpuppet.txt，里面内容是hello world。</p> 
+         <p>至此，puppet走通了一遍。</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-981 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

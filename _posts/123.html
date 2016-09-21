@@ -1,0 +1,96 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-123 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-123" class="post-123 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10763&nbsp;–&nbsp;Foreign&nbsp;Exchange&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=123" title="下午 3:31" rel="bookmark"><time class="entry-date" datetime="2011-08-05T15:31:58+00:00" pubdate>5 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=123#respond" title="Comment on UVA&nbsp;10763&nbsp;–&nbsp;Foreign&nbsp;Exchange&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 思路：sort+b_search &nbsp;<wbr>排序+二分查找</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <p style="text-align:center" align="center"> <b><span style="font-size:28.0pt;mso-bidi-font-size:18.0pt;font-family:Arial">Problem<br> E</span></b><span style="font-family:Arial"><br></span><b><span style="font-size:20.0pt;mso-bidi-font-size:24.0pt;font-family: Arial">Foreign<br> Exchange</span></b><br> <b><span style="font-family:Arial">Input:</span></b> <span style="font-family: Arial">standard input<br> <b>Output:</b> standard output<br> <b>Time Limit:</b> 1 second<br style="mso-special-character:line-break"><br> <br style="mso-special-character:line-break"></span></p> 
+          <p style="text-align:justify">Your non-profit<br> organization (<span><b>iCORE</b></span> –<br> <b>i</b>nternational <b>C</b>onfederation of <b>R</b>evolver<br> <b>E</b>nthusiasts) coordinates a very successful foreign student<br> exchange program. Over the last few years, demand has sky-rocketed<br> and now you need assistance with your task.</p> 
+          <p style="text-align:justify">The program your organization runs<br> works as follows: All candidates are asked for their original<br> location and the location they would like to go to. The program<br> works out only if every student has a suitable exchange partner. In<br> other words, if a student wants to go from A to B, there must be<br> another student who wants to go from B to A. This was an easy task<br> when there were only about 50 candidates, however now there are up<br> to <b style="mso-bidi-font-weight:normal">500000</b><br> candidates!</p> 
+          <h5><span><span style="font-size:16.0pt;mso-bidi-font-size: 10.0pt;mso-bidi-font-family:&quot;Times new roman&quot;"><br> Input</span></span></h5> 
+          <p style="text-align:justify">The input file<br> contains multiple cases. Each test case will consist of a line<br> containing <b>n</b> – the number of candidates <b style="mso-bidi-font-weight:normal">(1≤<span style="mso-bidi-font-weight:bold">n</span>≤500000)</b>, followed by<br> <b>n</b> lines representing the exchange information for each<br> candidate. Each of these lines will contain <b style="mso-bidi-font-weight:normal">2</b> integers, separated by a single<br> space, representing the candidate’s original location and the<br> candidate’s target location respectively. Locations will be<br> represented by nonnegative integer numbers. You may assume that no<br> candidate will have his or her original location being the same as<br> his or her target location as this would fall into the domestic<br> exchange program. The input is terminated by a case where<br> <b>n</b><b style="mso-bidi-font-weight:normal">&nbsp;</b></p> 
+         </div> 
+         <p><wbr>=&nbsp;<wbr>0;<br> this case should not be processed.<br> </p> 
+         <p>&nbsp;<wbr></p> 
+         <h4><span><span style="font-size:16.0pt;mso-bidi-font-size: 10.0pt;mso-bidi-font-family:&quot;Times new roman&quot;"><br> Output</span></span></h4> 
+         <p style="text-align:justify;tab-stops:143.25pt"> For each test case, print <b style="mso-bidi-font-weight:normal">“YES”</b> on a single line if there<br> is a way for the exchange program to work out, otherwise print<br> <b style="mso-bidi-font-weight:normal">“NO”</b>.</p> 
+         <p style="text-align:justify;tab-stops:143.25pt"> &nbsp;<wbr></p> 
+         <h1 style="text-align:left" align="left"><b><span style="font-size:16.0pt; mso-bidi-font-size:10.0pt;font-family:Arial;font-style:normal"><br> Sample Input<span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> Output for Sample Input</span></b></h1> 
+         <table style="background:#CCCCCC;border-collapse:collapse;border:none;mso-border-alt: solid windowtext .5pt;mso-padding-alt:0in 5.4pt 0in 5.4pt" cellpadding="0" cellspacing="0" border="1"> 
+          <tbody> 
+           <tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes"> 
+            <td style="width:239.4pt;border:solid windowtext 1.0pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" valign="top" width="319"> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 10</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 1 2</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 2 1</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 3 4</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 4 3</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 100 200</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 200 100</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 57 2</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 2 57</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 1 2</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 2 1</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 10</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 1 2</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 3 4</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 5 6</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 7 8</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 9 10</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 11 12</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 13 14</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 15 16</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 17 18</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 19 20</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:10.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> 0</span></b></p> <pre>
+<b><span style="mso-bidi-font-size:12.0pt">&nbsp;<wbr></span></b>
+</pre> </td> 
+            <td style="width:222.85pt;border:solid windowtext 1.0pt; border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt: solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" valign="top" width="297"> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> YES</span></b></p> <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <b style="mso-bidi-font-weight:normal"><span style="font-size:11.0pt;font-family: &quot;Courier new&quot;;color:windowtext"><br> NO</span></b></p> </td> 
+           </tr> 
+          </tbody> 
+         </table> 
+         <p></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-123 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

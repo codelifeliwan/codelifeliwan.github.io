@@ -1,0 +1,155 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-144 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-144" class="post-144 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10130&nbsp;–&nbsp;SuperSale&nbsp;(DP)</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=144" title="上午 9:33" rel="bookmark"><time class="entry-date" datetime="2011-08-13T09:33:15+00:00" pubdate>13 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=144#comments" title="Comment on UVA&nbsp;10130&nbsp;–&nbsp;SuperSale&nbsp;(DP)">2 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 这个题出简单了，一个人只能在里面选一件，物品有多件，也就是说不同的人可以选同一个物品，多个0-1背包相加。</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <h2 style="text-align:center" align="center"><span style="mso-ansi-language: en-Us" lang="EN-US" xml:lang="EN-US">SuperSale</span></h2> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">There is a SuperSale in a SuperHiperMarket. Every person<br> can take only one object of each kind, i.e. one TV, one carrot, but<br> for extra low price. We are going with a whole family to that<br> SuperHiperMarket. Every person can take as many objects, as he/she<br> can carry out from the SuperSale. We have given list of objects<br> with prices and their weight. We also know, what is the maximum<br> weight that every person can stand. What is the maximal value of<br> objects we can buy at SuperSale?</span></p> 
+          <h3><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">Input Specification</span></h3> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">The input consists of <var>T</var> test<br> cases. The number of them<br> (1&lt;=<var>T&lt;=1000</var>) is given on<br> the first line of the input file.</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">Each test case begins with a line<br> containing a&nbsp;<wbr>single integer number <var>N</var><br> that indicates the number of objects (<var>1 &lt;= N<br> &lt;= 1000</var>). Then follows <i>N</i> lines, each<br> containing two integers: P and W. The first integer<br> (1&lt;=P&lt;=100) corresponds to the price<br> of object. The second <span style="mso-spacerun: yes">&nbsp;</span><wbr></span>integer<br> (1&lt;=W&lt;=30) corresponds to the weight<br> of object. Next line contains one integer<br> (1&lt;=G&lt;=100) <span style="mso-spacerun: yes">&nbsp;<wbr></span>it’s the number of<br> people in our group. Next G lines contains maximal weight<br> (1&lt;=MW&lt;=30) that can stand this<br> i<i>-th</i> person from our family<br> (1&lt;=i&lt;=G).</p> 
+          <h3><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">Output Specification</span></h3> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">For every test case your program has to<br> determine one integer. Print out the maximal value of goods which<br> we can buy with that family.</span></p> 
+          <h3><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">Sample Input</span></h3> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">2</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">3</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">72 17</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">44 23</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">31 24</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">1</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">26</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">6</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">64 26</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">85 22</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">52 4</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">99 18</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">39 13</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">54 9</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">4</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">23</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">20</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">20</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">26</span></p> 
+          <p><span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+          <h3 style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">Output for the Sample Input</span></h3> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">72</span></p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US">514</span></p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> <span style="mso-ansi-language:en-Us" lang="EN-US" xml:lang="EN-US"><br></span></p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> 代码：</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> &nbsp;<wbr></p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> &nbsp;<wbr></p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> </p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> #include&lt;iostream&gt;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> #include&lt;cstring&gt;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> #include&lt;algorithm&gt;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> #include&lt;fstream&gt;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> using namespace std;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int f[30005];</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int N;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int P[1000];</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int W[1000];</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int G;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int MW;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> </p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int dp(int x,int V){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> for(int i=0;i&lt;N;i++){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> for(int j=V;j&gt;=0;j–){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> if(j&gt;=W[i]){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> f[j]=max(f[j],f[j-W[i]]+P[i]);</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> return f[V];</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> </p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int main()</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> {</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> // freopen(“test.txt”,”r”,stdin);</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int ncase;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> cin&gt;&gt;ncase;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> while(ncase–){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> cin&gt;&gt;N;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> for(int i=0;i&lt;N;i++){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> cin&gt;&gt;P[i]&gt;&gt;W[i];</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> cin&gt;&gt;G;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> int sum=0;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> for(int i=0;i&lt;G;i++){</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> memset(f,0,sizeof(f));</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> cin&gt;&gt;MW;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> sum=sum+dp(0,MW);</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> cout&lt;&lt;sum&lt;&lt;endl;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> return 0;</p> 
+          <p style="tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt"> }</p> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-144 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

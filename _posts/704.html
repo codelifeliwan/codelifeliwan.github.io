@@ -1,0 +1,2414 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-704 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-704" class="post-704 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-传统UNIX进程通信（二、信号）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=704" title="下午 12:34" rel="bookmark"><time class="entry-date" datetime="2012-11-17T12:34:47+00:00" pubdate>17 十一月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=704#comments" title="Comment on Linux内核-传统UNIX进程通信（二、信号）">2 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p>在经过一系列的折腾之后，<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">内核的进度又踏上正轨，下星期考试考完就差不多了。</span></p> 
+         <p>关于信号，也是<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">内核的一种通信方式，我们在前面一节讲的通信机制里面就有一个是信号。信号说白了就是软中断。</span></p> 
+         <p>关于软中断在前面的<span style="font-family: 'Times New Roman';">bh</span><span style="font-family: 宋体;">机制里面也说过一次，但是那里的软中断和这里的软中断不一样，为了区分我们列出一些中断等的“定义”：</span></p> 
+         <p>1、中断：外部设备对<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">的中断。</span></p> 
+         <p>2、Softirq<span style="font-family: 宋体;">：通常是“硬中断服务程序”对内核的中断。一般在中断或者系统调用等返回前期。</span></p> 
+         <p>3、信号：由内核或者一个进程对其他进程的中断，一般发生于由内核空间返回用户空间前夕。</p> 
+         <p>事实上在所有的进程通讯机制中只有信号机制是异步的，信号机制也是模仿了中断机制来实现的。</p> 
+         <p>信号的检测与响应通常发生在两个地方：一是当前进程由于系统调用、中断或异常而进入系统空间以后，从系统空间返回用户空间前夕；二是当前进程在内核中进入睡眠以后刚被唤醒的时候，由于信号的存在而提前返回到用户空间。</p> 
+         <p>信号程序的执行是在用户空间执行的，所以前面说的提前返回用户空间就是这个意思。</p> 
+         <p>当然，毛老先生的书上给了一个信号的检测与处理流程图：</p> 
+         <p><a href="uploads/2012/11/2.jpg"><img class="aligncenter size-full wp-image-705" title="2" src="uploads/2012/11/2.jpg" alt="" width="555" height="298"></a></p> 
+         <p>类比中断机制，我们讲信号还是从基本的数据结构开始讲起：</p> 
+         <h2>信号数据结构说明：</h2> 
+         <p>首先讲的是类似于一个中断向量表的东西，即数据结构<span style="font-family: 'Times New Roman';">signal_struct</span><span style="font-family: 宋体;">，在</span><span style="font-family: 'Times New Roman';">task_struct</span><span style="font-family: 宋体;">数据结构中有个</span><span style="font-family: 'Times New Roman';">signal_struct</span><span style="font-family: 宋体;">的指针</span><span style="font-family: 'Times New Roman';">sig</span><span style="font-family: 宋体;">，用于处理信号。这个数据结构定义于</span><span style="font-family: 'Times New Roman';">include/linux/sched.h</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7041"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+</pre></td> 
+             <td class="code" id="p704code1"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> signal_struct <span style="color: #009900;">{</span>
+	atomic_t		count<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> k_sigaction	action<span style="color: #009900;">[</span>_NSIG<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	spinlock_t		siglock<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>其中，数据结构<span style="font-family: 'Times New Roman';">k_sigaction</span><span style="font-family: 宋体;">更类似于真正的中断描述符，真正的中断向量表是</span><span style="font-family: 'Times New Roman';">action</span><span style="font-family: 宋体;">，每一个</span><span style="font-family: 'Times New Roman';">action</span><span style="font-family: 宋体;">元素中存在这信号处理程序指针，信号屏蔽标志等。</span></p> 
+         <p>数据结构<span style="font-family: 'Times New Roman';">k_sigaction</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">include/asm-i386/signal.h</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7042"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td> 
+             <td class="code" id="p704code2"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">typedef</span> <span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>__sighandler_t<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">struct</span> sigaction <span style="color: #009900;">{</span>
+	__sighandler_t sa_handler<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> sa_flags<span style="color: #339933;">;</span>
+	<span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>sa_restorer<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sigset_t sa_mask<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* mask last for extensibility */</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">struct</span> k_sigaction <span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sigaction sa<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">struct</span> sigaction <span style="color: #009900;">{</span>
+	<span style="color: #993333;">union</span> <span style="color: #009900;">{</span>
+	  __sighandler_t _sa_handler<span style="color: #339933;">;</span>
+	  <span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>_sa_sigaction<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">int</span><span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*,</span> <span style="color: #993333;">void</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> _u<span style="color: #339933;">;</span>
+	sigset_t sa_mask<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> sa_flags<span style="color: #339933;">;</span>
+	<span style="color: #993333;">void</span> <span style="color: #009900;">(</span><span style="color: #339933;">*</span>sa_restorer<span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>其中的<span style="font-family: 'Times New Roman';">_sa_handler</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">_sa_sigaction</span><span style="font-family: 宋体;">都是函数指针。</span><span style="font-family: 'Times New Roman';">sa_restorer</span><span style="font-family: 宋体;">指针现在几乎不用。</span></p> 
+         <p>sa_mask<span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">sa_flags</span><span style="font-family: 宋体;">共同决定了信号的屏蔽和开启，</span><span style="font-family: 'Times New Roman';">sa_mask</span><span style="font-family: 宋体;">是一个位图，它是</span><span style="font-family: 'Times New Roman';">sigset_t</span><span style="font-family: 宋体;">类型的，也是定义于</span><span style="font-family: 'Times New Roman';">signal.h</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7043"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td> 
+             <td class="code" id="p704code3"><pre class="c" style="font-family:monospace;"><span style="color: #339933;">#define _NSIG		64</span>
+<span style="color: #339933;">#define _NSIG_BPW	32</span>
+<span style="color: #339933;">#define _NSIG_WORDS	(_NSIG / _NSIG_BPW)</span>
+&nbsp;
+<span style="color: #993333;">typedef</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> old_sigset_t<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* at least 32 bits */</span>
+&nbsp;
+<span style="color: #993333;">typedef</span> <span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> sig<span style="color: #009900;">[</span>_NSIG_WORDS<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span> sigset_t<span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>位图中的每一位对应着一种信号，如果位图中的某一位为<span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">，就表示执行当前信号处理程序期间要将相应的信号暂时“屏蔽”，使得在执行的过程中不会嵌套地响应同种信号。事实上如果当</span><span style="font-family: 'Times New Roman';">sa_flags</span><span style="font-family: 宋体;">中的</span><span style="font-family: 'Times New Roman';">SA_NODEFER</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">SA_NOMASK</span><span style="font-family: 宋体;">位都不为</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">的话信号总是默认的自动屏蔽嵌套。</span></p> 
+         <p>注意这里的屏蔽并不是丢弃或者忽略，二是将其加入某一队列，当屏蔽去除的时候信号还在。</p> 
+         <p>sa_flags<span style="font-family: 宋体;">中的标志位如下：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7044"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td> 
+             <td class="code" id="p704code4"><pre class="c" style="font-family:monospace;"><span style="color: #339933;">#define SA_NOCLDSTOP	0x00000001</span>
+<span style="color: #339933;">#define SA_NOCLDWAIT	0x00000002 /* not supported yet */</span>
+<span style="color: #339933;">#define SA_SIGINFO	0x00000004</span>
+<span style="color: #339933;">#define SA_ONSTACK	0x08000000</span>
+<span style="color: #339933;">#define SA_RESTART	0x10000000</span>
+<span style="color: #339933;">#define SA_NODEFER	0x40000000</span>
+<span style="color: #339933;">#define SA_RESETHAND	0x80000000</span>
+&nbsp;
+<span style="color: #339933;">#define SA_NOMASK	SA_NODEFER</span>
+<span style="color: #339933;">#define SA_ONESHOT	SA_RESETHAND</span>
+<span style="color: #339933;">#define SA_INTERRUPT	0x20000000 /* dummy -- ignored */</span>
+&nbsp;
+<span style="color: #339933;">#define SA_RESTORER	0x04000000</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>以上将<span style="font-family: 'Times New Roman';">sigset_t</span><span style="font-family: 宋体;">数据结构当成位图来使用，事实上</span><span style="font-family: 'Times New Roman';">sigset_t</span><span style="font-family: 宋体;">是用来模拟中断请求寄存器或者中断屏蔽寄存器的，在</span><span style="font-family: 'Times New Roman';">task_struct</span><span style="font-family: 宋体;">中还有一个元素</span><span style="font-family: 'Times New Roman';">blocked</span><span style="font-family: 宋体;">，用来模拟中断请求寄存器，而中断屏蔽寄存器则在信号等待队列</span><span style="font-family: 'Times New Roman';">pending</span><span style="font-family: 宋体;">中，这里将</span><span style="font-family: 'Times New Roman';">task_struct</span><span style="font-family: 宋体;">中与信号有关的元素列出来：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7045"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td> 
+             <td class="code" id="p704code5"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> task_struct <span style="color: #009900;">{</span>
+　　...
+　　<span style="color: #993333;">int</span> sigpending<span style="color: #339933;">;</span>		<span style="color: #666666; font-style: italic;">//用来表示进程是否有信号在等待处理</span>
+　　...
+　　<span style="color: #993333;">int</span> exit_code<span style="color: #339933;">,</span>exit_signal<span style="color: #339933;">;</span>
+　　<span style="color: #993333;">int</span> pdeath_signal<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* The signal sent when the parent dies */</span>
+　　...
+　　<span style="color: #808080; font-style: italic;">/* signal handlers */</span>
+　　spinlock_t sigmask_lock<span style="color: #339933;">;</span>
+　　<span style="color: #993333;">struct</span> signal_struct <span style="color: #339933;">*</span>sig<span style="color: #339933;">;</span>		<span style="color: #666666; font-style: italic;">//信号处理表</span>
+　　
+　　sigset_t blocked<span style="color: #339933;">;</span>		<span style="color: #666666; font-style: italic;">//模拟中断屏蔽寄存器，信号屏蔽寄存器</span>
+　　<span style="color: #993333;">struct</span> sigpending pending<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//信号等待队列</span>
+　　
+　　<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> sas_ss_sp<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//当进程在用户空间执行信号处理程序时的堆栈位置</span>
+　　size_t sas_ss_size<span style="color: #339933;">;</span>			<span style="color: #666666; font-style: italic;">//堆栈大小</span>
+　　...
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>需要提的数据结构是<span style="font-family: 'Times New Roman';">sigpenging</span><span style="font-family: 宋体;">，这个数据结构是定义在</span><span style="font-family: 'Times New Roman';">include/linux/signal.h</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7046"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td> 
+             <td class="code" id="p704code6"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> sigqueue <span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sigqueue <span style="color: #339933;">*</span>next<span style="color: #339933;">;</span>
+	siginfo_t info<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">struct</span> sigpending <span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sigqueue <span style="color: #339933;">*</span>head<span style="color: #339933;">,</span> <span style="color: #339933;">**</span>tail<span style="color: #339933;">;</span>
+	sigset_t signal<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>而<span style="font-family: 'Times New Roman';">siginfo_t</span><span style="font-family: 宋体;">数据结构是记录信号的其他信息的，我们知道在发生中断的时候有时候会有一些寄存器等来保存一些其他信息，比如页面异常里面的</span><span style="font-family: 'Times New Roman';">cr2</span><span style="font-family: 宋体;">，其他中断等的累死，那么在信号机制中就用</span><span style="font-family: 'Times New Roman';">siginfo_t</span><span style="font-family: 宋体;">来保存其他信息，</span><span style="font-family: 'Times New Roman';">siginfo_t</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">include/asm-i386/siginfo.h</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7047"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre></td> 
+             <td class="code" id="p704code7"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">typedef</span> <span style="color: #993333;">union</span> sigval <span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> sival_int<span style="color: #339933;">;</span>
+	<span style="color: #993333;">void</span> <span style="color: #339933;">*</span>sival_ptr<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span> sigval_t<span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #339933;">#define SI_MAX_SIZE	128</span>
+<span style="color: #339933;">#define SI_PAD_SIZE	((SI_MAX_SIZE/sizeof(int)) - 3)</span>
+&nbsp;
+<span style="color: #993333;">typedef</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> si_signo<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> si_errno<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> si_code<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #993333;">union</span> <span style="color: #009900;">{</span>
+		<span style="color: #993333;">int</span> _pad<span style="color: #009900;">[</span>SI_PAD_SIZE<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* kill() */</span>
+		<span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+			pid_t _pid<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* sender's pid */</span>
+			uid_t _uid<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* sender's uid */</span>
+		<span style="color: #009900;">}</span> _kill<span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* POSIX.1b timers */</span>
+		<span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+			<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> _timer1<span style="color: #339933;">;</span>
+			<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> _timer2<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span> _timer<span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* POSIX.1b signals */</span>
+		<span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+			pid_t _pid<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* sender's pid */</span>
+			uid_t _uid<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* sender's uid */</span>
+			sigval_t _sigval<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span> _rt<span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* SIGCHLD */</span>
+		<span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+			pid_t _pid<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* which child */</span>
+			uid_t _uid<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* sender's uid */</span>
+			<span style="color: #993333;">int</span> _status<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* exit code */</span>
+			clock_t _utime<span style="color: #339933;">;</span>
+			clock_t _stime<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span> _sigchld<span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* SIGILL, SIGFPE, SIGSEGV, SIGBUS */</span>
+		<span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+			<span style="color: #993333;">void</span> <span style="color: #339933;">*</span>_addr<span style="color: #339933;">;</span> <span style="color: #808080; font-style: italic;">/* faulting insn/memory ref. */</span>
+		<span style="color: #009900;">}</span> _sigfault<span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* SIGPOLL */</span>
+		<span style="color: #993333;">struct</span> <span style="color: #009900;">{</span>
+			<span style="color: #993333;">int</span> _band<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* POLL_IN, POLL_OUT, POLL_MSG */</span>
+			<span style="color: #993333;">int</span> _fd<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span> _sigpoll<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> _sifields<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span> siginfo_t<span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>数据结构至此介绍完了。</p> 
+         <p>下面就是讲操作了。</p> 
+         <h2>信号的操作：</h2> 
+         <p>在讲操作的时候说明一下，在<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">中有着两套这样的操作，分别称为新、老操作。新的一般称为</span><span style="font-family: 'Times New Roman';">RT</span><span style="font-family: 宋体;">信号，事实上和实时（</span><span style="font-family: 'Times New Roman';">Real&nbsp;Time</span><span style="font-family: 宋体;">）半毛钱的关系都没有。</span></p> 
+         <p>&nbsp;</p> 
+         <p>信号的处理一般需要如下四个步骤：<br> 1、安装：把信号处理程序等与数据结构关联起来，相当于中断向量的设置。<br> 2、发送：由进程向目标进程发送信号，告诉其他目标该处理什么。<br> 3、接收：目标进程检测接收了信号，然后进行信号处理。<br> 4、执行：通过特定方法由接收信号进程执行信号处理程序。</p> 
+         <h3>1、安装</h3> 
+         <p>在<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">中老的信号安装的系统调用：</span></p> 
+         <p>sighandler_t&nbsp;signal(int&nbsp;signum,sighandler_t&nbsp;handler);</p> 
+         <p>这个<span style="font-family: 'Times New Roman';">signum</span><span style="font-family: 宋体;">是信号的定义值，</span><span style="font-family: 'Times New Roman';">handler</span><span style="font-family: 宋体;">就是指向信号处理程序的指针。</span></p> 
+         <p>另一个系统调用是新的，但是可以动态安装，为：</p> 
+         <p>int&nbsp;sigaction&nbsp;(int&nbsp;signum,&nbsp;const&nbsp;struct&nbsp;sigaction&nbsp;*newact&nbsp;,struct&nbsp;*sigaction&nbsp;oldact);</p> 
+         <p>这个系统调用可以根据信号的编号不同，确定是落实到<span style="font-family: 'Times New Roman';">sys_sigaction()</span><span style="font-family: 宋体;">还是</span><span style="font-family: 'Times New Roman';">sys_rt_sigaction()</span><span style="font-family: 宋体;">。</span></p> 
+         <p>这里的<span style="font-family: 'Times New Roman';">newact</span><span style="font-family: 宋体;">为所指向的结构为新的，待设置的向量，而</span><span style="font-family: 'Times New Roman';">oldact</span><span style="font-family: 宋体;">所指的为用来返回老向量的数据结构。</span></p> 
+         <p>它们在内核中的入口函数分别为<span style="font-family: 'Times New Roman';">sys_signal()</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">sys_sigaction()</span><span style="font-family: 宋体;">、</span><span style="font-family: 'Times New Roman';">sys_rt_sigaction()</span><span style="font-family: 宋体;">函数。</span></p> 
+         <p>其中两个定义在<span style="font-family: 'Times New Roman';">kernel/signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7048"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+</pre></td> 
+             <td class="code" id="p704code8"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span>
+sys_signal<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> __sighandler_t handler<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> k_sigaction new_sa<span style="color: #339933;">,</span> old_sa<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> ret<span style="color: #339933;">;</span>
+&nbsp;
+	new_sa.<span style="color: #202020;">sa</span>.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">=</span> handler<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *传统方式，在某信号处理的时候使用了一次处理函数指针后就将其改为SIG_DFL
+　　 *SA_NOMASK表示在执行信号处理程序的时候不使用任何信号屏蔽
+　　 */</span>
+	new_sa.<span style="color: #202020;">sa</span>.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">=</span> SA_ONESHOT <span style="color: #339933;">|</span> SA_NOMASK<span style="color: #339933;">;</span>
+	ret <span style="color: #339933;">=</span> do_sigaction<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>new_sa<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>old_sa<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> ret <span style="color: #339933;">?</span> ret <span style="color: #339933;">:</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span>old_sa.<span style="color: #202020;">sa</span>.<span style="color: #202020;">sa_handler</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+asmlinkage <span style="color: #993333;">long</span>
+sys_rt_sigaction<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">const</span> <span style="color: #993333;">struct</span> sigaction <span style="color: #339933;">*</span>act<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sigaction <span style="color: #339933;">*</span>oact<span style="color: #339933;">,</span>
+		 size_t sigsetsize<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> k_sigaction new_sa<span style="color: #339933;">,</span> old_sa<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> ret <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* XXX: Don't preclude handling different sized sigset_t's.  */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sigsetsize <span style="color: #339933;">!=</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>sigset_t<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>act<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>copy_from_user<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>new_sa.<span style="color: #202020;">sa</span><span style="color: #339933;">,</span> act<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>new_sa.<span style="color: #202020;">sa</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EFAULT<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	ret <span style="color: #339933;">=</span> do_sigaction<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> act <span style="color: #339933;">?</span> <span style="color: #339933;">&amp;</span>new_sa <span style="color: #339933;">:</span> NULL<span style="color: #339933;">,</span> oact <span style="color: #339933;">?</span> <span style="color: #339933;">&amp;</span>old_sa <span style="color: #339933;">:</span> NULL<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>ret <span style="color: #339933;">&amp;&amp;</span> oact<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>copy_to_user<span style="color: #009900;">(</span>oact<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>old_sa.<span style="color: #202020;">sa</span><span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>old_sa.<span style="color: #202020;">sa</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EFAULT<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> ret<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>另一个<span style="font-family: 'Times New Roman';">sys_sigaction</span><span style="font-family: 宋体;">与</span><span style="font-family: 'Times New Roman';">sys_rt_sigaction</span><span style="font-family: 宋体;">类似，不细说了。</span></p> 
+         <p>系统调用的主体是<span style="font-family: 'Times New Roman';">do_sigaction()</span><span style="font-family: 宋体;">函数，其代码也在</span><span style="font-family: 'Times New Roman';">kernel/signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7049"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+</pre></td> 
+             <td class="code" id="p704code9"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">int</span>
+do_sigaction<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">const</span> <span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>act<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>oact<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>k<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *出错检查，另外SIGKILL和SIGSTOP的响应是不允许改变的
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">1</span> <span style="color: #339933;">||</span> sig <span style="color: #339933;">&gt;</span> _NSIG <span style="color: #339933;">||</span>
+	    <span style="color: #009900;">(</span>act <span style="color: #339933;">&amp;&amp;</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">==</span> SIGKILL <span style="color: #339933;">||</span> sig <span style="color: #339933;">==</span> SIGSTOP<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+&nbsp;
+	k <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>action<span style="color: #009900;">[</span>sig<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//信号的下标是从0开始的</span>
+&nbsp;
+	spin_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>siglock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>oact<span style="color: #009900;">)</span>
+		<span style="color: #339933;">*</span>oact <span style="color: #339933;">=</span> <span style="color: #339933;">*</span>k<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//整体赋值，将旧的数据结构复制到oact，在上面说到过返回</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>act<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #339933;">*</span>k <span style="color: #339933;">=</span> <span style="color: #339933;">*</span>act<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//整体赋值，将新的数据结构复制到对应的信号向量表</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *SIGSTOP和SIGKILL这两个信号也不允许屏蔽，所以要清除屏蔽位
+　　 */</span>
+		sigdelsetmask<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>k<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_mask</span><span style="color: #339933;">,</span> sigmask<span style="color: #009900;">(</span>SIGKILL<span style="color: #009900;">)</span> <span style="color: #339933;">|</span> sigmask<span style="color: #009900;">(</span>SIGSTOP<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/*
+		 * POSIX 3.3.1.3:
+		 *  "Setting a signal action to SIG_IGN for a signal that is
+		 *   pending shall cause the pending signal to be discarded,
+		 *   whether or not it is blocked."
+		 *
+		 *  "Setting a signal action to SIG_DFL for a signal that is
+		 *   pending and whose default action is to ignore the signal
+		 *   (for example, SIGCHLD), shall cause the pending signal to
+		 *   be discarded, whether or not it is blocked"
+		 *
+		 * Note the silly behaviour of SIGCHLD: SIG_IGN means that the
+		 * signal isn't actually ignored, but does automatic child
+		 * reaping, while SIG_DFL is explicitly said by POSIX to force
+		 * the signal to be ignored.
+　　 *简单点说就是当新设置的信号为SIG_IGN或者新设置的信号为
+　　 *SIG_DFL且涉及的信号为SIGCONT或者SIGCHLD或者SIGWINCH
+　　 *时要按照POSIX标准将其丢弃
+		 */</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>k<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">==</span> SIG_IGN
+		    <span style="color: #339933;">||</span> <span style="color: #009900;">(</span>k<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">==</span> SIG_DFL
+			<span style="color: #339933;">&amp;&amp;</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">==</span> SIGCONT <span style="color: #339933;">||</span>
+			    sig <span style="color: #339933;">==</span> SIGCHLD <span style="color: #339933;">||</span>
+			    sig <span style="color: #339933;">==</span> SIGWINCH<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>rm_sig_from_queue<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> current<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+				recalc_sigpending<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	spin_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>siglock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>信号安装就此结束。</p> 
+         <h3>2、发送</h3> 
+         <p>信号的发送也有新的系统调用和老的系统调用，老版本的是<span style="font-family: 'Times New Roman';">kill()</span><span style="font-family: 宋体;">，如下：</span></p> 
+         <p>int&nbsp;kill(pid_t&nbsp;pid,int &nbsp;sig);</p> 
+         <p>其中，<span style="font-family: 'Times New Roman';">pid</span><span style="font-family: 宋体;">为目标进程的</span><span style="font-family: 'Times New Roman';">pid</span><span style="font-family: 宋体;">，为</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">表示发送给当前进程所在的进程组中的所有进程，为</span><span style="font-family: 'Times New Roman';">-1</span><span style="font-family: 宋体;">时则表示发送给系统中的所有进程。</span><span style="font-family: 'Times New Roman';">sig</span><span style="font-family: 宋体;">为要发送的信号编号。</span></p> 
+         <p>新版本的为：</p> 
+         <p>int&nbsp;sigqueue(pid_t&nbsp;pid,int&nbsp;sig,const&nbsp;union&nbsp;sigval&nbsp;val);</p> 
+         <p>新版本的有了一个附加信息<span style="font-family: 'Times New Roman';">val</span><span style="font-family: 宋体;">，一般指向一个</span><span style="font-family: 'Times New Roman';">siginfo</span><span style="font-family: 宋体;">数据结构，另外</span><span style="font-family: 'Times New Roman';">sigqueue()</span><span style="font-family: 宋体;">只能发送信号给一个特定的进程。</span></p> 
+         <p>函数<span style="font-family: 'Times New Roman';">kill()</span><span style="font-family: 宋体;">的系统实现部分是</span><span style="font-family: 'Times New Roman';">sys_kill()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">kernel/signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70410"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td> 
+             <td class="code" id="p704code10"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">long</span>
+sys_kill<span style="color: #009900;">(</span><span style="color: #993333;">int</span> pid<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> sig<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> siginfo info<span style="color: #339933;">;</span>
+&nbsp;
+	info.<span style="color: #202020;">si_signo</span> <span style="color: #339933;">=</span> sig<span style="color: #339933;">;</span>
+	info.<span style="color: #202020;">si_errno</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	info.<span style="color: #202020;">si_code</span> <span style="color: #339933;">=</span> SI_USER<span style="color: #339933;">;</span>
+	info.<span style="color: #202020;">si_pid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>pid<span style="color: #339933;">;</span>
+	info.<span style="color: #202020;">si_uid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>uid<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> kill_something_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>info<span style="color: #339933;">,</span> pid<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>函数很简单，准备一个<span style="font-family: 'Times New Roman';">siginfo</span><span style="font-family: 宋体;">数据结构，将发送进程自己的进程号、组号等加入进去然后调用</span><span style="font-family: 'Times New Roman';">kill_something_info()</span><span style="font-family: 宋体;">，这个函数也是定义在</span><span style="font-family: 'Times New Roman';">signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70411"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td> 
+             <td class="code" id="p704code11"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> kill_something_info<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> pid<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>pid<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//需要发送信号给真个进程组</span>
+		<span style="color: #b1b100;">return</span> kill_pg_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> current<span style="color: #339933;">-&gt;</span>pgrp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pid <span style="color: #339933;">==</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//需要发送信号给所有进程</span>
+		<span style="color: #993333;">int</span> retval <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> count <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+		<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span> p<span style="color: #339933;">;</span>
+&nbsp;
+		read_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		for_each_task<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//循环所有进程</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>pid <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">1</span> <span style="color: #339933;">&amp;&amp;</span> p <span style="color: #339933;">!=</span> current<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+				<span style="color: #993333;">int</span> err <span style="color: #339933;">=</span> send_sig_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//发送进程</span>
+				<span style="color: #339933;">++</span>count<span style="color: #339933;">;</span>
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">!=</span> <span style="color: #339933;">-</span>EPERM<span style="color: #009900;">)</span>
+					retval <span style="color: #339933;">=</span> err<span style="color: #339933;">;</span>
+			<span style="color: #009900;">}</span>
+		<span style="color: #009900;">}</span>
+		read_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> count <span style="color: #339933;">?</span> retval <span style="color: #339933;">:</span> <span style="color: #339933;">-</span>ESRCH<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pid <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">return</span> kill_pg_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> <span style="color: #339933;">-</span>pid<span style="color: #009900;">)</span><span style="color: #339933;">;</span>		<span style="color: #666666; font-style: italic;">//错误</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">return</span> kill_proc_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> pid<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//发送给特定进程</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>其中<span style="font-family: 'Times New Roman';">kill_pg_info()</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">kill_proc_info()</span><span style="font-family: 宋体;">也是用</span><span style="font-family: 'Times New Roman';">send_sig_info()</span><span style="font-family: 宋体;">来实现的，定义如下：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70412"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+</pre></td> 
+             <td class="code" id="p704code12"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">int</span>
+kill_pg_info<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> pid_t pgrp<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pgrp <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p<span style="color: #339933;">;</span>
+&nbsp;
+		retval <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ESRCH<span style="color: #339933;">;</span>
+		read_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		for_each_task<span style="color: #009900;">(</span>p<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #339933;">-&gt;</span>pgrp <span style="color: #339933;">==</span> pgrp<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+				<span style="color: #993333;">int</span> err <span style="color: #339933;">=</span> send_sig_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>retval<span style="color: #009900;">)</span>
+					retval <span style="color: #339933;">=</span> err<span style="color: #339933;">;</span>
+			<span style="color: #009900;">}</span>
+		<span style="color: #009900;">}</span>
+		read_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> retval<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">int</span>
+kill_proc_info<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> pid_t pid<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> error<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p<span style="color: #339933;">;</span>
+&nbsp;
+	read_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	p <span style="color: #339933;">=</span> find_task_by_pid<span style="color: #009900;">(</span>pid<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	error <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ESRCH<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>p<span style="color: #009900;">)</span>
+		error <span style="color: #339933;">=</span> send_sig_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	read_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>tasklist_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> error<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>另一个系统调用<span style="font-family: 'Times New Roman';">sigqueue()</span><span style="font-family: 宋体;">在内核中的实现是</span><span style="font-family: 'Times New Roman';">sys_rt_sigqueueinfo()</span><span style="font-family: 宋体;">，这个函数也是定义在</span><span style="font-family: 'Times New Roman';">signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70413"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td> 
+             <td class="code" id="p704code13"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">long</span>
+sys_rt_sigqueueinfo<span style="color: #009900;">(</span><span style="color: #993333;">int</span> pid<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> siginfo_t <span style="color: #339933;">*</span>uinfo<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	siginfo_t info<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>copy_from_user<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>info<span style="color: #339933;">,</span> uinfo<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>siginfo_t<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EFAULT<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Not even root can pretend to send signals from the kernel.
+	   Nor can they impersonate a kill(), which adds source info.  */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>info.<span style="color: #202020;">si_code</span> <span style="color: #339933;">&gt;=</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EPERM<span style="color: #339933;">;</span>
+	info.<span style="color: #202020;">si_signo</span> <span style="color: #339933;">=</span> sig<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* POSIX.1b doesn't mention process groups.  */</span>
+	<span style="color: #b1b100;">return</span> kill_proc_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>info<span style="color: #339933;">,</span> pid<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这些函数都是使用函数<span style="font-family: 'Times New Roman';">send_sig_info()</span><span style="font-family: 宋体;">来实现的，这个函数定义在</span><span style="font-family: 'Times New Roman';">signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70414"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+</pre></td> 
+             <td class="code" id="p704code14"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">int</span>
+send_sig_info<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>t<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> ret<span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+<span style="color: #339933;">#if DEBUG_SIG</span>
+printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"SIG queue (%s:%d): %d "</span><span style="color: #339933;">,</span> t<span style="color: #339933;">-&gt;</span>comm<span style="color: #339933;">,</span> t<span style="color: #339933;">-&gt;</span>pid<span style="color: #339933;">,</span> sig<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+&nbsp;
+	ret <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span> <span style="color: #339933;">||</span> sig <span style="color: #339933;">&gt;</span> _NSIG<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_nolock<span style="color: #339933;">;</span>
+	<span style="color: #808080; font-style: italic;">/* The somewhat baroque permissions check... */</span>
+	ret <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EPERM<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *进行参数以及权限检查
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>bad_signal<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> t<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_nolock<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* The null signal is a permissions and process existance probe.
+	   No signal is actually delivered.  Same goes for zombies. */</span>
+	ret <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sig <span style="color: #339933;">||</span> <span style="color: #339933;">!</span>t<span style="color: #339933;">-&gt;</span>sig<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_nolock<span style="color: #339933;">;</span>
+&nbsp;
+	spin_lock_irqsave<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	handle_stop_signal<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> t<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Optimize away the signal, if it's a signal that can be
+	   handled immediately (ie non-blocked and untraced) and
+	   that is ignored (either explicitly or by default).  */</span>
+　　
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *如果目标进程的“信号向量表”中对所投递信号的响应是SIG_IGN
+　　 *并且不在跟踪模式中，也未加屏蔽，则无需发送
+　　 *static int ignored_signal(int sig, struct task_struct *t)
+　　 *{
+　　 *	if ((t-&gt;ptrace &amp; PT_PTRACED) || sigismember(&amp;t-&gt;blocked, sig))
+　　 *		return 0;
+　　 *
+　　 *	return signal_type(sig, t-&gt;sig) == 0;
+　　 *}
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ignored_signal<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> t<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Support queueing exactly one non-rt signal, so that we
+	   can get more detailed information about the cause of
+	   the signal. */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *老信号测试，对于老编制的信号，处理分两步，一个是将相应接收位图置1
+　　 *还有一步就是将siginfo结构挂入队列，这种操作对于同一个信号只能有一次，
+　　 *所以如果检测到已经进行上述操作并且信号尚未处理，则直接返回
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">&lt;</span> SIGRTMIN <span style="color: #339933;">&amp;&amp;</span> sigismember<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>pending.<span style="color: #202020;">signal</span><span style="color: #339933;">,</span> sig<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	ret <span style="color: #339933;">=</span> deliver_signal<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> t<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//信号发送（投递）处理</span>
+out<span style="color: #339933;">:</span>
+	spin_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *如果发现目标进程正在等待信号则唤醒
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>t<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">&amp;</span> TASK_INTERRUPTIBLE<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> signal_pending<span style="color: #009900;">(</span>t<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		wake_up_process<span style="color: #009900;">(</span>t<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out_nolock<span style="color: #339933;">:</span>
+<span style="color: #339933;">#if DEBUG_SIG</span>
+printk<span style="color: #009900;">(</span><span style="color: #ff0000;">" %d -&gt; %d<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> signal_pending<span style="color: #009900;">(</span>t<span style="color: #009900;">)</span><span style="color: #339933;">,</span> ret<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> ret<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>投递信号的主体函数<span style="font-family: 'Times New Roman';">deliver_signal()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70415"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td> 
+             <td class="code" id="p704code15"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> deliver_signal<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>t<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> retval <span style="color: #339933;">=</span> send_signal<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>pending<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//投递信号</span>
+　　
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *如果投递成功且检测到信号未被屏蔽，则唤醒目标进程并且调度
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>retval <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>sigismember<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,</span> sig<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		signal_wake_up<span style="color: #009900;">(</span>t<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//唤醒并调度目标进程</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> retval<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>操作主体是send_signal()，定义在kernel/signal.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70416"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre></td> 
+             <td class="code" id="p704code16"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> send_signal<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sigpending <span style="color: #339933;">*</span>signals<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sigqueue <span style="color: #339933;">*</span> q <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//新信号信息</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Real-time signals must be queued if sent by sigqueue, or
+	   some other real-time mechanism.  It is implementation
+	   defined whether kill() does so.  We attempt to do so, on
+	   the principle of least surprise, but since kill is not
+	   allowed to fail with EAGAIN when low on memory we just
+	   make sure at least one signal gets delivered and don't
+	   pass on the info struct.  */</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>atomic_read<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nr_queued_signals<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;</span> max_queued_signals<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		q <span style="color: #339933;">=</span> kmem_cache_alloc<span style="color: #009900;">(</span>sigqueue_cachep<span style="color: #339933;">,</span> GFP_ATOMIC<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//分配空间</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>q<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		atomic_inc<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nr_queued_signals<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		q<span style="color: #339933;">-&gt;</span>next <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+		<span style="color: #339933;">*</span>signals<span style="color: #339933;">-&gt;</span>tail <span style="color: #339933;">=</span> q<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//将新信号加入队列</span>
+		signals<span style="color: #339933;">-&gt;</span>tail <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>q<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> info<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *当info为0或者1的时候，此时将info看成数字而不是指针，
+　　 *表明信号发生在系统空间，而不是用户通过系统调用来发送的
+　　 */</span>
+			<span style="color: #b1b100;">case</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">:</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_signo</span> <span style="color: #339933;">=</span> sig<span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_errno</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_code</span> <span style="color: #339933;">=</span> SI_USER<span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_pid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>pid<span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_uid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>uid<span style="color: #339933;">;</span>
+				<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">case</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">:</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_signo</span> <span style="color: #339933;">=</span> sig<span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_errno</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_code</span> <span style="color: #339933;">=</span> SI_KERNEL<span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_pid</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				q<span style="color: #339933;">-&gt;</span>info.<span style="color: #202020;">si_uid</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">default</span><span style="color: #339933;">:</span>
+				copy_siginfo<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>q<span style="color: #339933;">-&gt;</span>info<span style="color: #339933;">,</span> info<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//复制信号信息</span>
+				<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">&gt;=</span> SIGRTMIN <span style="color: #339933;">&amp;&amp;</span> info <span style="color: #339933;">&amp;&amp;</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span>info <span style="color: #339933;">!=</span> <span style="color: #0000dd;">1</span>
+		   <span style="color: #339933;">&amp;&amp;</span> info<span style="color: #339933;">-&gt;</span>si_code <span style="color: #339933;">!=</span> SI_USER<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Queue overflow, abort.  We may abort if the signal was rt
+		 * and sent by user using something other than kill().
+		 */</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EAGAIN<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	sigaddset<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>signals<span style="color: #339933;">-&gt;</span>signal<span style="color: #339933;">,</span> sig<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//将接收位图标志置1</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这里的<span style="font-family: 'Times New Roman';">info</span><span style="font-family: 宋体;">可以看成一个整数，例如在</span><span style="font-family: 'Times New Roman';">do_page_fault()</span><span style="font-family: 宋体;">函数中进行强制发送信号，函数如下</span><span style="font-family: 'Times New Roman';">(kernel/signal.c)</span><span style="font-family: 宋体;">：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70417"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td> 
+             <td class="code" id="p704code17"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">int</span>
+force_sig_info<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>t<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> <span style="color: #993333;">int</span> flags<span style="color: #339933;">;</span>
+&nbsp;
+	spin_lock_irqsave<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>t<span style="color: #339933;">-&gt;</span>sig <span style="color: #339933;">==</span> NULL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		spin_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>ESRCH<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>t<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>action<span style="color: #009900;">[</span>sig<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span>.<span style="color: #202020;">sa</span>.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">==</span> SIG_IGN<span style="color: #009900;">)</span>
+		t<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>action<span style="color: #009900;">[</span>sig<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span>.<span style="color: #202020;">sa</span>.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">=</span> SIG_DFL<span style="color: #339933;">;</span>
+	sigdelset<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,</span> sig<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	recalc_sigpending<span style="color: #009900;">(</span>t<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	spin_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>t<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> send_sig_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> t<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">void</span>
+force_sig<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> task_struct <span style="color: #339933;">*</span>p<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	force_sig_info<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #0000dd;">1L</span><span style="color: #339933;">,</span> p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这里将<span style="font-family: 'Times New Roman';">info</span><span style="font-family: 宋体;">的值设置为</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">，表示是由内核发送的，不允许目标进程忽略或者屏蔽此信号。</span></p> 
+         <p>至此，信号发送结束。</p> 
+         <h3>3、接收</h3> 
+         <p>这里说的是接收，其实就是信号的检测。前面说了，信号的检测发生在系统空间返回用户空间前夕，这里看看在<span style="font-family: 'Times New Roman';">arch/i386/kernel/entry.S</span><span style="font-family: 宋体;">中的部分代码：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70418"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td> 
+             <td class="code" id="p704code18"><pre class="c" style="font-family:monospace;">ret_with_reschedule<span style="color: #339933;">:</span>
+	cmpl $<span style="color: #0000dd;">0</span><span style="color: #339933;">,</span>need_resched<span style="color: #009900;">(</span><span style="color: #339933;">%</span>ebx<span style="color: #009900;">)</span>
+	jne reschedule
+	cmpl $<span style="color: #0000dd;">0</span><span style="color: #339933;">,</span>sigpending<span style="color: #009900;">(</span><span style="color: #339933;">%</span>ebx<span style="color: #009900;">)</span>
+	jne signal_return
+restore_all<span style="color: #339933;">:</span>
+	RESTORE_ALL
+&nbsp;
+	ALIGN
+signal_return<span style="color: #339933;">:</span>
+	sti				<span style="color: #339933;"># we can get here from an interrupt handler</span>
+	testl $<span style="color: #009900;">(</span>VM_MASK<span style="color: #009900;">)</span><span style="color: #339933;">,</span>EFLAGS<span style="color: #009900;">(</span><span style="color: #339933;">%</span>esp<span style="color: #009900;">)</span>
+	movl <span style="color: #339933;">%</span>esp<span style="color: #339933;">,%</span>eax
+	jne v86_signal_return
+	xorl <span style="color: #339933;">%</span>edx<span style="color: #339933;">,%</span>edx
+	call SYMBOL_NAME<span style="color: #009900;">(</span>do_signal<span style="color: #009900;">)</span>
+	jmp restore_all</pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>其中这一句：<br> cmpl&nbsp;$0,sigpending(%ebx)<br> 其实就是比较<span style="font-family: 'Times New Roman';">current-&gt;sigpending</span><span style="font-family: 宋体;">与</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">的大小，来判断当前进程中是由有信号尚未处理。有的话就转到</span><span style="font-family: 'Times New Roman';">signal_return</span><span style="font-family: 宋体;">处执行。</span></p> 
+         <p>signal_return<span style="font-family: 宋体;">首先开中断，因为信号是在可中断条件下执行的。然后检测</span><span style="font-family: 'Times New Roman';">VM86</span><span style="font-family: 宋体;">模式，当然这里先忽略，然后就是调用函数</span><span style="font-family: 'Times New Roman';">do_signal()</span><span style="font-family: 宋体;">来执行具体的中断服务程序了。</span></p> 
+         <h3>4、执行</h3> 
+         <p>信号处理函数的执行是从<span style="font-family: 'Times New Roman';">do_signal()</span><span style="font-family: 宋体;">函数开始的，从上面可以看出，这个函数是在系统空间中调用的，但是真正的信号处理函数一般是在用户空间执行的，这期间做了很多工作，先看</span><span style="font-family: 'Times New Roman';">do_signal()</span><span style="font-family: 宋体;">函数，定义在</span><span style="font-family: 'Times New Roman';">arch/i386/kernel/signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70419"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+</pre></td> 
+             <td class="code" id="p704code19"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">int</span> do_signal<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span>regs<span style="color: #339933;">,</span> sigset_t <span style="color: #339933;">*</span>oldset<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	siginfo_t info<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>ka<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * We want the common case to go fast, which
+	 * is why we may in certain cases get here from
+	 * kernel mode. Just return without doing anything
+	 * if so.
+	 */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *若进入前regs中保存原寄存器中的cs不为3表示
+　　 *现在还不是返回用户空间前夕，则不做反应
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>xcs <span style="color: #339933;">&amp;</span> <span style="color: #0000dd;">3</span><span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> <span style="color: #0000dd;">3</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>oldset<span style="color: #009900;">)</span>
+		oldset <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//当前进程的中断请求寄存器</span>
+&nbsp;
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span><span style="color: #339933;">;;</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//循环处理当前进程的所有信号</span>
+		<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> signr<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//信号的向量号</span>
+&nbsp;
+		spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		signr <span style="color: #339933;">=</span> dequeue_signal<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>info<span style="color: #009900;">)</span><span style="color: #339933;">;</span><span style="color: #666666; font-style: italic;">//取出一个未加屏蔽的信号来处理</span>
+		spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>signr<span style="color: #009900;">)</span>		<span style="color: #666666; font-style: italic;">//当前进程的所有信号已经处理完成</span>
+			<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>ptrace <span style="color: #339933;">&amp;</span> PT_PTRACED<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> signr <span style="color: #339933;">!=</span> SIGKILL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			<span style="color: #808080; font-style: italic;">/* Let the debugger run.  
+　　 *此处是用于进程跟踪调试的，说到进程的跟踪调试再说吧
+　　 */</span>
+			current<span style="color: #339933;">-&gt;</span>exit_code <span style="color: #339933;">=</span> signr<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *将进程设置为TASK_STOPPED，等待下一次跟踪调试信号
+　　 */</span>
+			current<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_STOPPED<span style="color: #339933;">;</span>
+			notify_parent<span style="color: #009900;">(</span>current<span style="color: #339933;">,</span> SIGCHLD<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *此处进行一次进程的调度，运行其他的程序，下一次运行从schedule()
+　　 *下面开始运行
+　　 */</span>
+			schedule<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #808080; font-style: italic;">/* We're back.  Did the debugger cancel the sig?  */</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span><span style="color: #009900;">(</span>signr <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>exit_code<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+			current<span style="color: #339933;">-&gt;</span>exit_code <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #808080; font-style: italic;">/* The debugger continued.  Ignore SIGSTOP.  */</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>signr <span style="color: #339933;">==</span> SIGSTOP<span style="color: #009900;">)</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #808080; font-style: italic;">/* Update the siginfo structure.  Is this good?  */</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>signr <span style="color: #339933;">!=</span> info.<span style="color: #202020;">si_signo</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+				info.<span style="color: #202020;">si_signo</span> <span style="color: #339933;">=</span> signr<span style="color: #339933;">;</span>
+				info.<span style="color: #202020;">si_errno</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				info.<span style="color: #202020;">si_code</span> <span style="color: #339933;">=</span> SI_USER<span style="color: #339933;">;</span>
+				info.<span style="color: #202020;">si_pid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>p_pptr<span style="color: #339933;">-&gt;</span>pid<span style="color: #339933;">;</span>
+				info.<span style="color: #202020;">si_uid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>p_pptr<span style="color: #339933;">-&gt;</span>uid<span style="color: #339933;">;</span>
+			<span style="color: #009900;">}</span>
+&nbsp;
+			<span style="color: #808080; font-style: italic;">/* If the (new) signal is now blocked, requeue it.  */</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sigismember<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,</span> signr<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+				send_sig_info<span style="color: #009900;">(</span>signr<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>info<span style="color: #339933;">,</span> current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+			<span style="color: #009900;">}</span>
+		<span style="color: #009900;">}</span>
+&nbsp;
+		ka <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>action<span style="color: #009900;">[</span>signr<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">==</span> SIG_IGN<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//若设置的反应方式是SIG_IGN</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *若signr==SIGCHLD则一般为子进程通过系统调用exit()向
+　　 *父进程发送的信号，父进程要料理子进程的“后事”，
+　　 */</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>signr <span style="color: #339933;">!=</span> SIGCHLD<span style="color: #009900;">)</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+			<span style="color: #808080; font-style: italic;">/* Check for SIGCHLD: it's special.  */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *使用循环wait4()来释放其所有需要释放系统资源的子进程的
+　　 *系统资源，第一个参数为-1表示检查其所有子进程
+　　 *WNOHANG表示无需等待其他不需释放的进程
+　　 */</span>
+			<span style="color: #b1b100;">while</span> <span style="color: #009900;">(</span>sys_wait4<span style="color: #009900;">(</span><span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">,</span> NULL<span style="color: #339933;">,</span> WNOHANG<span style="color: #339933;">,</span> NULL<span style="color: #009900;">)</span> <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+				<span style="color: #808080; font-style: italic;">/* nothing */</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">==</span> SIG_DFL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span><span style="color: #666666; font-style: italic;">//若反应方式是SIG_IGN，一般杀死</span>
+			<span style="color: #993333;">int</span> exit_code <span style="color: #339933;">=</span> signr<span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #808080; font-style: italic;">/* Init gets no signals it doesn't want.  */</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>pid <span style="color: #339933;">==</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span>	<span style="color: #666666; font-style: italic;">//1号进程不许杀死</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span>signr<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			<span style="color: #b1b100;">case</span> SIGCONT<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGCHLD<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGWINCH<span style="color: #339933;">:</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #b1b100;">case</span> SIGTSTP<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGTTIN<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGTTOU<span style="color: #339933;">:</span>
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>is_orphaned_pgrp<span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>pgrp<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+					<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+				<span style="color: #808080; font-style: italic;">/* FALLTHRU */</span>
+&nbsp;
+			<span style="color: #b1b100;">case</span> SIGSTOP<span style="color: #339933;">:</span>
+				current<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_STOPPED<span style="color: #339933;">;</span>
+				current<span style="color: #339933;">-&gt;</span>exit_code <span style="color: #339933;">=</span> signr<span style="color: #339933;">;</span>
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span><span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>p_pptr<span style="color: #339933;">-&gt;</span>sig<span style="color: #339933;">-&gt;</span>action<span style="color: #009900;">[</span>SIGCHLD<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span>.<span style="color: #202020;">sa</span>.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_NOCLDSTOP<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+					notify_parent<span style="color: #009900;">(</span>current<span style="color: #339933;">,</span> SIGCHLD<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				schedule<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #b1b100;">case</span> SIGQUIT<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGILL<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGTRAP<span style="color: #339933;">:</span>
+			<span style="color: #b1b100;">case</span> SIGABRT<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGFPE<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGSEGV<span style="color: #339933;">:</span>
+			<span style="color: #b1b100;">case</span> SIGBUS<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGSYS<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGXCPU<span style="color: #339933;">:</span> <span style="color: #b1b100;">case</span> SIGXFSZ<span style="color: #339933;">:</span>
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>do_coredump<span style="color: #009900;">(</span>signr<span style="color: #339933;">,</span> regs<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+					exit_code <span style="color: #339933;">|=</span> <span style="color: #208080;">0x80</span><span style="color: #339933;">;</span>
+				<span style="color: #808080; font-style: italic;">/* FALLTHRU */</span>
+&nbsp;
+			<span style="color: #b1b100;">default</span><span style="color: #339933;">:</span>
+				sigaddset<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>pending.<span style="color: #202020;">signal</span><span style="color: #339933;">,</span> signr<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				recalc_sigpending<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				current<span style="color: #339933;">-&gt;</span>flags <span style="color: #339933;">|=</span> PF_SIGNALED<span style="color: #339933;">;</span>
+				do_exit<span style="color: #009900;">(</span>exit_code<span style="color: #009900;">)</span><span style="color: #339933;">;</span>		<span style="color: #666666; font-style: italic;">//信号是使进程结束，执行do_exit()不会返回</span>
+				<span style="color: #808080; font-style: italic;">/* NOTREACHED */</span>
+			<span style="color: #009900;">}</span>
+		<span style="color: #009900;">}</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* Reenable any watchpoints before delivering the
+		 * signal to user space. The processor register will
+		 * have been cleared if the watchpoint triggered
+		 * inside the kernel.
+		 */</span>
+		__asm__<span style="color: #009900;">(</span><span style="color: #ff0000;">"movl %0,%%db7"</span>	<span style="color: #339933;">:</span> <span style="color: #339933;">:</span> <span style="color: #ff0000;">"r"</span> <span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">debugreg</span><span style="color: #009900;">[</span><span style="color: #0000dd;">7</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* Whee!  Actually deliver the signal.  */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *信号程序为用户自定义，则通过handle_signal()来执行
+　　 */</span>
+		handle_signal<span style="color: #009900;">(</span>signr<span style="color: #339933;">,</span> ka<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>info<span style="color: #339933;">,</span> oldset<span style="color: #339933;">,</span> regs<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *若执行到此处则一般表示信号执行失败，需要重新执行，设置regs的eip等
+　　 *数值来使得函数重新执行
+　　 */</span>
+	<span style="color: #808080; font-style: italic;">/* Did we come from a system call? */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>orig_eax <span style="color: #339933;">&gt;=</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #808080; font-style: italic;">/* Restart the system call - no handlers present */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">==</span> <span style="color: #339933;">-</span>ERESTARTNOHAND <span style="color: #339933;">||</span>
+		    regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">==</span> <span style="color: #339933;">-</span>ERESTARTSYS <span style="color: #339933;">||</span>
+		    regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">==</span> <span style="color: #339933;">-</span>ERESTARTNOINTR<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">=</span> regs<span style="color: #339933;">-&gt;</span>orig_eax<span style="color: #339933;">;</span>
+			regs<span style="color: #339933;">-&gt;</span>eip <span style="color: #339933;">-=</span> <span style="color: #0000dd;">2</span><span style="color: #339933;">;</span>		<span style="color: #666666; font-style: italic;">//使这个函数返回后重新执行系统调用</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>如果用户设置了信号处理程序，就要通过函数<span style="font-family: 'Times New Roman';">handle_signal()</span><span style="font-family: 宋体;">来准备好对处理程序的执行。函数代码定义在</span><span style="font-family: 'Times New Roman';">arch/i386/kernel/signal/c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70420"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+</pre></td> 
+             <td class="code" id="p704code20"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">void</span>
+handle_signal<span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>ka<span style="color: #339933;">,</span>
+	      siginfo_t <span style="color: #339933;">*</span>info<span style="color: #339933;">,</span> sigset_t <span style="color: #339933;">*</span>oldset<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span> regs<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #808080; font-style: italic;">/* Are we from a system call? */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>orig_eax <span style="color: #339933;">&gt;=</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #808080; font-style: italic;">/* If so, check system call restarting.. */</span>
+		<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>eax<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			<span style="color: #b1b100;">case</span> <span style="color: #339933;">-</span>ERESTARTNOHAND<span style="color: #339933;">:</span>
+				regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINTR<span style="color: #339933;">;</span>
+				<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+&nbsp;
+			<span style="color: #b1b100;">case</span> <span style="color: #339933;">-</span>ERESTARTSYS<span style="color: #339933;">:</span>
+				<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span><span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_RESTART<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+					regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINTR<span style="color: #339933;">;</span>
+					<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+				<span style="color: #009900;">}</span>
+			<span style="color: #808080; font-style: italic;">/* fallthrough */</span>
+			<span style="color: #b1b100;">case</span> <span style="color: #339933;">-</span>ERESTARTNOINTR<span style="color: #339933;">:</span>
+				regs<span style="color: #339933;">-&gt;</span>eax <span style="color: #339933;">=</span> regs<span style="color: #339933;">-&gt;</span>orig_eax<span style="color: #339933;">;</span>
+				regs<span style="color: #339933;">-&gt;</span>eip <span style="color: #339933;">-=</span> <span style="color: #0000dd;">2</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Set up the stack frame */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_SIGINFO<span style="color: #009900;">)</span>
+		setup_rt_frame<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> ka<span style="color: #339933;">,</span> info<span style="color: #339933;">,</span> oldset<span style="color: #339933;">,</span> regs<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">else</span>
+		setup_frame<span style="color: #009900;">(</span>sig<span style="color: #339933;">,</span> ka<span style="color: #339933;">,</span> oldset<span style="color: #339933;">,</span> regs<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_ONESHOT<span style="color: #009900;">)</span>
+		ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">=</span> SIG_DFL<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span><span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_NODEFER<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sigorsets<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,&amp;</span>current<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,&amp;</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_mask</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sigaddset<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>blocked<span style="color: #339933;">,</span>sig<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		recalc_sigpending<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>在进行一系列的处理以后，我们使用<span style="font-family: 'Times New Roman';">setup_rt_frame()</span><span style="font-family: 宋体;">或者</span><span style="font-family: 'Times New Roman';">setup_frame()</span><span style="font-family: 宋体;">来建立框架并且执行信号处理函数。在讲这两个函数之前先介绍两个数据结构：</span><br> 一个是用户空间的框架（<span style="font-family: 'Times New Roman';">arch/i386/kernel/signal.c</span><span style="font-family: 宋体;">）：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70421"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td> 
+             <td class="code" id="p704code21"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> sigframe
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">char</span> <span style="color: #339933;">*</span>pretcode<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//指向一断进程在执行完信号处理程序结束后重返系统空间的代码</span>
+	<span style="color: #993333;">int</span> sig<span style="color: #339933;">;</span>			<span style="color: #666666; font-style: italic;">//保存sig号</span>
+	<span style="color: #993333;">struct</span> sigcontext sc<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//保存系统空间框架</span>
+	<span style="color: #993333;">struct</span> _fpstate fpstate<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//保存位图</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> extramask<span style="color: #009900;">[</span>_NSIG_WORDS<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//保存位图</span>
+	<span style="color: #993333;">char</span> retcode<span style="color: #009900;">[</span><span style="color: #0000dd;">8</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//保存默认返回系统空间指令代码</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #993333;">struct</span> rt_sigframe	<span style="color: #666666; font-style: italic;">//新机制</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">char</span> <span style="color: #339933;">*</span>pretcode<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> sig<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> siginfo <span style="color: #339933;">*</span>pinfo<span style="color: #339933;">;</span>
+	<span style="color: #993333;">void</span> <span style="color: #339933;">*</span>puc<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> siginfo info<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> ucontext uc<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> _fpstate fpstate<span style="color: #339933;">;</span>
+	<span style="color: #993333;">char</span> retcode<span style="color: #009900;">[</span><span style="color: #0000dd;">8</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这里只介绍旧版本的<span style="font-family: 'Times New Roman';">sigfram</span><span style="font-family: 宋体;">数据结构，这个数据结构对于信号处理程序来说是不可见的，它的</span><span style="font-family: 'Times New Roman';">sc</span><span style="font-family: 宋体;">字段中保存了系统空间框架的内容。</span></p> 
+         <p>系统空间框架数据结构如下所示（<span style="font-family: 'Times New Roman';">include/asm-i386/sigcontext.h</span><span style="font-family: 宋体;">）：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70422"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td> 
+             <td class="code" id="p704code22"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> sigcontext <span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> gs<span style="color: #339933;">,</span> __gsh<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> fs<span style="color: #339933;">,</span> __fsh<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> es<span style="color: #339933;">,</span> __esh<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> ds<span style="color: #339933;">,</span> __dsh<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> edi<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> esi<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> ebp<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> esp<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> ebx<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> edx<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> ecx<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> eax<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> trapno<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> err<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> eip<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> cs<span style="color: #339933;">,</span> __csh<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> eflags<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> esp_at_signal<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> ss<span style="color: #339933;">,</span> __ssh<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> _fpstate <span style="color: #339933;">*</span> fpstate<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> oldmask<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> cr2<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>实现机制可以归结为以下几个步骤：<br> 1、在用户空间堆栈中为信号处理程序的执行预先创建一个框架，框架中包括一个作为局部量的sigframe数据结构，并且把系统空间堆栈中的原始框架保存到这个数据结构中。<br> 2、在信号处理程序中插入对系统调用<span style="font-family: 'Times New Roman';">sigreturn()</span><span style="font-family: 宋体;">的调用。</span><br> 3、将系统空间堆栈中的“原始框架”修改成为执行信号处理程序所需的框架。<br> 4、从系统空间“返回”到用户空间，但是由于第<span style="font-family: 'Times New Roman';">3</span><span style="font-family: 宋体;">步，所以返回的时候执行的是信号处理程序。</span><br> 5、信号处理程序执行结束，通过<span style="font-family: 'Times New Roman';">sigreturn()</span><span style="font-family: 宋体;">系统调用重返系统空间。</span><br> 6、在系统调用<span style="font-family: 'Times New Roman';">sigreturn()</span><span style="font-family: 宋体;">中从用户空间保存的内容回复系统空间的“原始”框架。</span><br> 7、再次返回，这次返回的是用户空间的原来的程序，继续执行原来的程序。<br> setup_rt_frame()<span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">setup_frame()</span><span style="font-family: 宋体;">在实现机制上差不多，这里就只关心</span><span style="font-family: 'Times New Roman';">setup_frame()</span><span style="font-family: 宋体;">了：</span><br> 函数定义在<span style="font-family: 'Times New Roman';">arch/i386/kernel/signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70423"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+</pre></td> 
+             <td class="code" id="p704code23"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">void</span> setup_frame<span style="color: #009900;">(</span><span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>ka<span style="color: #339933;">,</span>
+			sigset_t <span style="color: #339933;">*</span>set<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span> regs<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sigframe <span style="color: #339933;">*</span>frame<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//定义用户堆栈空间框架指针</span>
+	<span style="color: #993333;">int</span> err <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+	frame <span style="color: #339933;">=</span> get_sigframe<span style="color: #009900;">(</span>ka<span style="color: #339933;">,</span> regs<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>frame<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//获得用户堆栈空间</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>access_ok<span style="color: #009900;">(</span>VERIFY_WRITE<span style="color: #339933;">,</span> frame<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>frame<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>	<span style="color: #666666; font-style: italic;">//检查用户堆栈是否可写</span>
+		<span style="color: #b1b100;">goto</span> give_sigsegv<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *将sig复制到用户框架的sig中（可能需要用到传统UNIX的domain信号转换表）
+　　 */</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span><span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>exec_domain
+		           <span style="color: #339933;">&amp;&amp;</span> current<span style="color: #339933;">-&gt;</span>exec_domain<span style="color: #339933;">-&gt;</span>signal_invmap
+		           <span style="color: #339933;">&amp;&amp;</span> sig <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">32</span>
+		           <span style="color: #339933;">?</span> current<span style="color: #339933;">-&gt;</span>exec_domain<span style="color: #339933;">-&gt;</span>signal_invmap<span style="color: #009900;">[</span>sig<span style="color: #009900;">]</span>
+		           <span style="color: #339933;">:</span> sig<span style="color: #009900;">)</span><span style="color: #339933;">,</span>
+		          <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>sig<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> give_sigsegv<span style="color: #339933;">;</span>
+　　
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *向用户堆栈中的框架复制系统堆栈的regs、位图等数据结构
+　　 */</span>
+	err <span style="color: #339933;">|=</span> setup_sigcontext<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>sc<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>fpstate<span style="color: #339933;">,</span> regs<span style="color: #339933;">,</span> set<span style="color: #339933;">-&gt;</span>sig<span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> give_sigsegv<span style="color: #339933;">;</span>
+　　<span style="color: #666666; font-style: italic;">//屏蔽位图大小超过一个long型大小，则把剩下的也复制</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>_NSIG_WORDS <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">|=</span> __copy_to_user<span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>extramask<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>set<span style="color: #339933;">-&gt;</span>sig<span style="color: #009900;">[</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span><span style="color: #339933;">,</span>
+				      <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>extramask<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> give_sigsegv<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Set up to return from userspace.  If provided, use a stub
+	   already in userspace.  */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *重返系统空间的安排，在sigframe中有个8字节的数组retcode[]，
+　　 *还有个指针pretcode，pretcode指向一段使进程在执行完信号处理程序后
+　　 *重返系统空间的代码，如果用户提供了这个一个函数，就把该函数指针复制到
+　　 *pretcode中，否则就把pretcode指向retcode[]，
+　　 *并且在retcode[]中植入这样一段代码：
+　　 *	pop	%eax
+　　 *	movl	$__NR_sigreturn , %eax
+　　 *	int	$0x80
+　　 *这段代码就是调用sigreturn()系统调用代码
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_RESTORER<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_restorer</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>pretcode<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>retcode<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>pretcode<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/* This is popl %eax ; movl $,%eax ; int $0x80 */</span>
+		err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span><span style="color: #208080;">0xb858</span><span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">short</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>retcode<span style="color: #339933;">+</span><span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>__NR_sigreturn<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>retcode<span style="color: #339933;">+</span><span style="color: #0000dd;">2</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span><span style="color: #208080;">0x80cd</span><span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">short</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>retcode<span style="color: #339933;">+</span><span style="color: #0000dd;">6</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> give_sigsegv<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Set up registers for signal handler */</span>
+	regs<span style="color: #339933;">-&gt;</span>esp <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> frame<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置信号处理程序执行的堆栈，在frame之下</span>
+	regs<span style="color: #339933;">-&gt;</span>eip <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置信号处理程序的执行指针</span>
+　　
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *设置其他寄存器等内容
+　　 */</span>
+	set_fs<span style="color: #009900;">(</span>USER_DS<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	regs<span style="color: #339933;">-&gt;</span>xds <span style="color: #339933;">=</span> __USER_DS<span style="color: #339933;">;</span>
+	regs<span style="color: #339933;">-&gt;</span>xes <span style="color: #339933;">=</span> __USER_DS<span style="color: #339933;">;</span>
+	regs<span style="color: #339933;">-&gt;</span>xss <span style="color: #339933;">=</span> __USER_DS<span style="color: #339933;">;</span>
+	regs<span style="color: #339933;">-&gt;</span>xcs <span style="color: #339933;">=</span> __USER_CS<span style="color: #339933;">;</span>
+	regs<span style="color: #339933;">-&gt;</span>eflags <span style="color: #339933;">&amp;=</span> ~TF_MASK<span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #339933;">#if DEBUG_SIG</span>
+	printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"SIG deliver (%s:%d): sp=%p pc=%p ra=%p<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span>
+		current<span style="color: #339933;">-&gt;</span>comm<span style="color: #339933;">,</span> current<span style="color: #339933;">-&gt;</span>pid<span style="color: #339933;">,</span> frame<span style="color: #339933;">,</span> regs<span style="color: #339933;">-&gt;</span>eip<span style="color: #339933;">,</span> frame<span style="color: #339933;">-&gt;</span>pretcode<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+&nbsp;
+give_sigsegv<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sig <span style="color: #339933;">==</span> SIGSEGV<span style="color: #009900;">)</span>
+		ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_handler</span> <span style="color: #339933;">=</span> SIG_DFL<span style="color: #339933;">;</span>
+	force_sig<span style="color: #009900;">(</span>SIGSEGV<span style="color: #339933;">,</span> current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>其中，获得用户空间堆栈的<span style="font-family: 'Times New Roman';">sigframe</span><span style="font-family: 宋体;">空间函数如下（</span><span style="font-family: 'Times New Roman';">arch/i386/kernel/signal.c</span><span style="font-family: 宋体;">）：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70424"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre></td> 
+             <td class="code" id="p704code24"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> <span style="color: #339933;">*</span>
+get_sigframe<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> k_sigaction <span style="color: #339933;">*</span>ka<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span> regs<span style="color: #339933;">,</span> size_t frame_size<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> esp<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Default to using normal stack */</span>
+	esp <span style="color: #339933;">=</span> regs<span style="color: #339933;">-&gt;</span>esp<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* This is the X/Open sanctioned signal stack switching.  */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_ONSTACK<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *若SA_ONSTACK设置了的话，sas_ss_sp和sas_ss_size分别
+　　 *为所设置的堆栈位置和堆栈大小，忽略原来的regs保存的堆栈
+　　 * 	static inline int on_sig_stack(unsigned long sp)
+　　 *	{
+　　 *		return (sp - current-&gt;sas_ss_sp &lt; current-&gt;sas_ss_size);
+　　 *	}
+　　 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span> on_sig_stack<span style="color: #009900;">(</span>esp<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			esp <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>sas_ss_sp <span style="color: #339933;">+</span> current<span style="color: #339933;">-&gt;</span>sas_ss_size<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* This is the legacy signal stack switching. 
+　　 *旧方法，一般不再使用sa_restorer
+　　 */</span>
+	<span style="color: #b1b100;">else</span> <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>xss <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xffff</span><span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> __USER_DS <span style="color: #339933;">&amp;&amp;</span>
+		 <span style="color: #339933;">!</span><span style="color: #009900;">(</span>ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_flags</span> <span style="color: #339933;">&amp;</span> SA_RESTORER<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span>
+		 ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_restorer</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		esp <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> ka<span style="color: #339933;">-&gt;</span>sa.<span style="color: #202020;">sa_restorer</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *在用户堆栈上留下一个sigframe大小的空间
+　　 */</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #009900;">(</span><span style="color: #993333;">void</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span>esp <span style="color: #339933;">-</span> frame_size<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;</span> <span style="color: #339933;">-</span>8ul<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>setup_sigcontext()函数定义如下：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70425"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+</pre></td> 
+             <td class="code" id="p704code25"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span>
+setup_sigcontext<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sigcontext <span style="color: #339933;">*</span>sc<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> _fpstate <span style="color: #339933;">*</span>fpstate<span style="color: #339933;">,</span>
+		 <span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span>regs<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> mask<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> tmp<span style="color: #339933;">,</span> err <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+	tmp <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	__asm__<span style="color: #009900;">(</span><span style="color: #ff0000;">"movl %%gs,%0"</span> <span style="color: #339933;">:</span> <span style="color: #ff0000;">"=r"</span><span style="color: #009900;">(</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">:</span> <span style="color: #ff0000;">"0"</span><span style="color: #009900;">(</span>tmp<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>gs<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	__asm__<span style="color: #009900;">(</span><span style="color: #ff0000;">"movl %%fs,%0"</span> <span style="color: #339933;">:</span> <span style="color: #ff0000;">"=r"</span><span style="color: #009900;">(</span>tmp<span style="color: #009900;">)</span><span style="color: #339933;">:</span> <span style="color: #ff0000;">"0"</span><span style="color: #009900;">(</span>tmp<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>fs<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>xes<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>es<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>xds<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>ds<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>edi<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>edi<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>esi<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>esi<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>ebp<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>ebp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>esp<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>esp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>ebx<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>ebx<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>edx<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>edx<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>ecx<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>ecx<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>eax<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>eax<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">trap_no</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>trapno<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">error_code</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>eip<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>eip<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>xcs<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>cs<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>eflags<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>eflags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>esp<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>esp_at_signal<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>xss<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>ss<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	tmp <span style="color: #339933;">=</span> save_i387<span style="color: #009900;">(</span>fpstate<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>tmp <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+	  err <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">else</span>
+	  err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>tmp <span style="color: #339933;">?</span> fpstate <span style="color: #339933;">:</span> NULL<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>fpstate<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* non-iBCS2 extensions.. */</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>mask<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>oldmask<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	err <span style="color: #339933;">|=</span> __put_user<span style="color: #009900;">(</span>current<span style="color: #339933;">-&gt;</span>thread.<span style="color: #202020;">cr2</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sc<span style="color: #339933;">-&gt;</span>cr2<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>最后再说说<span style="font-family: 'Times New Roman';">sigreturn()</span><span style="font-family: 宋体;">系统调用。</span></p> 
+         <p>sigreturn()<span style="font-family: 宋体;">系统调用在内核中对应的是</span><span style="font-family: 'Times New Roman';">sys_sigreturn()</span><span style="font-family: 宋体;">，定义于</span><span style="font-family: 'Times New Roman';">arch/i386/kernel/signal.c</span><span style="font-family: 宋体;">中：</span></p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=704&amp;download=download.txt">download.txt</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p70426"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+</pre></td> 
+             <td class="code" id="p704code26"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">int</span> sys_sigreturn<span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> __unused<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span>regs <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pt_regs <span style="color: #339933;">*</span><span style="color: #009900;">)</span> <span style="color: #339933;">&amp;</span>__unused<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sigframe <span style="color: #339933;">*</span>frame <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sigframe <span style="color: #339933;">*</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>regs<span style="color: #339933;">-&gt;</span>esp <span style="color: #339933;">-</span> <span style="color: #0000dd;">8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sigset_t set<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> eax<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>verify_area<span style="color: #009900;">(</span>VERIFY_READ<span style="color: #339933;">,</span> frame<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>frame<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> badframe<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>__get_user<span style="color: #009900;">(</span>set.<span style="color: #202020;">sig</span><span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>sc.<span style="color: #202020;">oldmask</span><span style="color: #009900;">)</span>
+	    <span style="color: #339933;">||</span> <span style="color: #009900;">(</span>_NSIG_WORDS <span style="color: #339933;">&gt;</span> <span style="color: #0000dd;">1</span>
+		<span style="color: #339933;">&amp;&amp;</span> __copy_from_user<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>set.<span style="color: #202020;">sig</span><span style="color: #009900;">[</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>extramask<span style="color: #339933;">,</span>
+				    <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>frame<span style="color: #339933;">-&gt;</span>extramask<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> badframe<span style="color: #339933;">;</span>
+&nbsp;
+	sigdelsetmask<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>set<span style="color: #339933;">,</span> ~_BLOCKABLE<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	spin_lock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	current<span style="color: #339933;">-&gt;</span>blocked <span style="color: #339933;">=</span> set<span style="color: #339933;">;</span>
+	recalc_sigpending<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	spin_unlock_irq<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>current<span style="color: #339933;">-&gt;</span>sigmask_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>restore_sigcontext<span style="color: #009900;">(</span>regs<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>frame<span style="color: #339933;">-&gt;</span>sc<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>eax<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> badframe<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> eax<span style="color: #339933;">;</span>
+&nbsp;
+badframe<span style="color: #339933;">:</span>
+	force_sig<span style="color: #009900;">(</span>SIGSEGV<span style="color: #339933;">,</span> current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>代码就是恢复系统空间框架，不多说了。</p> 
+         <p>需要说明的是，在前面将<span style="font-family: 'Times New Roman';">regs</span><span style="font-family: 宋体;">中的</span><span style="font-family: 'Times New Roman';">eip</span><span style="font-family: 宋体;">设置为用户信号处理程序地址，那么用户处理程序的执行就不是通过“调用”来执行的，二是“返回”到了信号处理程序，所以就没有在堆栈中压入信号处理程序的返回地址，而在信号处理程序执行完成后执行</span><span style="font-family: 'Times New Roman';">return</span><span style="font-family: 宋体;">指令的时候就将本该是返回地址的地方保存的内容当作返回地址返回，这个内容就是堆栈里面保存的</span><span style="font-family: 'Times New Roman';">sigframe</span><span style="font-family: 宋体;">中的</span><span style="font-family: 'Times New Roman';">pretcode</span><span style="font-family: 宋体;">，也就是从</span><span style="font-family: 'Times New Roman';">pretcode</span><span style="font-family: 宋体;">这个地址开始执行，这个地址就是设定好的返回地址，在里面执行</span><span style="font-family: 'Times New Roman';">sigreturn()</span><span style="font-family: 宋体;">等函数。</span></p> 
+         <p>&nbsp;</p> 
+         <p>The&nbsp;End.</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-704 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

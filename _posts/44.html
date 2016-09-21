@@ -1,0 +1,223 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-44 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-44" class="post-44 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;408&nbsp;–&nbsp;Uniform&nbsp;Generator&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=44" title="上午 11:48" rel="bookmark"><time class="entry-date" datetime="2011-06-04T11:48:11+00:00" pubdate>4 六月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=44#comments" title="Comment on UVA&nbsp;408&nbsp;–&nbsp;Uniform&nbsp;Generator&nbsp;解题报告">2 Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 水题，求两个数的最大公约数</p> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: simsun; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font size="5" color="#C0FFFF">Uniform Generator</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> Computer simulations often require random numbers. One way to<br> generate pseudo-random numbers is via a function of the form</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> <img width="404" height="18" align="bottom" alt="displaymath29" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/4/408img1.gif" name="image_operate_95921307159792120" title="UVA&nbsp;<wbr>408&nbsp;<wbr>-&nbsp;<wbr>Uniform&nbsp;<wbr>Generator&nbsp;<wbr>解题报告"><wbr>408&nbsp;<wbr>-&nbsp;<wbr>Uniform&nbsp;<wbr>Generator&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> where “&nbsp;<wbr><img width="13" height="27" align="middle" alt="tex2html_wrap_inline31" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/4/408img2.gif" title="UVA&nbsp;<wbr>408&nbsp;<wbr>-&nbsp;<wbr>Uniform&nbsp;<wbr>Generator&nbsp;<wbr>解题报告"><wbr>408&nbsp;<wbr>-&nbsp;<wbr>Uniform&nbsp;<wbr>Generator&nbsp;<wbr>解题报告” /&gt;&nbsp;<wbr>”<br> is the modulus operator.</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;">Such<br> a function will generate pseudo-random numbers (<i>seed</i>)<br> between 0 and&nbsp;<wbr><i>MOD</i>-1. One problem with<br> functions of this form is that they will always generate the same<br> pattern over and over. In order to minimize this effect, selecting<br> the&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>and&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>values<br> carefully can result in a uniform distribution of all values<br> between (and including) 0 and&nbsp;<wbr><i>MOD</i>-1.</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;">For<br> example, if&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>= 3<br> and&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>= 5, the function<br> will generate the series of pseudo-random numbers 0, 3, 1, 4, 2 in<br> a repeating cycle. In this example, all of the numbers between and<br> including 0 and&nbsp;<wbr><i>MOD</i>-1 will be generated<br> every&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>iterations of<br> the function. Note that by the nature of the function to generate<br> the same<i>seed</i>(<i>x</i>+1) every<br> time&nbsp;<wbr><i>seed</i>(<i>x</i>) occurs means that if a<br> function will generate all the numbers between 0 and<i>MOD</i>-1,<br> it will generate pseudo-random numbers uniformly with<br> every&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>iterations.</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> If&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>= 15<br> and&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>= 20, the function<br> generates the series 0, 15, 10, 5 (or any other repeating series if<br> the initial seed is other than 0). This is a poor selection<br> of&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>and&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>because<br> no initial seed will generate all of the numbers from 0<br> and&nbsp;<wbr><i>MOD</i>-1.</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;">Your<br> program will determine if choices<br> of&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>and&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>will<br> generate a uniform distribution of pseudo-random numbers.</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; line-height: normal; font-size: medium;"> <a name="SECTION0001001000000000000000"><font color="#0070E8">Input</font></a></h2> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;">Each<br> line of input will contain a pair of integers<br> for&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>and&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>in<br> that order (&nbsp;<wbr><img width="211" height="25" align="middle" alt="tex2html_wrap_inline77" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/4/408img3.gif" title="UVA&nbsp;<wbr>408&nbsp;<wbr>-&nbsp;<wbr>Uniform&nbsp;<wbr>Generator&nbsp;<wbr>解题报告"><wbr>408&nbsp;<wbr>-&nbsp;<wbr>Uniform&nbsp;<wbr>Generator&nbsp;<wbr>解题报告” /&gt;&nbsp;<wbr>).</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; line-height: normal; font-size: medium;"> <a name="SECTION0001002000000000000000"><font color="#0070E8">Output</font></a></h2> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;">For<br> each line of input, your program should print<br> the&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>value right-<br> justified in columns 1 through 10,<br> the&nbsp;<wbr><i>MOD</i>&nbsp;<wbr>value<br> right-justified in columns 11 through 20 and either “<tt>Good<br> Choice</tt>” or “<tt>Bad Choice</tt>” left-justified starting in<br> column 25. The “<tt>Good Choice</tt>” message should be printed<br> when the selection<br> of&nbsp;<wbr><i>STEP</i>&nbsp;<wbr>and<i>MOD</i>&nbsp;<wbr>will<br> generate all the numbers between and including 0<br> and&nbsp;<wbr><i>MOD</i>-1 when MOD numbers are generated.<br> Otherwise, your program should print the message “<tt>Bad<br> Choice</tt>“. After each output test set, your program should print<br> exactly one blank line.</p> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; line-height: normal; font-size: medium;"> <a name="SECTION0001003000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<font size="3"><span style="line-height: normal;">3 5</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: normal;">15 20</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: normal;">63923 99999</span></font>
+</pre> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; line-height: normal; font-size: medium;"> <a name="SECTION0001004000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <p style="font-family: simsun; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">&nbsp;<wbr>&nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr> 3 &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr> 5 &nbsp;<wbr> &nbsp;<wbr>Good Choice</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">&nbsp;<wbr>&nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr>15 &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr> &nbsp;<wbr>20 &nbsp;<wbr> &nbsp;<wbr>Bad Choice</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">&nbsp;<wbr>&nbsp;<wbr> &nbsp;<wbr> 63923 &nbsp;<wbr> &nbsp;<wbr> 99999 &nbsp;<wbr> &nbsp;<wbr>Good Choice</span></font>
+</pre> 
+          <div style="font-family: simsun; line-height: normal; font-size: medium;">
+            代码： 
+          </div> 
+          <div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;"><br></span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">#include&lt;iostream&gt;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">#include&lt;iomanip&gt;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">#include&lt;algorithm&gt;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">#include&lt;fstream&gt;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">using<br> namespace std;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;"><br></span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">int gcd(int<br> a,int b)</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">{</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">if(b==0)return<br> a;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">return<br> gcd(b,a%b);</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">}</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;"><br></span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">int<br> main()</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">{</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">//<br> freopen(“test.txt”,”r”,stdin);</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">int<br> a,b;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">while(cin&gt;&gt;a&gt;&gt;b)</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">{</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">cout&lt;&lt;setw(10)&lt;&lt;a&lt;&lt;setw(10)&lt;&lt;b;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">if(a&lt;b)swap(a,b);</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">if(gcd(a,b)==1)</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">{</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">cout&lt;&lt;”<br> &nbsp;<wbr> &nbsp;<wbr>Good<br> Choice”&lt;&lt;endl&lt;&lt;endl;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">}</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">else<br> cout&lt;&lt;” &nbsp;<wbr><br> &nbsp;<wbr>Bad<br> Choice”&lt;&lt;endl&lt;&lt;endl;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">}</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">return<br> 0;</span></font> 
+           </div> 
+           <div> 
+            <font size="3"><span style="line-height: 24px;">}</span></font> 
+           </div> 
+           <div style="font-family: simsun; line-height: normal; font-size: medium;"> 
+           </div> 
+          </div> 
+          <div style="font-family: simsun; line-height: normal; font-size: medium;"> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-44 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

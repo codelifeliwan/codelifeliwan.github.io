@@ -1,0 +1,236 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-23 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-23" class="post-23 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;591&nbsp;–&nbsp;Box&nbsp;of&nbsp;Bricks&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=23" title="下午 6:26" rel="bookmark"><time class="entry-date" datetime="2011-05-17T18:26:49+00:00" pubdate>17 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=23#comments" title="Comment on UVA&nbsp;591&nbsp;–&nbsp;Box&nbsp;of&nbsp;Bricks&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目很没意思，就是求个平均值什么的，注意最后输出的时候要多加个空行（WA了一次）</p> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <center> 
+           <p></p> 
+           <h1 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> </h1> 
+           <p></p> 
+          </center> 
+          <p></p> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font size="5" color="#C0FFFF"><a name="SECTION0001000000000000000000">Box of<br> Bricks</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Little Bob likes playing with his box of bricks. He puts the bricks<br> one upon another and builds stacks of different height. “Look,<br> I’ve built a wall!”, he tells his older sister Alice. “Nah, you<br> should make all stacks the same height. Then you would have a real<br> wall.”, she retorts. After a little con- sideration, Bob sees that<br> she is right. So he sets out to rearrange the bricks, one by one,<br> such that all stacks are the same height afterwards. But since Bob<br> is lazy he wants to do this with the minimum number of bricks<br> moved. Can you help?</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <div align="center" style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> 
+           <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/p591.gif" alt="UVA&nbsp;<wbr>591&nbsp;<wbr>-&nbsp;<wbr>Box&nbsp;<wbr>of&nbsp;<wbr>Bricks&nbsp;<wbr>解题报告"> 
+           <wbr>591&nbsp; 
+           <wbr>-&nbsp; 
+           <wbr>Box&nbsp; 
+           <wbr>of&nbsp; 
+           <wbr>Bricks&nbsp; 
+           <wbr>解题报告” TITLE=”UVA&nbsp; 
+           <wbr>591&nbsp; 
+           <wbr>-&nbsp; 
+           <wbr>Box&nbsp; 
+           <wbr>of&nbsp; 
+           <wbr>Bricks&nbsp; 
+           <wbr>解题报告” /&gt; 
+          </div> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001001000000000000000">Input</a>&nbsp;<wbr></font></h2> 
+          <p><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">The<br> input consists of several data sets. Each set begins with a line<br> containing the number</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><i>n</i></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">of<br> stacks Bob has built. The next line contains</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><i>n</i></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">numbers,<br> the heights</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><i>h</i></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><sub><i>i</i></sub></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">of<br> the</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><i>n</i></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">stacks.<br> You may assume</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><img width="88" height="30" align="middle" border="0" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/591img1.gif" alt="$1 Ÿle n leŸ 50$" title="UVA&nbsp;<wbr>591&nbsp;<wbr>-&nbsp;<wbr>Box&nbsp;<wbr>of&nbsp;<wbr>Bricks&nbsp;<wbr>解题报告"><wbr>591&nbsp;<wbr>-&nbsp;<wbr>Box&nbsp;<wbr>of&nbsp;<wbr>Bricks&nbsp;<wbr>解题报告” /&gt;</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">and</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><img width="101" height="32" align="middle" border="0" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/591img2.gif" alt="$1 leŸ h_i Ÿle 100$" title="UVA&nbsp;<wbr>591&nbsp;<wbr>-&nbsp;<wbr>Box&nbsp;<wbr>of&nbsp;<wbr>Bricks&nbsp;<wbr>解题报告"><wbr>591&nbsp;<wbr>-&nbsp;<wbr>Box&nbsp;<wbr>of&nbsp;<wbr>Bricks&nbsp;<wbr>解题报告” /&gt;</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">.</span></p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> The total number of bricks will be divisible by the number of<br> stacks. Thus, it is always possible to rearrange the bricks such<br> that all stacks have the same height.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> The input is terminated by a set starting<br> with&nbsp;<wbr><i>n</i>&nbsp;<wbr>= 0. This set<br> should not be processed.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001002000000000000000">Output</a>&nbsp;<wbr></font></h2> 
+          <p><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">For<br> each set, first print the number of the set, as shown in the sample<br> output. Then print the line “</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><tt>The<br> minimum number of moves<br> is&nbsp;<wbr></tt></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><i>k</i></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">.”,<br> where</span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"><i>k</i></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">&nbsp;<wbr></span><span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">is<br> the minimum number of bricks that have to be moved in order to make<br> all the stacks the same height.</span></p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> Output a blank line after each set.</p> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;<wbr></font></h2> 
+          <pre>
+<span style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;">6&nbsp;<wbr></span>
+</pre> 
+          <pre>
+5 2 4 1 7 5
+</pre> 
+          <pre>
+0
+</pre> 
+          <p style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> &nbsp;<wbr></p> 
+          <h2 style="font-family: simsun; font-weight: normal; line-height: normal; font-size: medium;"> <font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+Set #1&nbsp;<wbr>
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+The minimum number of moves is 5.
+</pre> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+<br>
+</pre> 
+          <pre style="font-family: simsun; font-weight: bold; line-height: normal; font-size: medium;">
+代码：
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;iostream&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">#include&lt;fstream&gt;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">using namespace std;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">int Num[50];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><br></span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">int main()</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int n;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int mark=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>while(cin&gt;&gt;n&amp;&amp;n)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>mark++;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int sum=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;n;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cin&gt;&gt;Num[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>sum+=Num[i];</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int ave=sum/n;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>int num=0;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>for(int i=0;i&lt;n;i++)</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>{</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>if(Num[i]&gt;ave)num+=(Num[i]-ave);</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>cout&lt;&lt;"Set #"&lt;&lt;mark&lt;&lt;endl&lt;&lt;"The minimum number of moves is "&lt;&lt;num&lt;&lt;"."&lt;&lt;endl&lt;&lt;endl;</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>}</span></font>
+</pre> 
+          <pre>
+<font size="3"><span style="line-height: 24px;"><span style="white-space:pre"> </span>return 0;</span></font>
+</pre> 
+          <pre>
+<font face="宋体, Verdana, Arial, Helvetica, sans-serif" size="3"><span style="line-height: 24px;">}</span></font>
+</pre> 
+          <div style="font-family: simsun; font-weight: bold; line-height: normal; font-size: medium;"> 
+          </div> 
+          <pre style="font-weight: normal; font-family: simsun; line-height: normal; font-size: medium;">
+<br>
+</pre> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-23 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

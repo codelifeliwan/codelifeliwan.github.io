@@ -1,0 +1,155 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-215 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-215" class="post-215 post type-post status-publish format-standard hentry category-professional_exchanges tag-mp3"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">MP3编码方式</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=215" title="下午 2:43" rel="bookmark"><time class="entry-date" datetime="2012-02-04T14:43:35+00:00" pubdate>4 二月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=215#respond" title="Comment on MP3编码方式">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 来自： <a href="http://www.mp4tech.net/document/audiocomp/0000315.asp">http://www.mp4tech.net/document/audiocomp/0000315.asp</a></p> 
+         <div> 
+          <h3 style="font-family: simsun; line-height: normal; text-align: -webkit-left;"> 1、Mp3的文件结构</h3> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> Mp3的文件结构如下图所示：</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/mp3structure.gif" alt="mp3文件结构" width="421" height="121" title="MP3编码方式"><br> <strong style="font-size: 12px;">mp3文件结构</strong></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> Mp3码流是图中绿色的部分并不包括ID3信息，但现在的Mp3文件格式通常都包含ID3信息，用以记录Mp3的各种信息。于是在对Mp3文件解码时，还需要对ID3信息进行解复用。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> Mp3的编码器的数据流和控制流如下图所示：</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/1.gif" alt="mp3编码数据流和控制流" width="496" height="517" title="MP3编码方式"></p> 
+          <p align="center" style="font-size: 12px; font-family: simsun; line-height: normal;"> <strong>mp3编码数据流和控制流</strong></p> 
+          <h3 style="font-family: simsun; line-height: normal; text-align: -webkit-left;"> 2、混合多相滤波器（Hybrid Polyphase FilterBank）</h3> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 混合多相滤波器（也称为合成多相滤波器，上图简化称为滤波器组）的作用是将输入的时域PCM码流转化为分为若干子带的频域值。</p> 
+          <table width="80%" border="2" align="center" cellpadding="10" cellspacing="10" bordercolor="#000000" bgcolor="#FFCCFF" style="color: rgb(0, 0, 0); font-family: simsun; font-size: medium;"> 
+           <tbody> 
+            <tr> 
+             <td> <p><strong>mp3编码的输入和输出信号是什么？</strong>mpeg layer3<br> 编码的输入信号是PCM码流，输出是Mp3码流</p> <p><strong>为什么要将PCM时域值转化为频域值</strong>？这是因为这样可以去除时域值的相关性。</p> <p> <strong>为什么时域值会有相关性</strong>？这里的相关性是指邻近的时域采样点具有相似的振幅。因为自然世界中同一个音源的声音绝大多数都是连续变化的，这样就使得最终合成的声音的采样值在很大程度上都是具有相关性的。即使在较大的时间尺度上不是，将它划分成非常小的时间区间后，前一个时间区间和后一个时间区间都是具有相似的振幅的（即导数存在，不为无穷大）。</p> <p> <strong>为什么要去除时域值的相关性</strong>？这是因为这样更利于提高一组采样值的编码效率。想像一下一个正弦波信号</p> <p align="center">y(t) = Asin(wt + phi)</p> <p>的n个采样点，如果对它每个时域值进行编码，则需记录下n个采样点的振幅值，但如果用频<br> 频进行编码，则只用记录下w、A和phi即可，这就像是找到了一组数据的规律一样，用最小的代价记录下了这n个振幅值。</p> <p> 如果这并不是一个标准的正弦波，则可以想像，对n个采样点的记录可以分为两个部分：(1)记录下规律的部分(2)记录下剩下的不规律的部分。无论如何只要有(1)的步骤存在，其编码效率必然大于时域编码。</p> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 混合多相滤波器组是由多相滤波器组(Polyphase<br> filterbank)和MDCT滤波器组合而成的。其中多相滤波器组是所有MPEG1音频都会用到的滤波器组。</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <br> <img border="0" width="342" height="256" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/0000315_clip_image001.gif" alt="Polyphase " title="MP3编码方式"><strong><br> <span style="font-size: 12px;">多相滤波器组工作原理图</span></strong></p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <strong>多相滤波器组</strong></h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 多相滤波器组通过一组带通滤波器（FIR滤波器）将输入的1152个采样值在频域上划分成32个相等的子带，每个子带有36个采样值。注意这并非是无损转化，即使不通过量化，这种转化也将带来音质的损失，只是在特殊的设计下音质的损失非常小，几乎难以察觉。</p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <strong>MDCT（Modified Discrete Cosine Transform<br> 改进的离散余弦变换）滤波器</strong></h4> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img border="0" width="397" height="262" src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/image002.gif" alt="MDCT" title="MP3编码方式"><br> <strong><span style="font-size: 12px;">改进的离散余弦变换滤波器工作原理图</span></strong></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> MDCT滤波器对多相滤波器组造成的滤波缺陷作出补偿，和多相滤波器一同构成混合滤波器，混合滤波器可以针对信号特性进行较好的匹配（比如依赖于信号特性的长短块转换）。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> MDCT滤波器将32个子带中每一个子带的的信号在频域上进一步划分，长块进行18点（18个频域采样点）的MDCT变换，短块进行6点（6个频域采样点）的MDCT变换。</p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <strong>长块</strong></h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 长块是指对18个采样点进行一次MDCT变换的一组采样值，相对于只对6个采样值进行变换的短块来说，采样点组成的“块”似乎更“长”故命名为长块。在相同的频域范围内，由于长块的采样值更多，所以会有更高的“频域分辨率”（这里可以想像同一屏幕下640*480的分辨率大于320*240的分辨率）。而相对的，由于是对18个点进行运动平均(running<br> average)（请参阅FIR滤波器特性）的原因，在时间上变化的处理就不如短块(只有6个点)来得及时，准确，所以会有更低的“时域分辨率”。（想象一头大象不可能像一只老鼠那样在变速跑动)</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 每一个子带的18个频域采样值组成的长块被MDCT滤波器转化成为18个频域系数，总共得到32*18 =<br> 576个频域系数（也要频率线）。每个系数代表了在48kHz采样率下的41.67Hz的带宽。相邻的转换窗（采样器指定的采样点个数，参看信号处理中窗的概念）会有50%的重叠，所以窗的长度为36个采样点。</p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <strong>短块</strong></h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 短块有更高的时域分辨率，即对短时间变化较大的声音能有更精确的拟合能力。每个子带被转化为6个频域参数，总共得到32*6 =<br> 192个频域系数（也叫频率线），每个系数代表了48kHz采样率下的125Hz的带宽。同上，相邻的转换窗（参看信号处理中窗的概念）会有50%的重叠，所以窗的长度为12个采样点。</p> 
+          <table width="82%" border="2" align="center" cellpadding="10" cellspacing="10" bordercolor="#000000" bgcolor="#FFCCFF" style="color: rgb(0, 0, 0); font-family: simsun; font-size: medium;"> 
+           <tbody> 
+            <tr> 
+             <td> <p><strong>到底是用长块还是用短块？</strong>长短块的转换依赖于心理声学模型。</p> <p> <strong>长短块和混合块都是必需的吗？</strong>不，完全可能在一帧数据（1152个采样点)中完全是长块或完全是短块或是完全是混合块。</p> <p><strong>MDCT是否也会造成声音信号的丢失？</strong>MDCT滤波器的变换是无损（声音内容不会丢失）的。</p> <p><strong>为什么要进行混迭还原（Alias<br> Reduction)？</strong>一旦经过MDCT变换，由多相滤波器引起的频域中的音频信号混迭(aliasing)将会被部分消除掉。在解码时则需要对这些混迭进行还原（alias<br> reduction)以使得合成多相滤波器能够顺利地重建原来的声音信号。</p> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <h3 style="font-family: simsun; line-height: normal; text-align: -webkit-left;"> 3、心理声学模型</h3> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 心理声学模型应用在Mp3的目的是使得mp3编码变换所造成的声音质量损失是“不可察觉”的。众所周知跟APE不一样，mp3编码是一种有损编码，这是因为要想让mp3文件方便传输、携带，文件必须缩小。关键的问题在于，如何使得在文件缩小的同时还能最大程度地保证声音质量。从mp3的普及程度来看，mp3编码很好的做到了这一点。而这里的关键技术就在于心理声学模型的引入。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 心理声学模型是大量听觉实验的结果抽象出来的一种算法。它的核心在于对输入的一组采样值计算出可允许（“不可察觉”）的量化误差。</p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 临界带（Critial band 又称为临界频带）</h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 临界带是指用噪声产生人刚好能听到的某个频率时，噪声的频带宽度，也就是说仅有频率分量落入某个临界带中时，人才能感受到这个频率。人的耳朵能感受许多不同的频率，也即人耳的听觉频谱可划分成为不同的临界带，在相同的临界带中人的听觉感知能力是相似的，即觉得在这一范围内的声音频率是相似的。这样，在大量实验后，在20Hz到20kHz（人的听觉上下限）之间就划分出了25个不同的临界带。如下图所示：</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/criticalband.gif" alt="关键频带" width="573" height="448" title="MP3编码方式"><br> <span style="font-size: 12px;"><strong>临界频带</strong></span></p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/criticalband_fre.gif" alt="关键频带频谱" width="520" height="429" title="MP3编码方式"><br> <span style="font-size: 12px;"><strong>临界频带频谱</strong></span></p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 绝对听觉阈值</h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 在不同频率下人耳能察觉到的响度是不一样的，在20Hz到20kHz之间某一频率对应的响度值如果太低，人耳就不能听到，人耳刚好能哆听到的这一响度值被称为“绝对听觉阈值”。绝对听觉阈值的频谱如下图所示，它表示了人耳在不同频率下能听到的声压大小。</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/thres.gif" alt="绝对听觉门限" width="571" height="448" title="MP3编码方式"><br> <span style="font-size: 12px;"><strong>绝对听觉门限</strong></span></p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 遮掩效应（Masking Effect)</h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 遮掩效应简单的说是指原本人耳能听到的声音因为声音信号间的互相影响而变得听不到了。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 遮掩效应是人耳听觉系统的一个重要特性，正是因为这个效应的存在，使得mp3编码去除了大量的人耳察觉不到的信息，因此声音信号编码在大幅度缩减后还能保证人耳几乎察觉不到的音质损失。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 遮掩效应分为两种，时域遮掩和频域遮掩。</p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 时域遮掩（Temporal Masking）</h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 时域遮掩是指两个声音信号因为在时间上的相邻性而发生遮掩效应。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 时域遮掩又分为三种：前遮掩（Pre Masking）、同时遮掩（Simultaneous Masking)和后遮掩（Post<br> Masking） 分别对应于原始信号对于干扰信号所处的三种不同位置。如下图所示：</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/time_mask.gif" alt="时域遮掩" width="571" height="283" title="MP3编码方式"><br> <strong style="font-size: 12px;">时域遮掩</strong></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 这幅图表示了一个Masker信号对于在它前面的信号，和它同时的信号，在它之后的信号的影响强度。显然，绿色部分中，声音信号将被遮掩。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 后遮掩比前遮掩的时间更长，影响更大。由图可见，后遮掩对信号的影响时间持续了超过160ms，而前遮掩仅持续了20ms。</p> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 频域遮掩（Frequency Masking）</h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 频域遮掩效应指的是在具有相邻频域的信号也会发生遮掩效应。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 一个声音信号如果它的声压超过了绝对听觉阈值，则将会被人耳听到，但如果跟它频率相近而声压更大的声音信号存在，则将可能会变得不可察觉（想象一下在嘈杂的市场上常常听不清朋友说话）如下图所示：</p> 
+          <p align="center" style="font-family: simsun; line-height: normal; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/fre_mask.gif" alt="频域遮掩" width="508" height="408" title="MP3编码方式"><br> <strong style="font-size: 12px;">频域遮掩</strong></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 图中可以看到绝对听觉阈值（Threshold in Quiet）、没有被遮掩的声音信号（Non-masked<br> Sound），遮掩信号(Masker) 、遮掩阈值（Masking Threshold）、被遮掩的声音信号（Masked<br> Sound）。可以看到，遮掩信号改变了人耳能够听到的听觉阈值， 只有高于遮掩阈值(Masking<br> Threshold）的声音（图中绿色的声音信号）才可以被听到，低于遮掩阈值的声音（图中紫色声音信号）人耳不能察觉。于是mp3的心理声学模型将丢弃不可听到的紫色声音信号，而对于可以听到的绿色声音信号仅对其在遮掩阈值以上的部分进行编码，使得编码效率大大提高。</p> 
+          <table width="82%" border="2" align="center" cellpadding="10" cellspacing="10" bordercolor="#000000" bgcolor="#FFCCFF" style="color: rgb(0, 0, 0); font-family: simsun; font-size: medium;"> 
+           <tbody> 
+            <tr bordercolor="#000000" bgcolor="#FFCCFF"> 
+             <td> <p> <strong>MP3用了哪些心理声学模型？</strong>MPEG1标准推荐了两个心理声学模型，这里简称为I型和II型。理论上MPEG1<br> Layer 1, 2,3 都可以使用任意一个心理声学模型，但实际应用的结果是Layer 1和Layer 2一般使用心理声学模型I,<br> Layer 3一般使用心理声学模型II</p> <p> <strong>心理声学模型是必须的吗？</strong>不是必须的，心理声学模型的作用只是用来提高编码效率，减少声音信号的数据冗余。在需要快速编码而不担心编码大小的场合，完合可以使用不带心理声学模型的编码器。</p> <p> <strong>解码器和编码器都要使用心理声学模型？</strong>不，解码器完全不需要心理声学模型，心理声学模型仅在编码器中使用。</p> <p> <strong>心理声学模型II如何使用1024点的FFT去变换1152个信号的？</strong>心理声学模型II使用了两次FFT变换，第一次计算前1024个点，第二次计算剩余部分。</p> <p><strong>乐音指数(tonal<br> index)是什么？</strong>音调指数是心理声学模型中使用的，表示一个声音信号是否更像乐音（基音及泛音的正弦信号叠加）还是更像噪音（杂乱无章的正弦信号叠加）。</p> <p> <strong>为什么心理声学模型II要使用乐音指数？</strong>因为乐音和噪音的遮掩能力是不相同的。虽然心理声学模型II并不明确区分一个声音信号是乐音还是噪音，但它会使用乐音指数来对遮掩进行计算。</p> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <h4 style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 心理声学模型II的处理流程</h4> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 心理声学模型的处理流程是：</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 1.)对输入的1152个信号的每一半进行一个1024点的FFT（Fast Fourier<br> Transform快速傅叶变换），选择两半中最低的一个遮掩阈值作为此子带的遮掩阈值。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 2.)每个频率线均被映射到其对应的临界频带上。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 3.)计算乐音指数。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 4.）使用一个定义好的扩展函数来计算每个声音信号对相邻临界频带的遮掩效应。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 5.）计算每个子带最终的遮掩阈值。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 6.）计算每个子带的信掩比（SMR，Signal-to-Mask Ration）并将信息传递给量化器。</p> 
+          <h3 style="font-family: simsun; line-height: normal; text-align: -webkit-left;"> 3、量化</h3> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 量化的mp3采用的是非均匀量化（Non-uniform Qualization） 。这里的非均匀和在英语中的Non-uniform<br> 指的是量化的时候是一种非线性的量化关系，实际上，mp3压缩采用了下面的公式：</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/quantization.gif" alt="mp3量化公式" width="409" height="86" title="MP3编码方式"></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 其中xr(i)是量化前的频域响度，可以看到它和输出的量化值ix(i)是非线性关系，<br> nint指四舍五入地取整数，stepsize是要调整的量化步阶，可由下式求得：</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/stepsize.gif" width="405" height="56" alt="MP3编码方式" title="MP3编码方式"></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 其中</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://www.mp4tech.net/document/audiocomp/0000315/sfm.gif" width="293" height="140" alt="MP3编码方式" title="MP3编码方式"></p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> 量化主要的时间复杂度在于高整量化步阶，由于其输出不能高于<br> 14(哈夫量编码表最大值）＋8191(哈夫曼编码最大附加量化值linbits)=8207<br> ，所以这里必须调整量化步阶使量化值小于8207。</p> 
+          <p style="font-family: simsun; line-height: normal; text-align: -webkit-left; font-size: medium;"> &nbsp;<wbr></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-215 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

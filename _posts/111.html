@@ -1,0 +1,320 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-111 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-111" class="post-111 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;539&nbsp;–&nbsp;The&nbsp;Settlers&nbsp;of&nbsp;Catan&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=111" title="下午 6:51" rel="bookmark"><time class="entry-date" datetime="2011-08-01T18:51:04+00:00" pubdate>1 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=111#respond" title="Comment on UVA&nbsp;539&nbsp;–&nbsp;The&nbsp;Settlers&nbsp;of&nbsp;Catan&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 搜索即可，图为无向图。找出能走的不重复的边的最大数</p> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font color="#C0FFFF" size="5"><a name="SECTION0001000000000000000000">The Settlers of<br> Catan</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p>Within <em>Settlers of Catan</em>, the 1995 German game of the<br> year, players attempt to dominate an island by building roads,<br> settlements and cities across its uncharted wilderness.</p> 
+          <p>You are employed by a software company that just has decided to<br> develop a computer version of this game, and you are chosen to<br> implement one of the game’s special rules:</p> 
+          <p> When the game ends, the player who built the longest road gains two<br> extra victory points.</p> 
+          <p> The problem here is that the players usually build complex road<br> networks and not just one linear path. Therefore, determining the<br> longest road is not trivial (although human players usually see it<br> immediately).</p> 
+          <p> Compared to the original game, we will solve a simplified problem<br> here: You are given a set of nodes (cities) and a set of edges<br> (road segments) of length 1 connecting the nodes. The longest road<br> is defined as the longest path within the network that doesn’t use<br> an edge twice. Nodes may be visited more than once, though.</p> 
+          <p> Example: The following network contains a road of length 12.</p> 
+          <pre>
+o        o -- o        o
+       /            /
+  o -- o        o -- o
+ /            /      
+o        o -- o        o -- o
+                     /
+                o -- o
+</pre> 
+          <h2><font color="#0070E8"><a name="SECTION0001001000000000000000">Input</a>&nbsp;<wbr></font></h2> 
+          <p>The input file will contain one or more test cases.</p> 
+          <p>The first line of each test case contains two integers: the<br> number of nodes <i>n</i> ( <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/539img1.gif" alt="$2 le n le 25$" height="30" width="88" align="middle" border="0" title="UVA&nbsp;<wbr>539&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>Settlers&nbsp;<wbr>of&nbsp;<wbr>Catan&nbsp;<wbr>解题报告"><wbr>539&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>Settlers&nbsp;<wbr>of&nbsp;<wbr>Catan&nbsp;<wbr>解题报告” /&gt;) and the number of edges <i>m</i> ( <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/539img2.gif" alt="$1 le m le 25$" height="30" width="92" align="middle" border="0" title="UVA&nbsp;<wbr>539&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>Settlers&nbsp;<wbr>of&nbsp;<wbr>Catan&nbsp;<wbr>解题报告"><wbr>539&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>Settlers&nbsp;<wbr>of&nbsp;<wbr>Catan&nbsp;<wbr>解题报告” /&gt;). The next <i>m</i> lines describe the <i>m</i> edges. Each<br> edge is given by the numbers of the two nodes connected by it.<br> Nodes are numbered from 0 to <i>n</i>-1. Edges are undirected.<br> Nodes have degrees of three or less. The network is not<br> neccessarily connected.</p> 
+          <p>Input will be terminated by two values of 0 for <i>n</i> and<br> <i>m</i>.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001002000000000000000">Output</a>&nbsp;<wbr></font></h2> 
+          <p>For each test case, print the length of the longest road on a<br> single line.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;<wbr></font></h2> 
+          <pre>
+3 2
+</pre> 
+          <pre>
+0 1
+</pre> 
+          <pre>
+1 2
+</pre> 
+          <pre>
+15 16
+</pre> 
+          <pre>
+0 2
+</pre> 
+          <pre>
+1 2
+</pre> 
+          <pre>
+2 3
+</pre> 
+          <pre>
+3 4
+</pre> 
+          <pre>
+3 5
+</pre> 
+          <pre>
+4 6
+</pre> 
+          <pre>
+5 7
+</pre> 
+          <pre>
+6 8
+</pre> 
+          <pre>
+7 8
+</pre> 
+          <pre>
+7 9
+</pre> 
+          <pre>
+8 10
+</pre> 
+          <pre>
+9 11
+</pre> 
+          <pre>
+10 12
+</pre> 
+          <pre>
+11 12
+</pre> 
+          <pre>
+10 13
+</pre> 
+          <pre>
+12 14
+</pre> 
+          <pre>
+0 0
+</pre> 
+          <h2><font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <pre>
+2&nbsp;<wbr>
+</pre> 
+          <pre>
+12&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+#define maxn 30
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+int map[maxn][maxn];
+</pre> 
+          <pre>
+int vis[maxn][maxn];
+</pre> 
+          <pre>
+int point_num;
+</pre> 
+          <pre>
+int edge_num;
+</pre> 
+          <pre>
+int max_num;
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+void dfs(int n,int num){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(num&gt;max_num)max_num=num;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;point_num;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(i!=n&amp;&amp;!vis[n][i]&amp;&amp;map[n][i]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[n][i]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[i][n]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(i,num+1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[n][i]=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[i][n]=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;point_num&gt;&gt;edge_num){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(0==point_num&amp;&amp;0==edge_num)break;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(map,0,sizeof(map));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>max_num=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;edge_num;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int a,b;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;a&gt;&gt;b;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>map[a][b]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>map[b][a]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;point_num;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dfs(i,0);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;max_num&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-111 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

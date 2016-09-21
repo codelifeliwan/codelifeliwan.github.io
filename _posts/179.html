@@ -1,0 +1,289 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-179 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-179" class="post-179 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java多线程【二、线程常用操作方法】</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=179" title="下午 8:00" rel="bookmark"><time class="entry-date" datetime="2011-09-29T20:00:17+00:00" pubdate>29 九月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=179#respond" title="Comment on Java多线程【二、线程常用操作方法】">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="layout-grid:15.6000pt;"> 
+          <h1 style="margin-bottom:0pt; margin-top:0pt; text-align:center;"> <span style="mso-spacerun:'yes'; font-weight:bold; font-size:22.0000pt; font-family:'宋体';"><br> 线程常用操作方法</span></h1> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">几乎所有操作方法都在</span><span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread<font face="宋体">类里面！！！</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">只要方法如下：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100x3pl&amp;url=http://s12.sinaimg.cn/orignal/6730a3aag77ceba2c208b" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s12.sinaimg.cn/middle/6730a3aag77ceba2c208b&amp;690" name="image_operate_20061317297734926" alt="Java多线程【二、线程常用操作方法】" title="Java多线程【二、线程常用操作方法】"></a></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">下面进行应用：</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest002</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>t=new&nbsp;<wbr>Thread(“Test_Thread”);//<font face="宋体">实例化并设置线程名称</font></span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“The&nbsp;<wbr>Thread&nbsp;<wbr>name&nbsp;<wbr>is&nbsp;<wbr>:&nbsp;<wbr>“+t.getName());//<font face="宋体">取得线程名称</font></span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">t.setName(“TTT”);</span><br> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">//<font face="宋体">设置线程名称</font></span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“The&nbsp;<wbr>Thread&nbsp;<wbr>name&nbsp;<wbr>is&nbsp;<wbr>:&nbsp;<wbr>“+t.getName());//<font face="宋体">取得线程名称</font></span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> &nbsp;<wbr></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">运行结果如下：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">The&nbsp;<wbr>Thread&nbsp;<wbr>name&nbsp;<wbr>is&nbsp;<wbr>:&nbsp;<wbr>Test_Thread</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">The&nbsp;<wbr>Thread&nbsp;<wbr>name&nbsp;<wbr>is&nbsp;<wbr>:&nbsp;<wbr>TTT</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">再看下面代码：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">for(int&nbsp;<wbr>i=0;i&lt;3;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(Thread.currentThread().getName()+”&nbsp;<wbr>i=&nbsp;<wbr>“+i);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest002</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">new&nbsp;<wbr>Thread(t,”–001–“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">new&nbsp;<wbr>Thread(t,”–002–“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">new&nbsp;<wbr>Thread(t,”–003–“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">这里，在<font face="Times New Roman">run</font><font face="宋体">方法中使用了取得当前进程方法：</font><font face="Times New Roman">currentThread()</font><font face="宋体">，然后输出进程名字，注意在</font><font face="Times New Roman">Thread</font><font face="宋体">类的构造方法的使用！</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">运行结果：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–001–&nbsp;<wbr>i=&nbsp;<wbr>0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–001–&nbsp;<wbr>i=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–003–&nbsp;<wbr>i=&nbsp;<wbr>0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–003–&nbsp;<wbr>i=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–003–&nbsp;<wbr>i=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–002–&nbsp;<wbr>i=&nbsp;<wbr>0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–002–&nbsp;<wbr>i=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–002–&nbsp;<wbr>i=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">–001–&nbsp;<wbr>i=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(255,0,0); font-size:10.5000pt; font-family:'宋体';"><br> 注：若没有设线程名，那么系统自动设置。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">可以通过<font face="Times New Roman">isAlive()</font><font face="宋体">方法来判断线程是否正在执行。看如下例子：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">int&nbsp;<wbr>tmp=10;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">for(int&nbsp;<wbr>i=0;i&lt;10;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">if(tmp&gt;=0)</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(Thread.currentThread().getName()+”&nbsp;<wbr>tmp=&nbsp;<wbr>“+tmp–);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest002</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>tt=new&nbsp;<wbr>Thread(t,”Thread&nbsp;<wbr>“);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“before&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">tt.start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“in&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">for(int&nbsp;<wbr>i=0;i&lt;10;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;”+i);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“after&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">下面看看多次运行时的结果：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">第一次：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">before&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">in&nbsp;<wbr>Thread–&gt;true</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>10</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>9</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>8</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>7</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>6</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;6</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;7</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;8</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;9</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:bold; font-size:10.5000pt; font-family:'宋体';"><br> after&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">第二次：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">before&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">in&nbsp;<wbr>Thread–&gt;true</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>10</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>9</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>8</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>7</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>6</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;6</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;7</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;8</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">main&nbsp;<wbr>Thread&nbsp;<wbr>running–&gt;9</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:bold; font-size:10.5000pt; font-family:'宋体';"><br> after&nbsp;<wbr>Thread–&gt;true</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>tmp=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">下面看<font face="Times New Roman">after&nbsp;<wbr>Thread</font><font face="宋体">这一行：一个是</font><font face="Times New Roman">false</font><font face="宋体">，一个是</font><font face="Times New Roman">true</font><font face="宋体">，说明线程运行不是固定的，不知道什么时候结束。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">线程强制运行：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">把上面代码改改看下面代码：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">for(int&nbsp;<wbr>i=0;i&lt;10;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(Thread.currentThread().getName()+”&nbsp;<wbr>i=&nbsp;<wbr>“+i);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest002</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>tt=new&nbsp;<wbr>Thread(t,”Thread&nbsp;<wbr>“);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“before&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">tt.start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">tt.join();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}catch(Exception&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">e.printStackTrace();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“in&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“after&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">这里使用了<font face="Times New Roman">join</font><font face="宋体">方法，其作用是强制运行某个线程，等待线程结束，结果如下：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">before&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>6</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>7</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>8</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>&nbsp;<wbr>i=&nbsp;<wbr>9</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">in&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">after&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">可以看看<font face="Times New Roman">in&nbsp;<wbr>Thread</font><font face="宋体">这一行：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">in&nbsp;<wbr>Thread–&gt;false</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">这个足以说明在运行<font face="Times New Roman">System.out.println(“in&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</font><font face="宋体">这行之前，线程已经运行完毕了！</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">线程休眠：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">使用<font face="Times New Roman">sleep</font><font face="宋体">方法，使线程休眠</font><font face="Times New Roman">x</font><font face="宋体">毫秒【需要抛出异常】。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">看如下程序：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">for(int&nbsp;<wbr>i=0;i&lt;10;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread.sleep(1000);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}catch(Exception&nbsp;<wbr>e){}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(Thread.currentThread().getName()+”&nbsp;<wbr>i=&nbsp;<wbr>“+i);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest002</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread&nbsp;<wbr>tt=new&nbsp;<wbr>Thread(t,”Thread&nbsp;<wbr>“);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“before&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">tt.start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">//</span><br> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">tt.join();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}catch(Exception&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">e.printStackTrace();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“in&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“after&nbsp;<wbr>Thread–&gt;”+tt.isAlive());</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么输出的时候是一秒一秒的输出的，每隔一秒输出一行。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">线程中断，中断即不执行下面内容，用<font face="Times New Roman">interrupt()</font><font face="宋体">方法。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">后台线程：使用<font face="Times New Roman">setDaemon()</font><font face="宋体">方法例如：</font><font face="Times New Roman">t.setDaemon(true)</font><font face="宋体">就是设置</font><font face="Times New Roman">t</font><font face="宋体">线程后台可以执行。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-179 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

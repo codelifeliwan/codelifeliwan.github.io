@@ -1,0 +1,205 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-147 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-147" class="post-147 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10465&nbsp;–&nbsp;Homer&nbsp;Simpson&nbsp;（贪心？&nbsp;DP？）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=147" title="下午 3:43" rel="bookmark"><time class="entry-date" datetime="2011-08-13T15:43:53+00:00" pubdate>13 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=147#respond" title="Comment on UVA&nbsp;10465&nbsp;–&nbsp;Homer&nbsp;Simpson&nbsp;（贪心？&nbsp;DP？）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 题目：</p> 
+         <div> 
+          <table width="100%" align="center"> 
+           <tbody> 
+            <tr> 
+             <td width="25%" bgcolor="black"><font color="white" size="6">Problem C:</font></td> 
+             <td bgcolor="darkgray"><font size="6">Homer Simpson</font></td> 
+            </tr> 
+            <tr> 
+             <td colspan="2" align="center"> Time Limit: 3 seconds<br> Memory Limit: 32 MB</td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <hr> 
+          <table width="100%"> 
+           <tbody> 
+            <tr> 
+             <td width="20%" align="left"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/104/p10465.jpg" alt="UVA&nbsp;<wbr>10465&nbsp;<wbr>-&nbsp;<wbr>Homer&nbsp;<wbr>Simpson&nbsp;<wbr>（贪心？&nbsp;<wbr>DP？）"><wbr>10465&nbsp;<wbr>-&nbsp;<wbr>Homer&nbsp;<wbr>Simpson&nbsp;<wbr>（贪心？&nbsp;<wbr>DP？）” TITLE=”UVA&nbsp;<wbr>10465&nbsp;<wbr>-&nbsp;<wbr>Homer&nbsp;<wbr>Simpson&nbsp;<wbr>（贪心？&nbsp;<wbr>DP？）” /&gt;</td> 
+             <td>Homer Simpson, a very smart guy, likes eating Krusty-burgers.<br> It takes Homer m minutes to eat a Krusty- burger. However, there�s<br> a new type of burger in Apu�s Kwik-e-Mart. Homer likes those too.<br> It takes him n minutes to eat one of these burgers. Given t<br> minutes, you have to find out the maximum number of burgers Homer<br> can eat without wasting any time. If he must waste time, he can<br> have beer.</td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <h3>Input</h3> 
+          <p>Input consists of several test cases. Each test case consists of<br> three integers <b>m, n, t (0 &lt; m,n,t<br> &lt; 10000)</b>. Input is terminated by EOF.</p> 
+          <h3>Output</h3> 
+          <p>For each test case, print in a single line the maximum number of<br> burgers Homer can eat without having beer. If homer must have beer,<br> then also print the time he gets for drinking, separated by a<br> single space. It is preferable that Homer drinks as little beer as<br> possible.</p> 
+          <h3>Sample Input</h3> 
+          <pre>
+3 5 54&nbsp;<wbr>
+</pre> 
+          <pre>
+3 5 55
+</pre> 
+          <h3>Sample Output</h3> 
+          <pre>
+18
+</pre> 
+          <pre>
+17&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int m,n,t;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;m&gt;&gt;n&gt;&gt;t){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(m&gt;n)swap(m,n);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int max=t/m;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int min_beer=t-max*m;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;=t/n;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int tmp_max=(t-n*i)/m+i;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int tmp_minbeer=t-((tmp_max-i)*m+i*n);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(tmp_minbeer&gt;=0&amp;&amp;tmp_minbeer&lt;min_beer){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>max=tmp_max;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>min_beer=tmp_minbeer;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(tmp_minbeer==0)break;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;max;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(min_beer!=0)cout&lt;&lt;" "&lt;&lt;min_beer;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-147 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

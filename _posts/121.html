@@ -1,0 +1,263 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-121 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-121" class="post-121 post type-post status-publish format-standard hentry category-java tag-zatan"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java基础（一）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=121" title="下午 9:02" rel="bookmark"><time class="entry-date" datetime="2011-08-04T21:02:37+00:00" pubdate>4 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=121#respond" title="Comment on Java基础（一）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p><font color="#FF0000">声明：此文假定读者已学会C/C++</font></p> 
+         <div> 
+          <p></p> 
+          <div>
+            常用输入输出： 
+          </div> 
+          <div>
+            System.out.print()输出不自动换行 
+          </div> 
+          <div>
+            System.out.println()输出自动换行 
+          </div> 
+          <div>
+            System.out.printf()和C相似 
+          </div> 
+          <div>
+            System.in.read()一次读取一个字节 
+          </div> 
+          <div></div> 
+          <div>
+            Java数据类型： 
+          </div> 
+          <div>
+            与C++一样，Java有int,double等类型，但是不同的是，C++里面的bool型与java的不一样，java叫boolean，而不是写作bool。其各种数据表示范围与现在C的新标准差不多，号称Java能盛的下全宇宙的数据，也不过如此，做ACM大数运算的时候还是不行。。。。。 
+          </div> 
+          <div>
+            另外，Java里面的常量不是使用const，而是使用final关键字，而且final申请的变量可是事先不赋值，但是只能赋值一次。 
+          </div> 
+          <div>
+            在运算符方面，Java与C++基本相似，但是有一点需要说明： 
+          </div> 
+          <div>
+            在C++里面使用&amp;&amp;表示‘与’逻辑关系，在Java同样，但是大家知道，在C++里面，我有这样的式子： 
+          </div> 
+          <div>
+            int a=0; 
+          </div> 
+          <div>
+            int b=1; 
+          </div> 
+          <div>
+            if(a&amp;&amp;b++); 
+          </div> 
+          <div>
+            那么最后b的值为1，为什么呢，因为if语句执行前面的为假以后，后面的就不执行了。同理，Java也是这样。 
+          </div> 
+          <div>
+            但是在Java里面这个叫做短与，还有一种长与，只用一个符号表示：&amp;，它执行完前面以后后面也是会执行的。 
+          </div> 
+          <div>
+            同理，有短或’||’和长或‘|’。 
+          </div> 
+          <div>
+            Java里面的强制转换和C一样，(int)a; 
+          </div> 
+          <div> 
+           <font color="#ED1C24">强调：Java没有指针类型和联合类型。</font> 
+          </div> 
+          <div></div> 
+          <div>
+            数组： 
+          </div> 
+          <div>
+            数组声明格式可以事先不说明大小，例如：int a[];或 int[] a;a=new int[5]; 
+          </div> 
+         </div> 
+         <div>
+           也可以说明大小例如：int a[]=new int[5]; 
+         </div> 
+         <div>
+           同理，二维数组一样例如： 
+         </div> 
+         <div>
+           int a[][];a=new int[2][3]; 
+         </div> 
+         <div>
+           int a[][]=new int[2][3]; 
+         </div> 
+         <div>
+           这里使用数组名.length来表示数组大小。例如： 
+         </div> 
+         <div>
+           int a[]=new int[5]; 
+         </div> 
+         <div>
+           那么a.length就等于5。 
+         </div> 
+         <div> 
+          <div>
+            public class test { 
+          </div> 
+          <div>
+            public static void main(String args[]){ 
+          </div> 
+          <div>
+            int a[]=new int[5]; 
+          </div> 
+          <div>
+            System.out.println(a.length); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div>
+           二维数组：int a[][]=new int[2][3]; 
+         </div> 
+         <div>
+           那么a.length为2，a[0].length为3。 
+         </div> 
+         <div> 
+          <div>
+            public class test { 
+          </div> 
+          <div>
+            public static void main(String args[]){ 
+          </div> 
+          <div>
+            int a[][]=new int[2][3]; 
+          </div> 
+          <div>
+            System.out.println(a.length); 
+          </div> 
+          <div>
+            System.out.println(a[0].length); 
+          </div> 
+          <div>
+            } 
+          </div> 
+          <div>
+            } 
+          </div> 
+         </div> 
+         <div></div> 
+         <div>
+           方法： 
+         </div> 
+         <div>
+           方法，在C++又叫函数，使用方法和C++差不多。 
+         </div> 
+         <div> 
+          <font color="#FF0000">注意：static<br> 方法只能调用static方法和使用非本方法自己定义的static变量！</font> 
+         </div> 
+         <div></div> 
+         <div>
+           字符串： 
+         </div> 
+         <div>
+           Java里面的字符串是一个String类，跟字符数组不一样，也要跟C++里面的string类区分开来。 
+         </div> 
+         <div>
+           有一点： 
+         </div> 
+         <div>
+           Java里面可以使用字符串常量相加的形式例如： 
+         </div> 
+         <div>
+           String S=”Hello “+”World!”; 
+         </div> 
+         <div>
+           而C++不行，具体原因在此不细说。 
+         </div> 
+         <div> 
+          <font color="#FF0000">注意：不能使用字符数组风格：S[0]：错误！！！</font> 
+         </div> 
+         <div> 
+          <font color="#FF0000"><br></font> 
+         </div> 
+         <div>
+           使用方法来操纵字符串，常用方法如下： 
+         </div> 
+         <div>
+           int length() 
+         </div> 
+         <div>
+           boolean equals(Object obj)比较是否相等 
+         </div> 
+         <div>
+           char charAt(int index)返回index指定的字符 
+         </div> 
+         <div>
+           String substring(int begin)返回从begin到最后的子串 
+         </div> 
+         <div>
+           String substring(int begin,int end)返回从begin到end-1的子串 
+         </div> 
+         <div>
+           static String format(String format,…)返回format指定格式的字符串 
+         </div> 
+         <div></div> 
+         <div>
+           The end！ 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-121 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

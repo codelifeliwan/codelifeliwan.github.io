@@ -1,0 +1,463 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-582 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-582" class="post-582 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-内存管理（五、物理页面分配）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=582" title="下午 8:23" rel="bookmark"><time class="entry-date" datetime="2012-09-15T20:23:48+00:00" pubdate>15 九月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=582#respond" title="Comment on Linux内核-内存管理（五、物理页面分配）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div> 
+          <p>本章是讲内存管理中的物理页面的使用、周转和分配的。 
+           <!--?xml:namespace prefix = "o" ns = "urn:schemas-microsoft-com:office:office" /--></p> 
+          <p>首先，这里的物理页面不仅仅指的是内存的物理页面，也指一些磁盘等等这些物理页面。也就是说指的是物理存储介质的页面。</p> 
+          <p>这里假设读者已经学过操作系统相关知识。</p> 
+          <p>首先要讲的是交换设备的数据结构定义。在Linux<span style="font-family: 宋体;">中，设备也是被当作文件看待的。所以定义交换设备和文件用的是同一个数据结构</span><span style="font-family: Times New Roman;">swap_info_struct</span><span style="font-family: 宋体;">，定义在</span><span style="font-family: Times New Roman;">include/linux/swap.h</span><span style="font-family: 宋体;">中，以后说设备和文件是一样的，不加区分：</span></p> 
+          <p>struct&nbsp;swap_info_struct&nbsp;{</p> 
+          <p>unsigned&nbsp;int&nbsp;flags;</p> 
+          <p>kdev_t&nbsp;swap_device;</p> 
+          <p>spinlock_t&nbsp;sdev_lock;</p> 
+          <p>struct&nbsp;dentry&nbsp;*&nbsp;swap_file;</p> 
+          <p>struct&nbsp;vfsmount&nbsp;*swap_vfsmnt;</p> 
+          <p>unsigned&nbsp;short&nbsp;*&nbsp;swap_map;</p> 
+          <p>unsigned&nbsp;int&nbsp;lowest_bit;</p> 
+          <p>unsigned&nbsp;int&nbsp;highest_bit;</p> 
+          <p>unsigned&nbsp;int&nbsp;cluster_next;</p> 
+          <p>unsigned&nbsp;int&nbsp;cluster_nr;</p> 
+          <p>int&nbsp;prio; /*&nbsp;swap&nbsp;priority&nbsp;*/</p> 
+          <p>int&nbsp;pages;</p> 
+          <p>unsigned&nbsp;long&nbsp;max;</p> 
+          <p>int&nbsp;next; /*&nbsp;next&nbsp;entry&nbsp;on&nbsp;swap&nbsp;list&nbsp;*/</p> 
+          <p>};</p> 
+          <p>其中<span style="font-family: Times New Roman;">flags</span><span style="font-family: 宋体;">是一些标志用的，用到的时候再说，</span><span style="font-family: Times New Roman;">swap_map</span><span style="font-family: 宋体;">指向一个数组，数组的大小为</span><span style="font-family: Times New Roman;">pages</span><span style="font-family: 宋体;">，数组中每个短整数代表了盘上（或者文件中）的一个物理页面信息（页面使用计数），数组的下标表示其在交换设备上的位置。</span></p> 
+          <p>而在每个交换设备上<span style="font-family: Times New Roman;">swap_map[0]</span><span style="font-family: 宋体;">是不用于页面交换的，它存储了自身的一些信息，根据交换设备的不同，这些信息所占的空间也不一样。</span><span style="font-family: Times New Roman;">lowest_bit</span><span style="font-family: 宋体;">和</span><span style="font-family: Times New Roman;">highest_bit</span><span style="font-family: 宋体;">表示了交换设备的可交换区间的起始和结束页面。</span></p> 
+          <p>max<span style="font-family: 宋体;">表示了设备的最大页面号，也就是设备或者文件的物理大小。</span></p> 
+          <p>next<span style="font-family: 宋体;">指针是用来指向下一个设备的入口的。</span></p> 
+          <p>Linux<span style="font-family: 宋体;">内核允许多个交换设备，所以在内核中就定义了一个数组来列出各个交换设备，在</span><span style="font-family: Times New Roman;">mm/swapfile.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>struct&nbsp;swap_info_struct&nbsp;swap_info[MAX_SWAPFILES];</p> 
+          <p>&nbsp;</p> 
+          <p>同时在<span style="font-family: Times New Roman;">include/linux/swap.h</span><span style="font-family: 宋体;">中又定义了一个数据结构</span><span style="font-family: Times New Roman;">swap_list_t</span><span style="font-family: 宋体;">：</span></p> 
+          <p>struct&nbsp;swap_list_t&nbsp;{</p> 
+          <p>int&nbsp;head; /*&nbsp;head&nbsp;of&nbsp;priority-ordered&nbsp;swapfile&nbsp;list&nbsp;*/</p> 
+          <p>int&nbsp;next; /*&nbsp;swapfile&nbsp;to&nbsp;be&nbsp;used&nbsp;next&nbsp;*/</p> 
+          <p>};</p> 
+          <p>这个数据结构用来把各个可供分配物理页面的设备按照优先级顺序链接起来。定义及其初始化如下<span style="font-family: Times New Roman;">(mm/swapfile.c)</span><span style="font-family: 宋体;">：</span></p> 
+          <p>struct&nbsp;swap_list_t&nbsp;swap_list&nbsp;=&nbsp;{-1,&nbsp;-1};</p> 
+          <p>&nbsp;</p> 
+          <p>上篇文章说到过，在异常处理的时候有一类是页表不空，但是存在位为<span style="font-family: Times New Roman;">0</span><span style="font-family: 宋体;">，表示也不在内存，其实那时候页表已经不是页表的结构了，页表项里面存的是一个</span><span style="font-family: Times New Roman;">swp_entry_t</span><span style="font-family: 宋体;">类型的数据结构：</span></p> 
+          <p>typedef&nbsp;struct{</p> 
+          <p>unsigned&nbsp;long&nbsp;val;</p> 
+          <p>}&nbsp;swp_entry_t;</p> 
+          <p>它同页表项一样，是个<span style="font-family: Times New Roman;">32</span><span style="font-family: 宋体;">位无符号整数，此数分为三个部分如下：</span></p> 
+          <p><a href="uploads/2012/09/Pic1.jpg"><img class="aligncenter size-full wp-image-583" title="Pic1" src="uploads/2012/09/Pic1.jpg" alt="" width="563" height="44"></a></p> 
+          <p>在页表中，最低位表示页面存在位，这里的最低位为<span style="font-family: Times New Roman;">0</span><span style="font-family: 宋体;">表示页面不在内存，当发生页面不在内存异常的时候由某个自定义的程序进行特定处理</span><span style="font-family: Times New Roman;">(</span>do_swap_page)<span style="font-family: 宋体;">。</span></p> 
+          <p>Type<span style="font-family: 宋体;">的</span><span style="font-family: Times New Roman;">7</span><span style="font-family: 宋体;">位表示的是交换设备的下标，也就是</span><span style="font-family: Times New Roman;">swap_info</span><span style="font-family: 宋体;">数组的下标，表示的是哪一个交换设备。</span></p> 
+          <p>Offset<span style="font-family: 宋体;">的</span><span style="font-family: Times New Roman;">24</span><span style="font-family: 宋体;">位表示的是页面在交换区中的位置，也就是在交换设备中页面号。</span></p> 
+          <p>在<span style="font-family: Times New Roman;">include/asm-i386/pgtable.h</span><span style="font-family: 宋体;">中还有定义如下：</span></p> 
+          <p>/*&nbsp;Encode&nbsp;and&nbsp;de-code&nbsp;a&nbsp;swap&nbsp;entry&nbsp;*/</p> 
+          <p>#define&nbsp;SWP_TYPE(x) (((x).val&nbsp;&gt;&gt;&nbsp;1)&nbsp;&amp;&nbsp;0x3f)</p> 
+          <p>#define&nbsp;SWP_OFFSET(x) ((x).val&nbsp;&gt;&gt;&nbsp;8)</p> 
+          <p>#define&nbsp;SWP_ENTRY(type,&nbsp;offset) ((swp_entry_t)&nbsp;{&nbsp;((type)&nbsp;&lt;&lt;&nbsp;1)&nbsp;|&nbsp;((offset)&nbsp;&lt;&lt;&nbsp;8)&nbsp;})</p> 
+          <p>#define&nbsp;pte_to_swp_entry(pte) ((swp_entry_t)&nbsp;{&nbsp;(pte).pte_low&nbsp;})</p> 
+          <p>#define&nbsp;swp_entry_to_pte(x) ((pte_t)&nbsp;{&nbsp;(x).val&nbsp;})</p> 
+          <p>其中<span style="font-family: Times New Roman;">SWP_TYPE</span><span style="font-family: 宋体;">取得</span><span style="font-family: Times New Roman;">Type</span><span style="font-family: 宋体;">的</span><span style="font-family: Times New Roman;">7</span><span style="font-family: 宋体;">位，</span><span style="font-family: Times New Roman;">SWP_OFFSET</span><span style="font-family: 宋体;">取得</span><span style="font-family: Times New Roman;">Offset</span><span style="font-family: 宋体;">的</span><span style="font-family: Times New Roman;">24</span><span style="font-family: 宋体;">位，</span><span style="font-family: Times New Roman;">SWP_ENTRY</span><span style="font-family: 宋体;">表示用</span><span style="font-family: Times New Roman;">Type</span><span style="font-family: 宋体;">和</span><span style="font-family: Times New Roman;">Offset</span><span style="font-family: 宋体;">拼接一个</span><span style="font-family: Times New Roman;">swp_entry_t</span><span style="font-family: 宋体;">，剩下两个是</span><span style="font-family: Times New Roman;">pte_t</span><span style="font-family: 宋体;">和</span><span style="font-family: Times New Roman;">swp_entry_t</span><span style="font-family: 宋体;">互相强制转换。</span></p> 
+          <p>所以，当页表项的最低位为<span style="font-family: Times New Roman;">1</span><span style="font-family: 宋体;">的时候，页表中结构表明了地址映射关系，当为最低位为</span><span style="font-family: Times New Roman;">0</span><span style="font-family: 宋体;">而页表项不为空的时候</span><span style="font-family: Times New Roman;">CPU</span><span style="font-family: 宋体;">忽略其他位，此页表项指明了页面的去向，然后再通过软件来处理，在这一点上，</span><span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">的设计是非常巧妙的。</span></p> 
+          <p>为了更好理解，读者可以看看<span style="font-family: Times New Roman;">mm/swapfile.c</span><span style="font-family: 宋体;">中的</span><span style="font-family: Times New Roman;">__swap_free</span><span style="font-family: 宋体;">函数，这个函数是用来释放磁盘页面的，理解起来比较简单，在此就不啰嗦了。</span></p> 
+          <p>&nbsp;</p> 
+          <p>除了物理页面的分配、使用和回收以外，盘区交换也很重要，至于为什么交换我也就不多说。交换的页面都是映射到用户空间的页面，而内核空间就不进行交换。</p> 
+          <p>这里需要特别说明，所以的物理页面在内核上都有映射，用户空间指的是那些至少有一个进程的用户空间映射的页面，交换的时候是不会影响内核映射的。</p> 
+          <p>用户空间的页面有以下几种：</p> 
+          <p>·普通的用户页面。</p> 
+          <p>·映射到用户空间已经打开的文件内容。</p> 
+          <p>·进程间的共享内存区。</p> 
+          <p>常驻内存的页面可以分为两类，一类是用完之后可以立即释放，一类是可能还有其他使用价值。</p> 
+          <p>在内存中一般尽量腾出一些空白页面来“应急”，所以在系统相对空闲的时候就挑选一些页面预先换出来腾出页面，维持一定的页面供应量。</p> 
+          <p>在<span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">中页面的换出和内存页面的释放分成两步来做：</span></p> 
+          <p>1、准备换出时，将相应页面写入磁盘页面，将页表项改成<span style="font-family: Times New Roman;">swp_entry_t</span><span style="font-family: 宋体;">的数据类型来指明物理页面所在的设备和位置。将对应内存页面的</span><span style="font-family: Times New Roman;">page</span><span style="font-family: 宋体;">结构留在一个暂存队列中。</span></p> 
+          <p>2、不断老化然后真正释放。</p> 
+          <p>&nbsp;</p> 
+          <p>物理内存页面的换入换出周转如下图所示：</p> 
+          <p><a href="uploads/2012/09/Pic2.jpg"><img class="aligncenter size-full wp-image-584" title="Pic2" src="uploads/2012/09/Pic2.jpg" alt="" width="719" height="616"></a></p> 
+          <p>其中，这些队列中，active_list<span style="font-family: 宋体;">和</span><span style="font-family: Times New Roman;">inactive_dirty_list</span><span style="font-family: 宋体;">是两个全局</span><span style="font-family: Times New Roman;">LRU</span><span style="font-family: 宋体;">队列，而</span><span style="font-family: Times New Roman;">inactive_clean_list</span><span style="font-family: 宋体;">是每个页面管理区中有一个。根据</span><span style="font-family: Times New Roman;">page</span><span style="font-family: 宋体;">结构在这些</span><span style="font-family: Times New Roman;">LRU</span><span style="font-family: 宋体;">队列中的位置可以知道其转入不活跃状态的相对时间长短，为回收页面做参考。</span></p> 
+          <p>同时，为了管理全部的可交换内存页面，<span style="font-family: Times New Roman;">Linux</span><span style="font-family: 宋体;">还定义了一个数据结构：</span><span style="font-family: Times New Roman;">address_space</span><span style="font-family: 宋体;">，</span><span style="font-family: Times New Roman;">address_space</span><span style="font-family: 宋体;">定义在</span><span style="font-family: Times New Roman;">include/linux/fs.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>struct&nbsp;address_space&nbsp;{</p> 
+          <p>struct&nbsp;list_head clean_pages; /*&nbsp;list&nbsp;of&nbsp;clean&nbsp;pages&nbsp;*/</p> 
+          <p>struct&nbsp;list_head dirty_pages; /*&nbsp;list&nbsp;of&nbsp;dirty&nbsp;pages&nbsp;*/</p> 
+          <p>struct&nbsp;list_head locked_pages; /*&nbsp;list&nbsp;of&nbsp;locked&nbsp;pages&nbsp;*/</p> 
+          <p>unsigned&nbsp;long nrpages; /*&nbsp;number&nbsp;of&nbsp;total&nbsp;pages&nbsp;*/</p> 
+          <p>struct&nbsp;address_space_operations&nbsp;*a_ops; /*&nbsp;methods&nbsp;*/</p> 
+          <p>struct&nbsp;inode *host; /*&nbsp;owner:&nbsp;inode,&nbsp;block_device&nbsp;*/</p> 
+          <p>struct&nbsp;vm_area_struct *i_mmap; /*&nbsp;list&nbsp;of&nbsp;private&nbsp;mappings&nbsp;*/</p> 
+          <p>struct&nbsp;vm_area_struct *i_mmap_shared;&nbsp;/*&nbsp;list&nbsp;of&nbsp;shared&nbsp;mappings&nbsp;*/</p> 
+          <p>spinlock_t i_shared_lock;&nbsp;&nbsp;/*&nbsp;and&nbsp;spinlock&nbsp;protecting&nbsp;it&nbsp;*/</p> 
+          <p>};</p> 
+          <p>开头的三个<span style="font-family: Times New Roman;">list_head</span><span style="font-family: 宋体;">结构分别用于“干净”的页面、“脏”的页面和暂时锁定在内存中不让换出的页面。</span></p> 
+          <p>其具体实例化是定义在<span style="font-family: Times New Roman;">mm/swap_state.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>struct&nbsp;address_space&nbsp;swapper_space&nbsp;=&nbsp;{</p> 
+          <p>LIST_HEAD_INIT(swapper_space.clean_pages),</p> 
+          <p>LIST_HEAD_INIT(swapper_space.dirty_pages),</p> 
+          <p>LIST_HEAD_INIT(swapper_space.locked_pages),</p> 
+          <p>0, /*&nbsp;nrpages */</p> 
+          <p>&amp;swap_aops,</p> 
+          <p>};</p> 
+          <p>每一个可交换的内存页面的<span style="font-family: Times New Roman;">page</span><span style="font-family: 宋体;">结构都通过其字段</span><span style="font-family: Times New Roman;">list</span><span style="font-family: 宋体;">来链入其中的一个链。</span></p> 
+          <p>此外，为了加快在暂存队列中的搜索，又设置了一个杂凑表<span style="font-family: Times New Roman;">page_hash_table</span><span style="font-family: 宋体;">。</span></p> 
+          <p>也就是说，在进行交换页面操作的时候一般要考虑三个队列：一是活跃<span style="font-family: Times New Roman;">/</span><span style="font-family: 宋体;">不活跃队列，二是全局管理的队列，也就是</span><span style="font-family: Times New Roman;">address_space</span><span style="font-family: 宋体;">的队列，三是</span><span style="font-family: Times New Roman;">hash</span><span style="font-family: 宋体;">杂凑队列。</span></p> 
+          <p>至于有关操作太多，就放在用到的时候再说吧。</p> 
+          <p>&nbsp;</p> 
+          <p>关于物理页面的分配是个比较复杂的过程，而且我自己理解的也有点乱，我尽量查资料说清楚，里面的细节尽量解释清楚，当然我理解的也不一定是对的，所以您要是看到错误的地方或者理解不同的地方请尽量能联系我，谢谢！</p> 
+          <p>大家都知道，出于对内存质地一致性的考虑，内存分为<span style="font-family: Times New Roman;">NUMA</span><span style="font-family: 宋体;">，也就是不均匀存储介质，和</span><span style="font-family: Times New Roman;">UMA</span><span style="font-family: 宋体;">，也就是均匀存储介质。</span></p> 
+          <p>对于<span style="font-family: Times New Roman;">UMA</span><span style="font-family: 宋体;">，由于只有一个存储节点，所以只需要进行一次扫描，而对于</span><span style="font-family: Times New Roman;">NUMA</span><span style="font-family: 宋体;">，则从当前节点开始扫描，找不到合适的内存页面的时候从头开始到当前节点扫描，其他的都一样。下面为了说明问题，只说</span><span style="font-family: Times New Roman;">NUMA</span><span style="font-family: 宋体;">的情况。</span></p> 
+          <p>还记得前面说<span style="font-family: Times New Roman;">zonelist_t</span><span style="font-family: 宋体;">数据结构的时候讲的分配策略吗？也就是一个数组，描述了一个存储节点中的管理区的分配顺序，当扫描一个存储节点之前就要确定这个分配策略。然后将分配策略作为参数来传入来对每个存储节点的管理区进行特定顺序的扫描。</span></p> 
+          <p>当需要分配的连续页面为<span style="font-family: Times New Roman;">1</span><span style="font-family: 宋体;">并且满足其他特定要求的时候可以考虑从“不活跃干净页面”缓冲队列中回收，因为这些页面都是离散的，所以只能用于连续页面为</span><span style="font-family: Times New Roman;">1</span><span style="font-family: 宋体;">的分配。</span></p> 
+          <p>若不满足上述要求或者未分配到页面则进行一般页面分配处理。</p> 
+          <p>在讲<span style="font-family: Times New Roman;">zone_struct</span><span style="font-family: 宋体;">数据结构的时候里面有几个字段</span><span style="font-family: Times New Roman;">pages_min,pages_low,pages_high</span><span style="font-family: 宋体;">来表示管理区中一般预留的空白页面，同样在进行内存分配的时候也是得参照预留空白页面来进行。</span></p> 
+          <p>第一次进行页面搜索的时候尽量找页面剩余量在底线之上的页面，如果发现页面剩余量在底线之下了就调用一些方法来设法腾出一些空白页面。</p> 
+          <p>如果第一轮没有分配到合适页面，那么就加大力度进行第二轮搜索和第三轮搜索，这时候搜索的底线依次降低，由于第一轮搜索已经释放了部分“不活跃干净页面”，所以这里搜索时把“不活跃干净页面”也考虑进去了。</p> 
+          <p>要是还没有分配到内存的话就设法换出一部分页面并且为其他进程让路，在降低搜索底线来进行再一次搜索。</p> 
+          <p>如果还是没有分配到页面就要看看是谁想要分配页面了，一方面是“内存分配者”想要分配页面，这样的话优先级肯定高，否则还可以再缓一缓。如果不是内存工作者的话要想方设法将“脏页”洗干净，然后纳入内存中希望拼接起来较大的连续空间。</p> 
+          <p>如果是“内存工作者”或者上面的方法还是不行的话，那就到了“不惜血本”来分配内存了。</p> 
+          <p>&nbsp;</p> 
+          <p>在进行页面搜索的时候按照如下流程进行：</p> 
+          <p>1、依次搜索内存管理区。</p> 
+          <p>2、在每个内存管理区里面遍历搜索，首先找到剩余物理内存区和所需要连续内存大小 一样的队列里面分配，不行就换更大的。</p> 
+          <p>3、对于更大的内存块，将其每次除以<span style="font-family: Times New Roman;">2</span><span style="font-family: 宋体;">来链入连续内存小的队列。然后再比较，直到</span> 找到合适的为止。</p> 
+          <p>&nbsp;</p> 
+          <p>大体的程序流程如下所示：</p> 
+          <p><a href="uploads/2012/09/Linux5.svg" target="_blank">请点此查看图片</a></p> 
+          <p>至于具体实现几乎都在图里面了，函数名字以及路径说下就行了，读者可以自己看。</p> 
+          <p>内存分配的开始函数alloc_pages<span style="font-family: 宋体;">有两个，一个在</span><span style="font-family: Times New Roman;">mm/numa.c</span><span style="font-family: 宋体;">中，一个是在</span><span style="font-family: Times New Roman;">mm/page_alloc.c</span><span style="font-family: 宋体;">中，分别对应的是</span><span style="font-family: Times New Roman;">NUMA</span><span style="font-family: 宋体;">结构和</span><span style="font-family: Times New Roman;">UMA</span><span style="font-family: 宋体;">结构，在配置内核的时候选择到底使用哪个。</span></p> 
+          <p>在<span style="font-family: Times New Roman;">NUMA</span><span style="font-family: 宋体;">的函数调用</span><span style="font-family: Times New Roman;">alloc_pages_pgdat</span><span style="font-family: 宋体;">也是在</span><span style="font-family: Times New Roman;">mm/numa.c</span><span style="font-family: 宋体;">中。</span></p> 
+          <p>集中的调用是在<span style="font-family: Times New Roman;">mm/page_alloc.c</span><span style="font-family: 宋体;">中的</span><span style="font-family: Times New Roman;">__alloc_pages</span><span style="font-family: 宋体;">中，这个函数具体加上注释：</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;This&nbsp;is&nbsp;the&nbsp;‘heart’&nbsp;of&nbsp;the&nbsp;zoned&nbsp;buddy&nbsp;allocator:</p> 
+          <p>*/</p> 
+          <p>struct&nbsp;page&nbsp;*&nbsp;__alloc_pages(zonelist_t&nbsp;*zonelist,&nbsp;unsigned&nbsp;long&nbsp;order)</p> 
+          <p>{ //order<span style="font-family: 宋体;">标识需要的连续内存为</span><span style="font-family: Times New Roman;">2^order</span><span style="font-family: 宋体;">个页面。</span></p> 
+          <p>zone_t&nbsp;**zone;</p> 
+          <p>int&nbsp;direct_reclaim&nbsp;=&nbsp;0; //<span style="font-family: 宋体;">标识是否可以从相应页面管理区</span></p> 
+          <p>//<span style="font-family: 宋体;">的“不活跃干净页面”中回收</span></p> 
+          <p>unsigned&nbsp;int&nbsp;gfp_mask&nbsp;=&nbsp;zonelist-&gt;gfp_mask; //<span style="font-family: 宋体;">标识位</span></p> 
+          <p>struct&nbsp;page&nbsp;*&nbsp;page;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Allocations&nbsp;put&nbsp;pressure&nbsp;on&nbsp;the&nbsp;VM&nbsp;subsystem.</p> 
+          <p>*/</p> 
+          <p>memory_pressure++; //<span style="font-family: 宋体;">压力值，每分配一次加</span><span style="font-family: Times New Roman;">1</span><span style="font-family: 宋体;">，释放一次减</span><span style="font-family: Times New Roman;">1</span></p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;(If&nbsp;anyone&nbsp;calls&nbsp;gfp&nbsp;from&nbsp;interrupts&nbsp;nonatomically&nbsp;then&nbsp;it</p> 
+          <p>*&nbsp;will&nbsp;sooner&nbsp;or&nbsp;later&nbsp;tripped&nbsp;up&nbsp;by&nbsp;a&nbsp;schedule().)</p> 
+          <p>*</p> 
+          <p>*&nbsp;We&nbsp;are&nbsp;falling&nbsp;back&nbsp;to&nbsp;lower-level&nbsp;zones&nbsp;if&nbsp;allocation</p> 
+          <p>*&nbsp;in&nbsp;a&nbsp;higher&nbsp;zone&nbsp;fails.</p> 
+          <p>*/</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Can&nbsp;we&nbsp;take&nbsp;pages&nbsp;directly&nbsp;from&nbsp;the&nbsp;inactive_clean</p> 
+          <p>*&nbsp;list?</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(order&nbsp;==&nbsp;0&nbsp;&amp;&amp;&nbsp;(gfp_mask&nbsp;&amp;&nbsp;__GFP_WAIT)&nbsp;&amp;&amp;</p> 
+          <p>!(current-&gt;flags&nbsp;&amp;&nbsp;PF_MEMALLOC)) //<span style="font-family: 宋体;">表示若分配页面为单个页面</span></p> 
+          <p>//<span style="font-family: 宋体;">并且可以等待，且不为“执行</span> //<span style="font-family: 宋体;">公务”</span></p> 
+          <p>direct_reclaim&nbsp;=&nbsp;1;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;we&nbsp;are&nbsp;about&nbsp;to&nbsp;get&nbsp;low&nbsp;on&nbsp;free&nbsp;pages&nbsp;and&nbsp;we&nbsp;also&nbsp;have</p> 
+          <p>*&nbsp;an&nbsp;inactive&nbsp;page&nbsp;shortage,&nbsp;wake&nbsp;up&nbsp;kswapd.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(inactive_shortage()&nbsp;&gt;&nbsp;inactive_target&nbsp;/&nbsp;2&nbsp;&amp;&amp;&nbsp;free_shortage())</p> 
+          <p>wakeup_kswapd(0); //<span style="font-family: 宋体;">唤醒内存回收线程</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;we&nbsp;are&nbsp;about&nbsp;to&nbsp;get&nbsp;low&nbsp;on&nbsp;free&nbsp;pages&nbsp;and&nbsp;cleaning</p> 
+          <p>*&nbsp;the&nbsp;inactive_dirty&nbsp;pages&nbsp;would&nbsp;fix&nbsp;the&nbsp;situation,</p> 
+          <p>*&nbsp;wake&nbsp;up&nbsp;bdflush.</p> 
+          <p>*/</p> 
+          <p>else&nbsp;if&nbsp;(free_shortage()&nbsp;&amp;&amp;&nbsp;nr_inactive_dirty_pages&nbsp;&gt;&nbsp;free_shortage()</p> 
+          <p>&amp;&amp;&nbsp;nr_inactive_dirty_pages&nbsp;&gt;=&nbsp;freepages.high)</p> 
+          <p>wakeup_bdflush(0);</p> 
+          <p>&nbsp;</p> 
+          <p>try_again:</p> 
+          <p>/*</p> 
+          <p>*&nbsp;First,&nbsp;see&nbsp;if&nbsp;we&nbsp;have&nbsp;any&nbsp;zones&nbsp;with&nbsp;lots&nbsp;of&nbsp;free&nbsp;memory.</p> 
+          <p>*</p> 
+          <p>*&nbsp;We&nbsp;allocate&nbsp;free&nbsp;memory&nbsp;first&nbsp;because&nbsp;it&nbsp;doesn’t&nbsp;contain</p> 
+          <p>*&nbsp;any&nbsp;data&nbsp;…&nbsp;DUH!</p> 
+          <p>*/</p> 
+          <p>zone&nbsp;=&nbsp;zonelist-&gt;zones;</p> 
+          <p>for&nbsp;(;;)&nbsp;{ //<span style="font-family: 宋体;">扫描各个管理区</span></p> 
+          <p>zone_t&nbsp;*z&nbsp;=&nbsp;*(zone++);</p> 
+          <p>if&nbsp;(!z)</p> 
+          <p>break;</p> 
+          <p>if&nbsp;(!z-&gt;size)</p> 
+          <p>BUG();</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(z-&gt;free_pages&nbsp;&gt;=&nbsp;z-&gt;pages_low)&nbsp;{</p> 
+          <p>page&nbsp;=&nbsp;rmqueue(z,&nbsp;order); //<span style="font-family: 宋体;">此函数为图上最右边一栏</span></p> 
+          <p>//<span style="font-family: 宋体;">是在特定管理区内寻找特定</span></p> 
+          <p>//<span style="font-family: 宋体;">大小的函数。</span></p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>}&nbsp;else&nbsp;if&nbsp;(z-&gt;free_pages&nbsp;&lt;&nbsp;z-&gt;pages_min&nbsp;&amp;&amp;</p> 
+          <p>waitqueue_active(&amp;kreclaimd_wait))&nbsp;{</p> 
+          <p>wake_up_interruptible(&amp;kreclaimd_wait); //<span style="font-family: 宋体;">唤醒线程回收部分页面</span></p> 
+          <p>}</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Try&nbsp;to&nbsp;allocate&nbsp;a&nbsp;page&nbsp;from&nbsp;a&nbsp;zone&nbsp;with&nbsp;a&nbsp;HIGH</p> 
+          <p>*&nbsp;amount&nbsp;of&nbsp;free&nbsp;+&nbsp;inactive_clean&nbsp;pages.</p> 
+          <p>*</p> 
+          <p>*&nbsp;If&nbsp;there&nbsp;is&nbsp;a&nbsp;lot&nbsp;of&nbsp;activity,&nbsp;inactive_target</p> 
+          <p>*&nbsp;will&nbsp;be&nbsp;high&nbsp;and&nbsp;we’ll&nbsp;have&nbsp;a&nbsp;good&nbsp;chance&nbsp;of</p> 
+          <p>*&nbsp;finding&nbsp;a&nbsp;page&nbsp;using&nbsp;the&nbsp;HIGH&nbsp;limit.</p> 
+          <p>*/</p> 
+          <p>//<span style="font-family: 宋体;">降低“水位”再搜索</span></p> 
+          <p>page&nbsp;=&nbsp;__alloc_pages_limit(zonelist,&nbsp;order,&nbsp;PAGES_HIGH,&nbsp;direct_reclaim);</p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Then&nbsp;try&nbsp;to&nbsp;allocate&nbsp;a&nbsp;page&nbsp;from&nbsp;a&nbsp;zone&nbsp;with&nbsp;more</p> 
+          <p>*&nbsp;than&nbsp;zone-&gt;pages_low&nbsp;free&nbsp;+&nbsp;inactive_clean&nbsp;pages.</p> 
+          <p>*</p> 
+          <p>*&nbsp;When&nbsp;the&nbsp;working&nbsp;set&nbsp;is&nbsp;very&nbsp;large&nbsp;and&nbsp;VM&nbsp;activity</p> 
+          <p>*&nbsp;is&nbsp;low,&nbsp;we’re&nbsp;most&nbsp;likely&nbsp;to&nbsp;have&nbsp;our&nbsp;allocation</p> 
+          <p>*&nbsp;succeed&nbsp;here.</p> 
+          <p>*/</p> 
+          <p>//<span style="font-family: 宋体;">再降低“水位”再搜索</span></p> 
+          <p>page&nbsp;=&nbsp;__alloc_pages_limit(zonelist,&nbsp;order,&nbsp;PAGES_LOW,&nbsp;direct_reclaim);</p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;OK,&nbsp;none&nbsp;of&nbsp;the&nbsp;zones&nbsp;on&nbsp;our&nbsp;zonelist&nbsp;has&nbsp;lots</p> 
+          <p>*&nbsp;of&nbsp;pages&nbsp;free.</p> 
+          <p>*</p> 
+          <p>*&nbsp;We&nbsp;wake&nbsp;up&nbsp;kswapd,&nbsp;in&nbsp;the&nbsp;hope&nbsp;that&nbsp;kswapd&nbsp;will</p> 
+          <p>*&nbsp;resolve&nbsp;this&nbsp;situation&nbsp;before&nbsp;memory&nbsp;gets&nbsp;tight.</p> 
+          <p>*</p> 
+          <p>*&nbsp;We&nbsp;also&nbsp;yield&nbsp;the&nbsp;CPU,&nbsp;because&nbsp;that:</p> 
+          <p>*&nbsp;–&nbsp;gives&nbsp;kswapd&nbsp;a&nbsp;chance&nbsp;to&nbsp;do&nbsp;something</p> 
+          <p>*&nbsp;–&nbsp;slows&nbsp;down&nbsp;allocations,&nbsp;in&nbsp;particular&nbsp;the</p> 
+          <p>*&nbsp;&nbsp;&nbsp;allocations&nbsp;from&nbsp;the&nbsp;fast&nbsp;allocator&nbsp;that’s</p> 
+          <p>*&nbsp;&nbsp;&nbsp;causing&nbsp;the&nbsp;problems&nbsp;…</p> 
+          <p>*&nbsp;–&nbsp;…&nbsp;which&nbsp;minimises&nbsp;the&nbsp;impact&nbsp;the&nbsp;“bad&nbsp;guys”</p> 
+          <p>*&nbsp;&nbsp;&nbsp;have&nbsp;on&nbsp;the&nbsp;rest&nbsp;of&nbsp;the&nbsp;system</p> 
+          <p>*&nbsp;–&nbsp;if&nbsp;we&nbsp;don’t&nbsp;have&nbsp;__GFP_IO&nbsp;set,&nbsp;kswapd&nbsp;may&nbsp;be</p> 
+          <p>*&nbsp;&nbsp;&nbsp;able&nbsp;to&nbsp;free&nbsp;some&nbsp;memory&nbsp;we&nbsp;can’t&nbsp;free&nbsp;ourselves</p> 
+          <p>*/</p> 
+          <p>wakeup_kswapd(0); //<span style="font-family: 宋体;">唤醒线程回收内存页面</span></p> 
+          <p>if&nbsp;(gfp_mask&nbsp;&amp;&nbsp;__GFP_WAIT)&nbsp;{</p> 
+          <p>__set_current_state(TASK_RUNNING);</p> 
+          <p>current-&gt;policy&nbsp;|=&nbsp;SCHED_YIELD;</p> 
+          <p>schedule(); //<span style="font-family: 宋体;">进程调度程序</span></p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;After&nbsp;waking&nbsp;up&nbsp;kswapd,&nbsp;we&nbsp;try&nbsp;to&nbsp;allocate&nbsp;a&nbsp;page</p> 
+          <p>*&nbsp;from&nbsp;any&nbsp;zone&nbsp;which&nbsp;isn’t&nbsp;critical&nbsp;yet.</p> 
+          <p>*</p> 
+          <p>*&nbsp;Kswapd&nbsp;should,&nbsp;in&nbsp;most&nbsp;situations,&nbsp;bring&nbsp;the&nbsp;situation</p> 
+          <p>*&nbsp;back&nbsp;to&nbsp;normal&nbsp;in&nbsp;no&nbsp;time.</p> 
+          <p>*/</p> 
+          <p>//<span style="font-family: 宋体;">再次降低“水平线”进行搜索</span></p> 
+          <p>page&nbsp;=&nbsp;__alloc_pages_limit(zonelist,&nbsp;order,&nbsp;PAGES_MIN,&nbsp;direct_reclaim);</p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Damn,&nbsp;we&nbsp;didn’t&nbsp;succeed.</p> 
+          <p>*</p> 
+          <p>*&nbsp;This&nbsp;can&nbsp;be&nbsp;due&nbsp;to&nbsp;2&nbsp;reasons:</p> 
+          <p>*&nbsp;–&nbsp;we’re&nbsp;doing&nbsp;a&nbsp;higher-order&nbsp;allocation</p> 
+          <p>*&nbsp; –&gt;&nbsp;move&nbsp;pages&nbsp;to&nbsp;the&nbsp;free&nbsp;list&nbsp;until&nbsp;we&nbsp;succeed</p> 
+          <p>*&nbsp;–&nbsp;we’re&nbsp;/really/&nbsp;tight&nbsp;on&nbsp;memory</p> 
+          <p>*&nbsp; –&gt;&nbsp;wait&nbsp;on&nbsp;the&nbsp;kswapd&nbsp;waitqueue&nbsp;until&nbsp;memory&nbsp;is&nbsp;freed</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(!(current-&gt;flags&nbsp;&amp;&nbsp;PF_MEMALLOC))&nbsp;{ //<span style="font-family: 宋体;">判断是否为“执行公务”</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;Are&nbsp;we&nbsp;dealing&nbsp;with&nbsp;a&nbsp;higher&nbsp;order&nbsp;allocation?</p> 
+          <p>*</p> 
+          <p>*&nbsp;Move&nbsp;pages&nbsp;from&nbsp;the&nbsp;inactive_clean&nbsp;to&nbsp;the&nbsp;free&nbsp;list</p> 
+          <p>*&nbsp;in&nbsp;the&nbsp;hope&nbsp;of&nbsp;creating&nbsp;a&nbsp;large,&nbsp;physically&nbsp;contiguous</p> 
+          <p>*&nbsp;piece&nbsp;of&nbsp;free&nbsp;memory.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(order&nbsp;&gt;&nbsp;0&nbsp;&amp;&amp;&nbsp;(gfp_mask&nbsp;&amp;&nbsp;__GFP_WAIT))&nbsp;{ //<span style="font-family: 宋体;">判断要分配的长度是否为</span><span style="font-family: Times New Roman;">1</span></p> 
+          <p>//<span style="font-family: 宋体;">且是否可等待</span></p> 
+          <p>zone&nbsp;=&nbsp;zonelist-&gt;zones;</p> 
+          <p>/*&nbsp;First,&nbsp;clean&nbsp;some&nbsp;dirty&nbsp;pages.&nbsp;*/</p> 
+          <p>current-&gt;flags&nbsp;|=&nbsp;PF_MEMALLOC;</p> 
+          <p>page_launder(gfp_mask,&nbsp;1); //<span style="font-family: 宋体;">把“脏”页面“洗干净”</span></p> 
+          <p>//<span style="font-family: 宋体;">既把“不活动脏页面”</span></p> 
+          <p>//<span style="font-family: 宋体;">写入交换设备，将其变成、</span></p> 
+          <p>//<span style="font-family: 宋体;">不活动干净页面</span></p> 
+          <p>current-&gt;flags&nbsp;&amp;=&nbsp;~PF_MEMALLOC;</p> 
+          <p>for&nbsp;(;;)&nbsp;{ //<span style="font-family: 宋体;">循环扫描管理区</span></p> 
+          <p>zone_t&nbsp;*z&nbsp;=&nbsp;*(zone++);</p> 
+          <p>if&nbsp;(!z)</p> 
+          <p>break;</p> 
+          <p>if&nbsp;(!z-&gt;size)</p> 
+          <p>continue;</p> 
+          <p>while&nbsp;(z-&gt;inactive_clean_pages)&nbsp;{ //<span style="font-family: 宋体;">循环扫描不活动</span></p> 
+          <p>//<span style="font-family: 宋体;">干净内存页面</span></p> 
+          <p>struct&nbsp;page&nbsp;*&nbsp;page;</p> 
+          <p>/*&nbsp;Move&nbsp;one&nbsp;page&nbsp;to&nbsp;the&nbsp;free&nbsp;list.&nbsp;*/</p> 
+          <p>page&nbsp;=&nbsp;reclaim_page(z);</p> 
+          <p>if&nbsp;(!page)</p> 
+          <p>break;</p> 
+          <p>__free_page(page); //<span style="font-family: 宋体;">回收释放单个页面</span></p> 
+          <p>/*&nbsp;Try&nbsp;if&nbsp;the&nbsp;allocation&nbsp;succeeds.&nbsp;*/</p> 
+          <p>page&nbsp;=&nbsp;rmqueue(z,&nbsp;order); //<span style="font-family: 宋体;">扫描</span></p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>}</p> 
+          <p>}</p> 
+          <p>}</p> 
+          <p>/*</p> 
+          <p>*&nbsp;When&nbsp;we&nbsp;arrive&nbsp;here,&nbsp;we&nbsp;are&nbsp;really&nbsp;tight&nbsp;on&nbsp;memory.</p> 
+          <p>*</p> 
+          <p>*&nbsp;We&nbsp;wake&nbsp;up&nbsp;kswapd&nbsp;and&nbsp;sleep&nbsp;until&nbsp;kswapd&nbsp;wakes&nbsp;us</p> 
+          <p>*&nbsp;up&nbsp;again.&nbsp;After&nbsp;that&nbsp;we&nbsp;loop&nbsp;back&nbsp;to&nbsp;the&nbsp;start.</p> 
+          <p>*</p> 
+          <p>*&nbsp;We&nbsp;have&nbsp;to&nbsp;do&nbsp;this&nbsp;because&nbsp;something&nbsp;else&nbsp;might&nbsp;eat</p> 
+          <p>*&nbsp;the&nbsp;memory&nbsp;kswapd&nbsp;frees&nbsp;for&nbsp;us&nbsp;and&nbsp;we&nbsp;need&nbsp;to&nbsp;be</p> 
+          <p>*&nbsp;reliable.&nbsp;Note&nbsp;that&nbsp;we&nbsp;don’t&nbsp;loop&nbsp;back&nbsp;for&nbsp;higher</p> 
+          <p>*&nbsp;order&nbsp;allocations&nbsp;since&nbsp;it&nbsp;is&nbsp;possible&nbsp;that&nbsp;kswapd</p> 
+          <p>*&nbsp;simply&nbsp;cannot&nbsp;free&nbsp;a&nbsp;large&nbsp;enough&nbsp;contiguous&nbsp;area</p> 
+          <p>*&nbsp;of&nbsp;memory&nbsp;*ever*.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;((gfp_mask&nbsp;&amp;&nbsp;(__GFP_WAIT|__GFP_IO))&nbsp;==&nbsp;(__GFP_WAIT|__GFP_IO))&nbsp;{</p> 
+          <p>wakeup_kswapd(1);</p> 
+          <p>memory_pressure++;</p> 
+          <p>if&nbsp;(!order)</p> 
+          <p>goto&nbsp;try_again;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;__GFP_IO&nbsp;isn’t&nbsp;set,&nbsp;we&nbsp;can’t&nbsp;wait&nbsp;on&nbsp;kswapd&nbsp;because</p> 
+          <p>*&nbsp;kswapd&nbsp;just&nbsp;might&nbsp;need&nbsp;some&nbsp;IO&nbsp;locks&nbsp;/we/&nbsp;are&nbsp;holding&nbsp;…</p> 
+          <p>*</p> 
+          <p>*&nbsp;SUBTLE:&nbsp;The&nbsp;scheduling&nbsp;point&nbsp;above&nbsp;makes&nbsp;sure&nbsp;that</p> 
+          <p>*&nbsp;kswapd&nbsp;does&nbsp;get&nbsp;the&nbsp;chance&nbsp;to&nbsp;free&nbsp;memory&nbsp;we&nbsp;can’t</p> 
+          <p>*&nbsp;free&nbsp;ourselves…</p> 
+          <p>*/</p> 
+          <p>}&nbsp;else&nbsp;if&nbsp;(gfp_mask&nbsp;&amp;&nbsp;__GFP_WAIT)&nbsp;{</p> 
+          <p>try_to_free_pages(gfp_mask);</p> 
+          <p>memory_pressure++;</p> 
+          <p>if&nbsp;(!order)</p> 
+          <p>goto&nbsp;try_again;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Final&nbsp;phase:&nbsp;allocate&nbsp;anything&nbsp;we&nbsp;can!</p> 
+          <p>*</p> 
+          <p>*&nbsp;Higher&nbsp;order&nbsp;allocations,&nbsp;GFP_ATOMIC&nbsp;allocations&nbsp;and</p> 
+          <p>*&nbsp;recursive&nbsp;allocations&nbsp;(PF_MEMALLOC)&nbsp;end&nbsp;up&nbsp;here.</p> 
+          <p>*</p> 
+          <p>*&nbsp;Only&nbsp;recursive&nbsp;allocations&nbsp;can&nbsp;use&nbsp;the&nbsp;very&nbsp;last&nbsp;pages</p> 
+          <p>*&nbsp;in&nbsp;the&nbsp;system,&nbsp;otherwise&nbsp;it&nbsp;would&nbsp;be&nbsp;just&nbsp;too&nbsp;easy&nbsp;to</p> 
+          <p>*&nbsp;deadlock&nbsp;the&nbsp;system…</p> 
+          <p>*/</p> 
+          <p>zone&nbsp;=&nbsp;zonelist-&gt;zones;</p> 
+          <p>for&nbsp;(;;)&nbsp;{</p> 
+          <p>zone_t&nbsp;*z&nbsp;=&nbsp;*(zone++);</p> 
+          <p>struct&nbsp;page&nbsp;*&nbsp;page&nbsp;=&nbsp;NULL;</p> 
+          <p>if&nbsp;(!z)</p> 
+          <p>break;</p> 
+          <p>if&nbsp;(!z-&gt;size)</p> 
+          <p>BUG();</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;SUBTLE:&nbsp;direct_reclaim&nbsp;is&nbsp;only&nbsp;possible&nbsp;if&nbsp;the&nbsp;task</p> 
+          <p>*&nbsp;becomes&nbsp;PF_MEMALLOC&nbsp;while&nbsp;looping&nbsp;above.&nbsp;This&nbsp;will</p> 
+          <p>*&nbsp;happen&nbsp;when&nbsp;the&nbsp;OOM&nbsp;killer&nbsp;selects&nbsp;this&nbsp;task&nbsp;for</p> 
+          <p>*&nbsp;instant&nbsp;execution…</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(direct_reclaim)&nbsp;{</p> 
+          <p>page&nbsp;=&nbsp;reclaim_page(z);</p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;XXX:&nbsp;is&nbsp;pages_min/4&nbsp;a&nbsp;good&nbsp;amount&nbsp;to&nbsp;reserve&nbsp;for&nbsp;this?&nbsp;*/</p> 
+          <p>if&nbsp;(z-&gt;free_pages&nbsp;&lt;&nbsp;z-&gt;pages_min&nbsp;/&nbsp;4&nbsp;&amp;&amp;</p> 
+          <p>!(current-&gt;flags&nbsp;&amp;&nbsp;PF_MEMALLOC))</p> 
+          <p>continue;</p> 
+          <p>page&nbsp;=&nbsp;rmqueue(z,&nbsp;order);</p> 
+          <p>if&nbsp;(page)</p> 
+          <p>return&nbsp;page;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;No&nbsp;luck..&nbsp;*/</p> 
+          <p>printk(KERN_ERR&nbsp;“__alloc_pages:&nbsp;%lu-order&nbsp;allocation&nbsp;failed.\n”,&nbsp;order);</p> 
+          <p>return&nbsp;NULL;</p> 
+          <p>}</p> 
+          <p>而<span style="font-family: Times New Roman;">rmqueue</span><span style="font-family: 宋体;">函数是定义在</span><span style="font-family: Times New Roman;">mm/page_alloc.c</span><span style="font-family: 宋体;">中。</span></p> 
+          <p>expand<span style="font-family: 宋体;">函数也是定义在此处。</span></p> 
+          <p>__alloc_pages_limit<span style="font-family: 宋体;">也是定义在此处</span></p> 
+          <p><a href="mailto:若有问题，希望发送到qdtecwanli@sina.com我们共同探讨">若有问题，希望发送到<span style="font-family: Times New Roman;">qdtecwanli@sina.com</span><span style="font-family: 宋体;">我们共同探讨</span></a></p> 
+          <p>谢谢！</p> 
+          <p>&nbsp;</p> 
+          <p>The&nbsp;End.</p> 
+         </div> 
+         <p> 
+          <!--EndFragment--></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-582 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

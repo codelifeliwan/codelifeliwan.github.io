@@ -1,0 +1,1513 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-767 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-767" class="post-767 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-设备驱动（三、PCI初始化操作）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=767" title="下午 4:28" rel="bookmark"><time class="entry-date" datetime="2013-01-06T16:28:53+00:00" pubdate>6 一月, 2013</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=767#comments" title="Comment on Linux内核-设备驱动（三、PCI初始化操作）">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p>前面我们讲了PCI的数据结构，而初始化操作想必读者也能猜到，但是PCI的操作设计大量的硬件知识，所以这里对于数据结构的操作就不详细说明，读者应该能看明白，但是对于硬件操作等我们还是详细说明。<br> 上一篇说过，对于i386的PCI的读写等操作都是通过0XCF8和0XCFC这两个寄存器的读写来进行的，对于读写的格式我们也说明了。那么对于不同的读写操作分为读字节、读字、读双字、写字节、写字和写双字，对于这些底层操作是通过pci_ops数据结构来实现的，底层的实现是通过in和out等指令来实现的（详见《Diers操作系统设计与实现》）。那么中间的部分是这样的（在drivers/pci/pci.c中）：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7671"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td> 
+             <td class="code" id="p767code1"><pre class="c" style="font-family:monospace;"><span style="color: #339933;">#define PCI_byte_BAD 0</span>
+<span style="color: #339933;">#define PCI_word_BAD (pos &amp; 1)    </span>
+<span style="color: #339933;">#define PCI_dword_BAD (pos &amp; 3)</span>
+&nbsp;
+<span style="color: #339933;">#define PCI_OP(rw,size,type) \
+int pci_##rw##_config_##size (struct pci_dev *dev, int pos, type value) \
+{									\
+	int res;							\
+	unsigned long flags;						\
+	if (PCI_##size##_BAD) return PCIBIOS_BAD_REGISTER_NUMBER;	\
+	spin_lock_irqsave(&amp;pci_lock, flags);				\
+	res = dev-&gt;bus-&gt;ops-&gt;rw##_##size(dev, pos, value);		\
+	spin_unlock_irqrestore(&amp;pci_lock, flags);			\
+	return res;							\
+}</span>
+&nbsp;
+PCI_OP<span style="color: #009900;">(</span>read<span style="color: #339933;">,</span> byte<span style="color: #339933;">,</span> u8 <span style="color: #339933;">*</span><span style="color: #009900;">)</span>
+PCI_OP<span style="color: #009900;">(</span>read<span style="color: #339933;">,</span> word<span style="color: #339933;">,</span> u16 <span style="color: #339933;">*</span><span style="color: #009900;">)</span>
+PCI_OP<span style="color: #009900;">(</span>read<span style="color: #339933;">,</span> dword<span style="color: #339933;">,</span> u32 <span style="color: #339933;">*</span><span style="color: #009900;">)</span>
+PCI_OP<span style="color: #009900;">(</span>write<span style="color: #339933;">,</span> byte<span style="color: #339933;">,</span> u8<span style="color: #009900;">)</span>
+PCI_OP<span style="color: #009900;">(</span>write<span style="color: #339933;">,</span> word<span style="color: #339933;">,</span> u16<span style="color: #009900;">)</span>
+PCI_OP<span style="color: #009900;">(</span>write<span style="color: #339933;">,</span> dword<span style="color: #339933;">,</span> u32<span style="color: #009900;">)</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这是通过宏定义连接等来实现的，比如PCI_OP(read,word,u16 *)会通过宏定义处理成函数int pci_read_config_word()，注意这样的函数名字都是有规范的，read/write表示读或者写，byte/word/dword表示读写的是字节/字/双字，对于pci_ops中实际上是这样的（举例：pci_direct_conf1）：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7672"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td> 
+             <td class="code" id="p767code2"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">struct</span> pci_ops pci_direct_conf1 <span style="color: #339933;">=</span> <span style="color: #009900;">{</span>
+pci_conf1_read_config_byte<span style="color: #339933;">,</span>
+pci_conf1_read_config_word<span style="color: #339933;">,</span>
+pci_conf1_read_config_dword<span style="color: #339933;">,</span>
+pci_conf1_write_config_byte<span style="color: #339933;">,</span>
+pci_conf1_write_config_word<span style="color: #339933;">,</span>
+pci_conf1_write_config_dword<span style="color: #339933;">,</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>而前面的pci_read_config_word()实际上是通过函数指针调用的pci_conf1_read_config_word()，真正的实现是在arch/i386/kernel/pci-pc.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7673"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+</pre></td> 
+             <td class="code" id="p767code3"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> pci_conf1_read_config_word<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> where<span style="color: #339933;">,</span> u16 <span style="color: #339933;">*</span>value<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	outl<span style="color: #009900;">(</span>CONFIG_CMD<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span>where<span style="color: #009900;">)</span><span style="color: #339933;">,</span> <span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #339933;">*</span>value <span style="color: #339933;">=</span> inw<span style="color: #009900;">(</span><span style="color: #208080;">0xCFC</span> <span style="color: #339933;">+</span> <span style="color: #009900;">(</span>where<span style="color: #339933;">&amp;</span><span style="color: #0000dd;">2</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> PCIBIOS_SUCCESSFUL<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>可见实际上就是操作0XCF8和0XCFC，先写后读。<br> 除了1型以外还有2型和BIOS型的读写方式，也就是PCI配置寄存器操作，这里不再详细说明。<br> 为了便于理解和查看，本节重要的函数调用关系图如下：<br> <a href="http://codelifeliwan.github.io/?attachment_id=768" rel="attachment wp-att-768"><img class="aligncenter size-full wp-image-768" alt="1" src="uploads/2013/01/1.jpg" width="669" height="560"></a><br> PCI的初始化操作入口在drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7674"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td> 
+             <td class="code" id="p767code4"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">void</span> __init pci_init<span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">;</span>
+&nbsp;
+	pcibios_init<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	pci_for_each_dev<span style="color: #009900;">(</span>dev<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		pci_fixup_device<span style="color: #009900;">(</span>PCI_FIXUP_FINAL<span style="color: #339933;">,</span> dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #339933;">#ifdef CONFIG_PM</span>
+	pm_register<span style="color: #009900;">(</span>PM_PCI_DEV<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> pci_pm_callback<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>在这里我们不关心电源管理的选项，实际上就剩下两件事：PCI设备的探测和PCI设备的修正。<br> PCI的初始化探测是在函数pcibios_init()中，这个函数定义在arch/i386/kernel/pci-pc中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7675"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+</pre></td> 
+             <td class="code" id="p767code5"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">void</span> __init pcibios_init<span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_ops <span style="color: #339933;">*</span>bios <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> pci_ops <span style="color: #339933;">*</span>dir <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #339933;">#ifdef CONFIG_PCI_BIOS</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> PCI_PROBE_BIOS<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>bios <span style="color: #339933;">=</span> pci_find_bios<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		pci_probe <span style="color: #339933;">|=</span> PCI_BIOS_SORT<span style="color: #339933;">;</span>
+		pci_bios_present <span style="color: #339933;">=</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #339933;">#endif</span>
+<span style="color: #339933;">#ifdef CONFIG_PCI_DIRECT</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> <span style="color: #009900;">(</span>PCI_PROBE_CONF1 <span style="color: #339933;">|</span> PCI_PROBE_CONF2<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		dir <span style="color: #339933;">=</span> pci_check_direct<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>dir<span style="color: #009900;">)</span>
+		pci_root_ops <span style="color: #339933;">=</span> dir<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">else</span> <span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>bios<span style="color: #009900;">)</span>
+		pci_root_ops <span style="color: #339933;">=</span> bios<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+		printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"PCI: No PCI bus detected<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"PCI: Probing PCI hardware<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	pci_root_bus <span style="color: #339933;">=</span> pci_scan_bus<span style="color: #009900;">(</span><span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> pci_root_ops<span style="color: #339933;">,</span> NULL<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//扫描枚举总线和设备</span>
+&nbsp;
+	pcibios_irq_init<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//PCI的中断初始化</span>
+	pcibios_fixup_peer_bridges<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	pcibios_fixup_irqs<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	pcibios_resource_survey<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #339933;">#ifdef CONFIG_PCI_BIOS</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> PCI_BIOS_SORT<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span><span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> PCI_NO_SORT<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		pcibios_sort<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这里的条件编译选项CONFIG_PCI_BIOS表示的是使用BIOS自带的方法进行PCI探测，而CONFIG_PCI_DIRECT表示的是使用Linux的方法来进行手工探测。第一次的探测仅探测PCI树的树根，然后再进一步探测。<br> 我们这里不关心BIOS自带的方法探测，已经过时，这里仅关心Linux的直接探测。函数pci_check_direct()定义在pci-pc.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7676"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+</pre></td> 
+             <td class="code" id="p767code6"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">struct</span> pci_ops <span style="color: #339933;">*</span> __init pci_check_direct<span style="color: #009900;">(</span><span style="color: #993333;">void</span><span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> tmp<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span>
+&nbsp;
+	__save_flags<span style="color: #009900;">(</span>flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span> __cli<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * Check if configuration type 1 works.
+	 */</span>
+<span style="color: #808080; font-style: italic;">/*
+ *检查PCI总线是否存在，先按照1型操作探测，再按2型操作探测
+ *探测口就是先前说的0XCF8~0XCFF
+ */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> PCI_PROBE_CONF1<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+<span style="color: #808080; font-style: italic;">/*
+ *探测方式是先写入0x01（读出状态命令？）然后将值保存于
+ *tmp中，然后写入0x80000000进行探测，若探测成功则读出的值为
+ *0x80000000，然后使用pci_sanity_check()进行验证，最后将寄存器复原
+ *也就是再把tmp写入进去
+ */</span>
+		outb <span style="color: #009900;">(</span><span style="color: #208080;">0x01</span><span style="color: #339933;">,</span> <span style="color: #208080;">0xCFB</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		tmp <span style="color: #339933;">=</span> inl <span style="color: #009900;">(</span><span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		outl <span style="color: #009900;">(</span><span style="color: #208080;">0x80000000</span><span style="color: #339933;">,</span> <span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>inl <span style="color: #009900;">(</span><span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span> <span style="color: #339933;">==</span> <span style="color: #208080;">0x80000000</span> <span style="color: #339933;">&amp;&amp;</span>
+		    pci_sanity_check<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>pci_direct_conf1<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			outl <span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> <span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			__restore_flags<span style="color: #009900;">(</span>flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"PCI: Using configuration type 1<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #666666; font-style: italic;">//在内核的I/O设备资源树中增加一个节点</span>
+			request_region<span style="color: #009900;">(</span><span style="color: #208080;">0xCF8</span><span style="color: #339933;">,</span> <span style="color: #0000dd;">8</span><span style="color: #339933;">,</span> <span style="color: #ff0000;">"PCI conf1"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">return</span> <span style="color: #339933;">&amp;</span>pci_direct_conf1<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+		outl <span style="color: #009900;">(</span>tmp<span style="color: #339933;">,</span> <span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * Check if configuration type 2 works.
+	 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> PCI_PROBE_CONF2<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		outb <span style="color: #009900;">(</span><span style="color: #208080;">0x00</span><span style="color: #339933;">,</span> <span style="color: #208080;">0xCFB</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		outb <span style="color: #009900;">(</span><span style="color: #208080;">0x00</span><span style="color: #339933;">,</span> <span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		outb <span style="color: #009900;">(</span><span style="color: #208080;">0x00</span><span style="color: #339933;">,</span> <span style="color: #208080;">0xCFA</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>inb <span style="color: #009900;">(</span><span style="color: #208080;">0xCF8</span><span style="color: #009900;">)</span> <span style="color: #339933;">==</span> <span style="color: #208080;">0x00</span> <span style="color: #339933;">&amp;&amp;</span> inb <span style="color: #009900;">(</span><span style="color: #208080;">0xCFA</span><span style="color: #009900;">)</span> <span style="color: #339933;">==</span> <span style="color: #208080;">0x00</span> <span style="color: #339933;">&amp;&amp;</span>
+		    pci_sanity_check<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>pci_direct_conf2<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			__restore_flags<span style="color: #009900;">(</span>flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			printk<span style="color: #009900;">(</span><span style="color: #ff0000;">"PCI: Using configuration type 2<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			request_region<span style="color: #009900;">(</span><span style="color: #208080;">0xCF8</span><span style="color: #339933;">,</span> <span style="color: #0000dd;">4</span><span style="color: #339933;">,</span> <span style="color: #ff0000;">"PCI conf2"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">return</span> <span style="color: #339933;">&amp;</span>pci_direct_conf2<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	__restore_flags<span style="color: #009900;">(</span>flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>验证函数pci_sanity_check()定义在arch/i386/kernel/pci-pc.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7677"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+</pre></td> 
+             <td class="code" id="p767code7"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ * Before we decide to use direct hardware access mechanisms, we try to do some
+ * trivial checks to ensure it at least _seems_ to be working -- we just test
+ * whether bus 00 contains a host bridge (this is similar to checking
+ * techniques used in XFree86, but ours should be more reliable since we
+ * attempt to make use of direct access hints provided by the PCI BIOS).
+ *
+ * This should be close to trivial, but it isn't, because there are buggy
+ * chipsets (yes, you guessed it, by Intel and Compaq) that have no class ID.
+ */</span>
+<span style="color: #993333;">static</span> <span style="color: #993333;">int</span> __init pci_sanity_check<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_ops <span style="color: #339933;">*</span>o<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	u16 x<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> pci_bus bus<span style="color: #339933;">;</span>		<span style="color: #808080; font-style: italic;">/* Fake bus and device */</span>
+	<span style="color: #993333;">struct</span> pci_dev dev<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_probe <span style="color: #339933;">&amp;</span> PCI_NO_CHECKS<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	bus.<span style="color: #202020;">number</span> <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	dev.<span style="color: #202020;">bus</span> <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>bus<span style="color: #339933;">;</span>
+<span style="color: #808080; font-style: italic;">/*
+ *一条PCI设备最多可以有256个逻辑设备，而HOST-PCI桥至少应该
+ *提供PCI_CLASS_BRIDGE_HOST和PCI_CLASS_DISPLAY_VGA这
+ *二者之一，如果连这也没有的话就至少应该是Intel或者Compaq制造
+ *的，如果这样还不符合的话就认为没有此设备，前面的探测是巧合
+ */</span>
+	<span style="color: #b1b100;">for</span><span style="color: #009900;">(</span>dev.<span style="color: #202020;">devfn</span><span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> dev.<span style="color: #202020;">devfn</span> <span style="color: #339933;">&lt;</span> <span style="color: #208080;">0x100</span><span style="color: #339933;">;</span> dev.<span style="color: #202020;">devfn</span><span style="color: #339933;">++</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #339933;">!</span>o<span style="color: #339933;">-&gt;</span>read_word<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">,</span> PCI_CLASS_DEVICE<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>x<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span>
+		     <span style="color: #009900;">(</span>x <span style="color: #339933;">==</span> PCI_CLASS_BRIDGE_HOST <span style="color: #339933;">||</span> x <span style="color: #339933;">==</span> PCI_CLASS_DISPLAY_VGA<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">||</span>
+		    <span style="color: #009900;">(</span><span style="color: #339933;">!</span>o<span style="color: #339933;">-&gt;</span>read_word<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">,</span> PCI_VENDOR_ID<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>x<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span>
+		     <span style="color: #009900;">(</span>x <span style="color: #339933;">==</span> PCI_VENDOR_ID_INTEL <span style="color: #339933;">||</span> x <span style="color: #339933;">==</span> PCI_VENDOR_ID_COMPAQ<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"PCI: Sanity check failed<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>这些函数执行完了就确定好了操作等，这些确定好了就使用pci_scan_bus()来进行扫描，并建立PCI树，这个函数定义在drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7678"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td> 
+             <td class="code" id="p767code8"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span> __init pci_scan_bus<span style="color: #009900;">(</span><span style="color: #993333;">int</span> bus<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> pci_ops <span style="color: #339933;">*</span>ops<span style="color: #339933;">,</span> <span style="color: #993333;">void</span> <span style="color: #339933;">*</span>sysdata<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>b <span style="color: #339933;">=</span> pci_alloc_primary_bus<span style="color: #009900;">(</span>bus<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//分配主总线空间</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>b<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		b<span style="color: #339933;">-&gt;</span>sysdata <span style="color: #339933;">=</span> sysdata<span style="color: #339933;">;</span>
+		b<span style="color: #339933;">-&gt;</span>ops <span style="color: #339933;">=</span> ops<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置操作</span>
+		b<span style="color: #339933;">-&gt;</span>subordinate <span style="color: #339933;">=</span> pci_do_scan_bus<span style="color: #009900;">(</span>b<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//扫描从设备</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> b<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>实际的扫描就是探测并设置数据结构，在内核中建立PCI树，在pci_scan_bus()中建立好了主总线数据结构以后就使用pci_do_scan_bus()来探测并建树。<br> 函数pci_alloc_primary_bus()定义在drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p7679"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td> 
+             <td class="code" id="p767code9"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span> __init pci_alloc_primary_bus<span style="color: #009900;">(</span><span style="color: #993333;">int</span> bus<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>b<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_bus_exists<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>pci_root_buses<span style="color: #339933;">,</span> bus<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//检查是否重复</span>
+		<span style="color: #808080; font-style: italic;">/* If we already got to this bus through a different bridge, ignore it */</span>
+		DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"PCI: Bus %02x already known<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> bus<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	b <span style="color: #339933;">=</span> pci_alloc_bus<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//分配数据空间</span>
+	list_add_tail<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>b<span style="color: #339933;">-&gt;</span>node<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>pci_root_buses<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//加入队列</span>
+&nbsp;
+	b<span style="color: #339933;">-&gt;</span>number <span style="color: #339933;">=</span> b<span style="color: #339933;">-&gt;</span>secondary <span style="color: #339933;">=</span> bus<span style="color: #339933;">;</span>
+	b<span style="color: #339933;">-&gt;</span>resource<span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span> <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>ioport_resource<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置I/O空间地址占用</span>
+	b<span style="color: #339933;">-&gt;</span>resource<span style="color: #009900;">[</span><span style="color: #0000dd;">1</span><span style="color: #009900;">]</span> <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>iomem_resource<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置内存空间地址占用</span>
+	<span style="color: #b1b100;">return</span> b<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>函数pci_do_scan_bus()定义在drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76710"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+</pre></td> 
+             <td class="code" id="p767code10"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> __init pci_do_scan_bus<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>bus<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> devfn<span style="color: #339933;">,</span> max<span style="color: #339933;">,</span> pass<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> list_head <span style="color: #339933;">*</span>ln<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">,</span> dev0<span style="color: #339933;">;</span>
+&nbsp;
+	DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"Scanning bus %02x<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> bus<span style="color: #339933;">-&gt;</span>number<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	max <span style="color: #339933;">=</span> bus<span style="color: #339933;">-&gt;</span>secondary<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Create a device template */</span>
+	memset<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dev0<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span>dev0<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	dev0.<span style="color: #202020;">bus</span> <span style="color: #339933;">=</span> bus<span style="color: #339933;">;</span>
+	dev0.<span style="color: #202020;">sysdata</span> <span style="color: #339933;">=</span> bus<span style="color: #339933;">-&gt;</span>sysdata<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Go find them, Rover! */</span>
+<span style="color: #808080; font-style: italic;">/*
+ *依次扫描总线上的最多32个物理设备，每个物理设备有最多8个
+ *逻辑设备，pci_scan_slot()用于一次扫描8个逻辑设备
+ */</span>
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>devfn <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> devfn <span style="color: #339933;">&lt;</span> <span style="color: #208080;">0x100</span><span style="color: #339933;">;</span> devfn <span style="color: #339933;">+=</span> <span style="color: #0000dd;">8</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		dev0.<span style="color: #202020;">devfn</span> <span style="color: #339933;">=</span> devfn<span style="color: #339933;">;</span>
+		pci_scan_slot<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dev0<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * After performing arch-dependent fixup of the bus, look behind
+	 * all PCI-to-PCI bridges on this bus.
+	 */</span>
+	DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"Fixups for bus %02x<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> bus<span style="color: #339933;">-&gt;</span>number<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	pcibios_fixup_bus<span style="color: #009900;">(</span>bus<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//修正</span>
+<span style="color: #808080; font-style: italic;">/*
+ *分两趟扫描，第一趟是针对已经由BIOS进行处理过的桥，第二趟是针对
+ *未经BIOS处理过的桥
+ */</span>
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>pass<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> pass <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">2</span><span style="color: #339933;">;</span> pass<span style="color: #339933;">++</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>ln<span style="color: #339933;">=</span>bus<span style="color: #339933;">-&gt;</span>devices.<span style="color: #202020;">next</span><span style="color: #339933;">;</span> ln <span style="color: #339933;">!=</span> <span style="color: #339933;">&amp;</span>bus<span style="color: #339933;">-&gt;</span>devices<span style="color: #339933;">;</span> ln<span style="color: #339933;">=</span>ln<span style="color: #339933;">-&gt;</span>next<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			dev <span style="color: #339933;">=</span> pci_dev_b<span style="color: #009900;">(</span>ln<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>hdr_type <span style="color: #339933;">==</span> PCI_HEADER_TYPE_BRIDGE <span style="color: #339933;">||</span> dev<span style="color: #339933;">-&gt;</span>hdr_type <span style="color: #339933;">==</span> PCI_HEADER_TYPE_CARDBUS<span style="color: #009900;">)</span>
+<span style="color: #808080; font-style: italic;">/*
+ *扫描PCI桥，然后就可以扫描桥上的总线和子设备等
+ */</span>
+				max <span style="color: #339933;">=</span> pci_scan_bridge<span style="color: #009900;">(</span>bus<span style="color: #339933;">,</span> dev<span style="color: #339933;">,</span> max<span style="color: #339933;">,</span> pass<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * We've scanned the bus and so we know all about what's on
+	 * the other side of any bridges that may be on this bus plus
+	 * any devices.
+	 *
+	 * Return how far we've got finding sub-buses.
+	 */</span>
+	DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"Bus scan for %02x returning with max=%02x<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> bus<span style="color: #339933;">-&gt;</span>number<span style="color: #339933;">,</span> max<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> max<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>修正部分不重点介绍。<br> 函数pci_scan_slot()用来扫描功能，即逻辑设备，每次扫描8个，函数定义于drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76711"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td> 
+             <td class="code" id="p767code11"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span> __init pci_scan_slot<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>temp<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>bus <span style="color: #339933;">=</span> temp<span style="color: #339933;">-&gt;</span>bus<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>first_dev <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> func <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> is_multi <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	u8 hdr_type<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>func <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> func <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">8</span><span style="color: #339933;">;</span> func<span style="color: #339933;">++,</span> temp<span style="color: #339933;">-&gt;</span>devfn<span style="color: #339933;">++</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>func <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>is_multi<span style="color: #009900;">)</span>		<span style="color: #808080; font-style: italic;">/* not a multi-function device */</span>
+			<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+<span style="color: #666666; font-style: italic;">//读取设备头部字节的类型</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_read_config_byte<span style="color: #009900;">(</span>temp<span style="color: #339933;">,</span> PCI_HEADER_TYPE<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>hdr_type<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+		temp<span style="color: #339933;">-&gt;</span>hdr_type <span style="color: #339933;">=</span> hdr_type <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0x7f</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//取出类型编码</span>
+&nbsp;
+		dev <span style="color: #339933;">=</span> pci_scan_device<span style="color: #009900;">(</span>temp<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//扫描设备</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>dev<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+		pci_name_device<span style="color: #009900;">(</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>func<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			is_multi <span style="color: #339933;">=</span> hdr_type <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0x80</span><span style="color: #339933;">;</span>
+			first_dev <span style="color: #339933;">=</span> dev<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/*
+		 * Link the device to both the global PCI device chain and
+		 * the per-bus list of devices.
+ *将设备数据结构加入相应队列
+		 */</span>
+		list_add_tail<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>global_list<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>pci_devices<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		list_add_tail<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>bus_list<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>bus<span style="color: #339933;">-&gt;</span>devices<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #808080; font-style: italic;">/* Fix up broken headers */</span>
+		pci_fixup_device<span style="color: #009900;">(</span>PCI_FIXUP_HEADER<span style="color: #339933;">,</span> dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> first_dev<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>设置函数pci_scan_device()定义在同一文件中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76712"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+</pre></td> 
+             <td class="code" id="p767code12"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ * Read the config data for a PCI device, sanity-check it
+ * and fill in the dev structure...
+ */</span>
+<span style="color: #993333;">static</span> <span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span> __init pci_scan_device<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>temp<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">;</span>
+	u32 l<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_read_config_dword<span style="color: #009900;">(</span>temp<span style="color: #339933;">,</span> PCI_VENDOR_ID<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>l<span style="color: #009900;">)</span><span style="color: #009900;">)</span>	<span style="color: #666666; font-style: italic;">//读取厂商编号和设备号</span>
+		<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* some broken boards return 0 or ~0 if a slot is empty: */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>l <span style="color: #339933;">==</span> <span style="color: #208080;">0xffffffff</span> <span style="color: #339933;">||</span> l <span style="color: #339933;">==</span> <span style="color: #208080;">0x00000000</span> <span style="color: #339933;">||</span> l <span style="color: #339933;">==</span> <span style="color: #208080;">0x0000ffff</span> <span style="color: #339933;">||</span> l <span style="color: #339933;">==</span> <span style="color: #208080;">0xffff0000</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+&nbsp;
+	dev <span style="color: #339933;">=</span> kmalloc<span style="color: #009900;">(</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">,</span> GFP_KERNEL<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>dev<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+&nbsp;
+	memcpy<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> temp<span style="color: #339933;">,</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//复制</span>
+	dev<span style="color: #339933;">-&gt;</span>vendor <span style="color: #339933;">=</span> l <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xffff</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置厂商编号</span>
+	dev<span style="color: #339933;">-&gt;</span>device <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>l <span style="color: #339933;">&gt;&gt;</span> <span style="color: #0000dd;">16</span><span style="color: #009900;">)</span> <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xffff</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置设备号</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Assume 32-bit PCI; let 64-bit PCI cards (which are far rarer)
+	   set this higher, assuming the system even supports it.  */</span>
+	dev<span style="color: #339933;">-&gt;</span>dma_mask <span style="color: #339933;">=</span> <span style="color: #208080;">0xffffffff</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pci_setup_device<span style="color: #009900;">(</span>dev<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//进一步设置</span>
+		kfree<span style="color: #009900;">(</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		dev <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> dev<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>进一步设置的函数pci_setup_device()也是定义在同一文件中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76713"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+</pre></td> 
+             <td class="code" id="p767code13"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ * Fill in class and map information of a device
+ */</span>
+<span style="color: #993333;">int</span> pci_setup_device<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span> dev<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	u32 class<span style="color: #339933;">;</span>
+&nbsp;
+	sprintf<span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>slot_name<span style="color: #339933;">,</span> <span style="color: #ff0000;">"%02x:%02x.%d"</span><span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>bus<span style="color: #339933;">-&gt;</span>number<span style="color: #339933;">,</span> PCI_SLOT<span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>devfn<span style="color: #009900;">)</span><span style="color: #339933;">,</span> PCI_FUNC<span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>devfn<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sprintf<span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>name<span style="color: #339933;">,</span> <span style="color: #ff0000;">"PCI device %04x:%04x"</span><span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>vendor<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>device<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_CLASS_REVISION<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>class<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//读取设备类别和版本号</span>
+	class <span style="color: #339933;">&gt;&gt;=</span> <span style="color: #0000dd;">8</span><span style="color: #339933;">;</span>				    <span style="color: #808080; font-style: italic;">/* upper 3 bytes */</span>
+	dev<span style="color: #339933;">-&gt;</span>class <span style="color: #339933;">=</span> class<span style="color: #339933;">;</span>
+	class <span style="color: #339933;">&gt;&gt;=</span> <span style="color: #0000dd;">8</span><span style="color: #339933;">;</span>
+&nbsp;
+	DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"Found %02x:%02x [%04x/%04x] %06x %02x<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>bus<span style="color: #339933;">-&gt;</span>number<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>devfn<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>vendor<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>device<span style="color: #339933;">,</span> class<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>hdr_type<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/*
+ *下面就要根据具体的头部类型进行具体的操作了
+ */</span>
+	<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>hdr_type<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>		    <span style="color: #808080; font-style: italic;">/* header type */</span>
+	<span style="color: #b1b100;">case</span> PCI_HEADER_TYPE_NORMAL<span style="color: #339933;">:</span>		    <span style="color: #808080; font-style: italic;">/* standard header */</span>	<span style="color: #666666; font-style: italic;">//普通设备</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>class <span style="color: #339933;">==</span> PCI_CLASS_BRIDGE_PCI<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> bad<span style="color: #339933;">;</span>
+		pci_read_irq<span style="color: #009900;">(</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//读取和设置中断线和中断引脚</span>
+		pci_read_bases<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> <span style="color: #0000dd;">6</span><span style="color: #339933;">,</span> PCI_ROM_ADDRESS<span style="color: #009900;">)</span><span style="color: #339933;">;</span><span style="color: #666666; font-style: italic;">//读取设备自带的RAM和ROM区间</span>
+		pci_read_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_SUBSYSTEM_VENDOR_ID<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>subsystem_vendor<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_SUBSYSTEM_ID<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>subsystem_device<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">case</span> PCI_HEADER_TYPE_BRIDGE<span style="color: #339933;">:</span>		    <span style="color: #808080; font-style: italic;">/* bridge header */</span>	<span style="color: #666666; font-style: italic;">//PCI-PCI桥</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>class <span style="color: #339933;">!=</span> PCI_CLASS_BRIDGE_PCI<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> bad<span style="color: #339933;">;</span>
+		pci_read_bases<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> <span style="color: #0000dd;">2</span><span style="color: #339933;">,</span> PCI_ROM_ADDRESS1<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">case</span> PCI_HEADER_TYPE_CARDBUS<span style="color: #339933;">:</span>		    <span style="color: #808080; font-style: italic;">/* CardBus bridge header */</span>
+	<span style="color: #666666; font-style: italic;">//PCI-CARDBUS桥</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>class <span style="color: #339933;">!=</span> PCI_CLASS_BRIDGE_CARDBUS<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> bad<span style="color: #339933;">;</span>
+		pci_read_irq<span style="color: #009900;">(</span>dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_bases<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_CB_SUBSYSTEM_VENDOR_ID<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>subsystem_vendor<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_CB_SUBSYSTEM_ID<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>subsystem_device<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">default</span><span style="color: #339933;">:</span>				    <span style="color: #808080; font-style: italic;">/* unknown header */</span>
+		printk<span style="color: #009900;">(</span>KERN_ERR <span style="color: #ff0000;">"PCI: device %s has unknown header type %02x, ignoring.<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span>
+			dev<span style="color: #339933;">-&gt;</span>slot_name<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>hdr_type<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+&nbsp;
+	bad<span style="color: #339933;">:</span>
+		printk<span style="color: #009900;">(</span>KERN_ERR <span style="color: #ff0000;">"PCI: %s: class %x doesn't match header type %02x. Ignoring class.<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span>
+		       dev<span style="color: #339933;">-&gt;</span>slot_name<span style="color: #339933;">,</span> class<span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>hdr_type<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		dev<span style="color: #339933;">-&gt;</span>class <span style="color: #339933;">=</span> PCI_CLASS_NOT_DEFINED<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* We found a fine healthy device, go go go... */</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>函数pci_read_irq()也定义在同一文件中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76714"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td> 
+             <td class="code" id="p767code14"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ * Read interrupt line and base address registers.
+ * The architecture-dependent code can tweak these, of course.
+ */</span>
+<span style="color: #993333;">static</span> <span style="color: #993333;">void</span> pci_read_irq<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">char</span> irq<span style="color: #339933;">;</span>
+&nbsp;
+	pci_read_config_byte<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_INTERRUPT_PIN<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>irq<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>irq<span style="color: #009900;">)</span>
+		pci_read_config_byte<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_INTERRUPT_LINE<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>irq<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	dev<span style="color: #339933;">-&gt;</span>irq <span style="color: #339933;">=</span> irq<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>需要说明的是，PCI设备中一般都带有一些RAM和ROM区间，通常的控制/状态寄存器和数据寄存器也往往以RAM区间的形式出现，这些地址以后都要先映射到系统总线上，再进一步映射到内存的虚拟空间。现在要先通过pci_read_base()来把这些区间的大小和当前的地址读进来。对于一般的PCI设备最多允许有6个这样的RAM区间，前面讲的resource数据结构就是用来记录设备上的各个区间的起始地址与长度。<br> 在pci_dev数据结构中，resource数组的大小为12，这是因为除了PCI设备的6个常规地址区间以外还可以有一个扩充的ROM区间，同时还要考虑到设备为PCI桥时的需要。<br> 在前面一篇中我们可以看到这六个常规地址区间的长字是连续的。<br> 代码还是在同一文件中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76715"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+</pre></td> 
+             <td class="code" id="p767code15"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">void</span> pci_read_bases<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> howmany<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> rom<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> pos<span style="color: #339933;">,</span> reg<span style="color: #339933;">,</span> next<span style="color: #339933;">;</span>
+	u32 l<span style="color: #339933;">,</span> sz<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> resource <span style="color: #339933;">*</span>res<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">for</span><span style="color: #009900;">(</span>pos<span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> pos<span style="color: #339933;">&lt;</span>howmany<span style="color: #339933;">;</span> pos <span style="color: #339933;">=</span> next<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//循环读出常规地址区间</span>
+		next <span style="color: #339933;">=</span> pos<span style="color: #339933;">+</span><span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+		res <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>resource<span style="color: #009900;">[</span>pos<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+		res<span style="color: #339933;">-&gt;</span>name <span style="color: #339933;">=</span> dev<span style="color: #339933;">-&gt;</span>name<span style="color: #339933;">;</span>
+<span style="color: #666666; font-style: italic;">//因为读出的数值是一些控制信息以及区间地址的组合，所以这里需要先计算</span>
+		reg <span style="color: #339933;">=</span> PCI_BASE_ADDRESS_0 <span style="color: #339933;">+</span> <span style="color: #009900;">(</span>pos <span style="color: #339933;">&lt;&lt;</span> <span style="color: #0000dd;">2</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">,</span> ~<span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sz<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">,</span> l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sz <span style="color: #339933;">||</span> sz <span style="color: #339933;">==</span> <span style="color: #208080;">0xffffffff</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>l <span style="color: #339933;">==</span> <span style="color: #208080;">0xffffffff</span><span style="color: #009900;">)</span>
+			l <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>l <span style="color: #339933;">&amp;</span> PCI_BASE_ADDRESS_SPACE<span style="color: #009900;">)</span> <span style="color: #339933;">==</span> PCI_BASE_ADDRESS_SPACE_MEMORY<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">=</span> l <span style="color: #339933;">&amp;</span> PCI_BASE_ADDRESS_MEM_MASK<span style="color: #339933;">;</span>
+			sz <span style="color: #339933;">=</span> pci_size<span style="color: #009900;">(</span>sz<span style="color: #339933;">,</span> PCI_BASE_ADDRESS_MEM_MASK<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//计算区间长度</span>
+		<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+			res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">=</span> l <span style="color: #339933;">&amp;</span> PCI_BASE_ADDRESS_IO_MASK<span style="color: #339933;">;</span>
+			sz <span style="color: #339933;">=</span> pci_size<span style="color: #009900;">(</span>sz<span style="color: #339933;">,</span> PCI_BASE_ADDRESS_IO_MASK <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xffff</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//计算区间长度</span>
+		<span style="color: #009900;">}</span>
+		res<span style="color: #339933;">-&gt;</span>end <span style="color: #339933;">=</span> res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">+</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> sz<span style="color: #339933;">;</span>
+		res<span style="color: #339933;">-&gt;</span>flags <span style="color: #339933;">|=</span> <span style="color: #009900;">(</span>l <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xf</span><span style="color: #009900;">)</span> <span style="color: #339933;">|</span> pci_calc_resource_flags<span style="color: #009900;">(</span>l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>l <span style="color: #339933;">&amp;</span> <span style="color: #009900;">(</span>PCI_BASE_ADDRESS_SPACE <span style="color: #339933;">|</span> PCI_BASE_ADDRESS_MEM_TYPE_MASK<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		    <span style="color: #339933;">==</span> <span style="color: #009900;">(</span>PCI_BASE_ADDRESS_SPACE_MEMORY <span style="color: #339933;">|</span> PCI_BASE_ADDRESS_MEM_TYPE_64<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">+</span><span style="color: #0000dd;">4</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			next<span style="color: #339933;">++;</span>
+<span style="color: #339933;">#if BITS_PER_LONG == 64</span>
+			res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">|=</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> l<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;&lt;</span> <span style="color: #0000dd;">32</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//区间起点</span>
+			res<span style="color: #339933;">-&gt;</span>end <span style="color: #339933;">=</span> res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">+</span> sz<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//区间终点</span>
+			pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">+</span><span style="color: #0000dd;">4</span><span style="color: #339933;">,</span> ~<span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">+</span><span style="color: #0000dd;">4</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sz<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> reg<span style="color: #339933;">+</span><span style="color: #0000dd;">4</span><span style="color: #339933;">,</span> l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>~sz<span style="color: #009900;">)</span>
+				res<span style="color: #339933;">-&gt;</span>end <span style="color: #339933;">=</span> res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">+</span> <span style="color: #208080;">0xffffffff</span> <span style="color: #339933;">+</span>
+						<span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> ~sz<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;&lt;</span> <span style="color: #0000dd;">32</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #339933;">#else</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>l<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+				printk<span style="color: #009900;">(</span>KERN_ERR <span style="color: #ff0000;">"PCI: Unable to handle 64-bit address for device %s<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>slot_name<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+				res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				res<span style="color: #339933;">-&gt;</span>flags <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+				<span style="color: #b1b100;">continue</span><span style="color: #339933;">;</span>
+			<span style="color: #009900;">}</span>
+<span style="color: #339933;">#endif</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>rom<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//扩充ROM区间</span>
+		dev<span style="color: #339933;">-&gt;</span>rom_base_reg <span style="color: #339933;">=</span> rom<span style="color: #339933;">;</span>
+		res <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>resource<span style="color: #009900;">[</span>PCI_ROM_RESOURCE<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+		pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> rom<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> rom<span style="color: #339933;">,</span> ~PCI_ROM_ADDRESS_ENABLE<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> rom<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sz<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> rom<span style="color: #339933;">,</span> l<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>l <span style="color: #339933;">==</span> <span style="color: #208080;">0xffffffff</span><span style="color: #009900;">)</span>
+			l <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sz <span style="color: #339933;">&amp;&amp;</span> sz <span style="color: #339933;">!=</span> <span style="color: #208080;">0xffffffff</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			res<span style="color: #339933;">-&gt;</span>flags <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>l <span style="color: #339933;">&amp;</span> PCI_ROM_ADDRESS_ENABLE<span style="color: #009900;">)</span> <span style="color: #339933;">|</span>
+			  IORESOURCE_MEM <span style="color: #339933;">|</span> IORESOURCE_PREFETCH <span style="color: #339933;">|</span> IORESOURCE_READONLY <span style="color: #339933;">|</span> IORESOURCE_CACHEABLE<span style="color: #339933;">;</span>
+			res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">=</span> l <span style="color: #339933;">&amp;</span> PCI_ROM_ADDRESS_MASK<span style="color: #339933;">;</span>
+			sz <span style="color: #339933;">=</span> pci_size<span style="color: #009900;">(</span>sz<span style="color: #339933;">,</span> PCI_ROM_ADDRESS_MASK<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			res<span style="color: #339933;">-&gt;</span>end <span style="color: #339933;">=</span> res<span style="color: #339933;">-&gt;</span>start <span style="color: #339933;">+</span> <span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span><span style="color: #009900;">)</span> sz<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+		res<span style="color: #339933;">-&gt;</span>name <span style="color: #339933;">=</span> dev<span style="color: #339933;">-&gt;</span>name<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>回到pci_do_scan_bus()中，最后使用pci_scan_bridge()来进行PCI桥的扫描建树，在pci_do_scan_bus()中使用两遍扫描，若扫描到是PCI-PCI桥或PCI-CARDBUS桥，就对其调用pci_scan_bridge()，代码还是在drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76716"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+</pre></td> 
+             <td class="code" id="p767code16"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ * If it's a bridge, configure it and scan the bus behind it.
+ * For CardBus bridges, we don't scan behind as the devices will
+ * be handled by the bridge driver itself.
+ *
+ * We need to process bridges in two passes -- first we scan those
+ * already configured by the BIOS and after we are done with all of
+ * them, we proceed to assigning numbers to the remaining buses in
+ * order to avoid overlaps between old and new bus numbers.
+ */</span>
+<span style="color: #993333;">static</span> <span style="color: #993333;">int</span> __init pci_scan_bridge<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>bus<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span> dev<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> max<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> pass<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> buses<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">short</span> cr<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>child<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> is_cardbus <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>dev<span style="color: #339933;">-&gt;</span>hdr_type <span style="color: #339933;">==</span> PCI_HEADER_TYPE_CARDBUS<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	pci_read_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_PRIMARY_BUS<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>buses<span style="color: #009900;">)</span><span style="color: #339933;">;</span><span style="color: #666666; font-style: italic;">//读取主总线号、次总线号等</span>
+	DBG<span style="color: #009900;">(</span><span style="color: #ff0000;">"Scanning behind PCI bridge %s, config %06x, pass %d<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> dev<span style="color: #339933;">-&gt;</span>slot_name<span style="color: #339933;">,</span> buses <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xffffff</span><span style="color: #339933;">,</span> pass<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #808080; font-style: italic;">/*
+ *读出的buses最低的字节为主总线号，在此之上的两个字节依次为次总线号和
+ *子树中的最大总线号，只要这两个字节有一个不为0就表示已经由BIOS枚举过了
+ *所以已经分配过了子总线号和最大子总线号
+ */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>buses <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xffff00</span><span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>pcibios_assign_all_busses<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//一般为第一次循环时执行</span>
+<span style="color: #808080; font-style: italic;">/*
+ *这个时候总线寄存器可能已经由BIOS处理过了
+ */</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Bus already configured by firmware, process it in the first
+		 * pass and just note the configuration.
+		 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>pass<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">return</span> max<span style="color: #339933;">;</span>
+		child <span style="color: #339933;">=</span> pci_add_new_bus<span style="color: #009900;">(</span>bus<span style="color: #339933;">,</span> dev<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//添加新总线数据结构</span>
+		child<span style="color: #339933;">-&gt;</span>primary <span style="color: #339933;">=</span> buses <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xFF</span><span style="color: #339933;">;</span>
+		child<span style="color: #339933;">-&gt;</span>secondary <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>buses <span style="color: #339933;">&gt;&gt;</span> <span style="color: #0000dd;">8</span><span style="color: #009900;">)</span> <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xFF</span><span style="color: #339933;">;</span>
+		child<span style="color: #339933;">-&gt;</span>subordinate <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>buses <span style="color: #339933;">&gt;&gt;</span> <span style="color: #0000dd;">16</span><span style="color: #009900;">)</span> <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xFF</span><span style="color: #339933;">;</span>
+		child<span style="color: #339933;">-&gt;</span>number <span style="color: #339933;">=</span> child<span style="color: #339933;">-&gt;</span>secondary<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>is_cardbus<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> cmax <span style="color: #339933;">=</span> pci_do_scan_bus<span style="color: #009900;">(</span>child<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//递归调用扫描枚举</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>cmax <span style="color: #339933;">&gt;</span> max<span style="color: #009900;">)</span> max <span style="color: #339933;">=</span> cmax<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+			<span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span> cmax <span style="color: #339933;">=</span> child<span style="color: #339933;">-&gt;</span>subordinate<span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>cmax <span style="color: #339933;">&gt;</span> max<span style="color: #009900;">)</span> max <span style="color: #339933;">=</span> cmax<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//一般为第二次循环的时候执行</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * We need to assign a number to this bus which we always
+		 * do in the second pass. We also keep all address decoders
+		 * on the bridge disabled during scanning.  FIXME: Why?
+		 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>pass<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">return</span> max<span style="color: #339933;">;</span>
+		pci_read_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_COMMAND<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>cr<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_COMMAND<span style="color: #339933;">,</span> <span style="color: #208080;">0x0000</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_STATUS<span style="color: #339933;">,</span> <span style="color: #208080;">0xffff</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		child <span style="color: #339933;">=</span> pci_add_new_bus<span style="color: #009900;">(</span>bus<span style="color: #339933;">,</span> dev<span style="color: #339933;">,</span> <span style="color: #339933;">++</span>max<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		buses <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>buses <span style="color: #339933;">&amp;</span> <span style="color: #208080;">0xff000000</span><span style="color: #009900;">)</span>
+		      <span style="color: #339933;">|</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>child<span style="color: #339933;">-&gt;</span>primary<span style="color: #009900;">)</span>     <span style="color: #339933;">&lt;&lt;</span>  <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		      <span style="color: #339933;">|</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>child<span style="color: #339933;">-&gt;</span>secondary<span style="color: #009900;">)</span>   <span style="color: #339933;">&lt;&lt;</span>  <span style="color: #0000dd;">8</span><span style="color: #009900;">)</span>
+		      <span style="color: #339933;">|</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span> <span style="color: #993333;">int</span><span style="color: #009900;">)</span><span style="color: #009900;">(</span>child<span style="color: #339933;">-&gt;</span>subordinate<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;&lt;</span> <span style="color: #0000dd;">16</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * We need to blast all three values with a single write.
+		 */</span>
+		pci_write_config_dword<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_PRIMARY_BUS<span style="color: #339933;">,</span> buses<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>is_cardbus<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			<span style="color: #808080; font-style: italic;">/* Now we can scan all subordinate buses... */</span>
+			max <span style="color: #339933;">=</span> pci_do_scan_bus<span style="color: #009900;">(</span>child<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+			<span style="color: #808080; font-style: italic;">/*
+			 * For CardBus bridges, we leave 4 bus numbers
+			 * as cards with a PCI-to-PCI bridge can be
+			 * inserted later.
+			 */</span>
+			max <span style="color: #339933;">+=</span> <span style="color: #0000dd;">3</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Set the subordinate bus number to its real value.
+		 */</span>
+		child<span style="color: #339933;">-&gt;</span>subordinate <span style="color: #339933;">=</span> max<span style="color: #339933;">;</span>
+		pci_write_config_byte<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_SUBORDINATE_BUS<span style="color: #339933;">,</span> max<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		pci_write_config_word<span style="color: #009900;">(</span>dev<span style="color: #339933;">,</span> PCI_COMMAND<span style="color: #339933;">,</span> cr<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	sprintf<span style="color: #009900;">(</span>child<span style="color: #339933;">-&gt;</span>name<span style="color: #339933;">,</span> <span style="color: #009900;">(</span>is_cardbus <span style="color: #339933;">?</span> <span style="color: #ff0000;">"PCI CardBus #%02x"</span> <span style="color: #339933;">:</span> <span style="color: #ff0000;">"PCI Bus #%02x"</span><span style="color: #009900;">)</span><span style="color: #339933;">,</span> child<span style="color: #339933;">-&gt;</span>number<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> max<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>添加bus的函数pci_add_new_bus()定义在drivers/pci/pci.c中：</p> 
+         <div class="wp_codebox_msgheader"> 
+          <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+          <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=767&amp;download=download.c">download.c</a></span> 
+          <div class="codebox_clear"></div> 
+         </div> 
+         <div class="wp_codebox"> 
+          <table> 
+           <tbody> 
+            <tr id="p76717"> 
+             <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td> 
+             <td class="code" id="p767code17"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span> __init pci_add_new_bus<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>parent<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> pci_dev <span style="color: #339933;">*</span>dev<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> busnr<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> pci_bus <span style="color: #339933;">*</span>child<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> i<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * Allocate a new bus, and inherit stuff from the parent..
+	 */</span>
+	child <span style="color: #339933;">=</span> pci_alloc_bus<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	list_add_tail<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>child<span style="color: #339933;">-&gt;</span>node<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>parent<span style="color: #339933;">-&gt;</span>children<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	child<span style="color: #339933;">-&gt;</span>self <span style="color: #339933;">=</span> dev<span style="color: #339933;">;</span>
+	dev<span style="color: #339933;">-&gt;</span>subordinate <span style="color: #339933;">=</span> child<span style="color: #339933;">;</span>
+	child<span style="color: #339933;">-&gt;</span>parent <span style="color: #339933;">=</span> parent<span style="color: #339933;">;</span>
+	child<span style="color: #339933;">-&gt;</span>ops <span style="color: #339933;">=</span> parent<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">;</span>
+	child<span style="color: #339933;">-&gt;</span>sysdata <span style="color: #339933;">=</span> parent<span style="color: #339933;">-&gt;</span>sysdata<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * Set up the primary, secondary and subordinate
+	 * bus numbers.
+	 */</span>
+	child<span style="color: #339933;">-&gt;</span>number <span style="color: #339933;">=</span> child<span style="color: #339933;">-&gt;</span>secondary <span style="color: #339933;">=</span> busnr<span style="color: #339933;">;</span>
+	child<span style="color: #339933;">-&gt;</span>primary <span style="color: #339933;">=</span> parent<span style="color: #339933;">-&gt;</span>secondary<span style="color: #339933;">;</span>
+	child<span style="color: #339933;">-&gt;</span>subordinate <span style="color: #339933;">=</span> <span style="color: #208080;">0xff</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Set up default resource pointers.. */</span>
+	<span style="color: #b1b100;">for</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span> i <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">4</span><span style="color: #339933;">;</span> i<span style="color: #339933;">++</span><span style="color: #009900;">)</span>
+		child<span style="color: #339933;">-&gt;</span>resource<span style="color: #009900;">[</span>i<span style="color: #009900;">]</span> <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>dev<span style="color: #339933;">-&gt;</span>resource<span style="color: #009900;">[</span>PCI_BRIDGE_RESOURCES<span style="color: #339933;">+</span>i<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">return</span> child<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+         <p>函数就是分配并设置一些属性等，不再详细解释。</p> 
+         <p>&nbsp;</p> 
+         <p>The End.</p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-767 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

@@ -1,0 +1,328 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-158 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-158" class="post-158 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;558&nbsp;–&nbsp;Wormholes【SPFA】</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=158" title="下午 8:25" rel="bookmark"><time class="entry-date" datetime="2011-08-29T20:25:26+00:00" pubdate>29 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=158#respond" title="Comment on UVA&nbsp;558&nbsp;–&nbsp;Wormholes【SPFA】">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 判断是否存在负权回路</p> 
+         <div></div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><font color="#C0FFFF" size="5"><a name="SECTION0001000000000000000000">Wormholes</a>&nbsp;<wbr></font></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p>In the year 2163, wormholes were discovered. A wormhole is a<br> subspace tunnel through space and time connecting two star systems.<br> Wormholes have a few peculiar properties:</p> 
+          <ul> 
+           <li>Wormholes are <em>one-way</em> only.</li> 
+           <li>The time it takes to travel through a wormhole is<br> negligible.</li> 
+           <li>A wormhole has two end points, each situated in a star<br> system.</li> 
+           <li>A star system may have more than one wormhole end point within<br> its boundaries.</li> 
+           <li>For some unknown reason, starting from our solar system, it is<br> always possible to end up in any star system by following a<br> sequence of wormholes (maybe Earth is the centre of the<br> universe).</li> 
+           <li>Between any pair of star systems, there is at most one wormhole<br> in either direction.</li> 
+           <li>There are no wormholes with both end points in the same star<br> system.</li> 
+          </ul> 
+          <p>All wormholes have a constant time difference between their end<br> points. For example, a specific wormhole may cause the person<br> travelling through it to end up 15 years in the future. Another<br> wormhole may cause the person to end up 42 years in the past.</p> 
+          <p> A brilliant physicist, living on earth, wants to use wormholes to<br> study the Big Bang. Since warp drive has not been invented yet, it<br> is not possible for her to travel from one star system to another<br> one directly. This <em>can</em> be done using wormholes, of<br> course.</p> 
+          <p> The scientist wants to reach a cycle of wormholes somewhere in the<br> universe that causes her to end up in the past. By travelling along<br> this cycle a lot of times, the scientist is able to go back as far<br> in time as necessary to reach the beginning of the universe and see<br> the Big Bang with her own eyes. Write a program to find out whether<br> such a cycle exists.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001001000000000000000">Input</a>&nbsp;<wbr></font></h2> 
+          <p>The input file starts with a line containing the number of cases<br> <i>c</i> to be analysed. Each case starts with a line with two<br> numbers <i>n</i> and <i>m</i> . These indicate the number of star<br> systems ( <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/558img2.gif" alt="$1 le n le 1000$" height="30" border="0" width="105" align="middle" title="UVA&nbsp;<wbr>558&nbsp;<wbr>-&nbsp;<wbr>Wormholes【SPFA】"><wbr>558&nbsp;<wbr>-&nbsp;<wbr>Wormholes【SPFA】” /&gt;) and the number of wormholes ( <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/558img3.gif" alt="$0 le m le 2000$" height="30" border="0" width="110" align="middle" title="UVA&nbsp;<wbr>558&nbsp;<wbr>-&nbsp;<wbr>Wormholes【SPFA】"><wbr>558&nbsp;<wbr>-&nbsp;<wbr>Wormholes【SPFA】” /&gt;) . The star systems are numbered from 0 (our solar<br> system) through <i>n</i>-1 . For each wormhole a line containing<br> three integer numbers <i>x</i>, <i>y</i> and <i>t</i> is given.<br> These numbers indicate that this wormhole allows someone to travel<br> from the star system numbered <i>x</i> to the star system numbered<br> <i>y</i>, thereby ending up <i>t</i> ( <img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/5/558img4.gif" alt="$-1000 le t le 1000$" height="30" border="0" width="141" align="middle" title="UVA&nbsp;<wbr>558&nbsp;<wbr>-&nbsp;<wbr>Wormholes【SPFA】"><wbr>558&nbsp;<wbr>-&nbsp;<wbr>Wormholes【SPFA】” /&gt;) years in the future.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001002000000000000000">Output</a>&nbsp;</font></h2> 
+          <p><wbr><br> The output consists of <i>c</i> lines, one line for each case,<br> containing the word <tt>possible</tt> if it is indeed possible to<br> go back in time indefinitely, or <tt>not possible</tt> if this is<br> not possible with the given set of star systems and wormholes.</p> 
+          <h2><font color="#0070E8"><a name="SECTION0001003000000000000000">Sample<br> Input</a>&nbsp;</font></h2> 
+          <p><wbr><br> </p> 
+          <pre>
+2
+</pre> 
+          <pre>
+3 3
+</pre> 
+          <pre>
+0 1 1000
+</pre> 
+          <pre>
+1 2 15
+</pre> 
+          <pre>
+2 1 -42
+</pre> 
+          <pre>
+4 4
+</pre> 
+          <pre>
+0 1 10
+</pre> 
+          <pre>
+1 2 20
+</pre> 
+          <pre>
+2 3 30
+</pre> 
+          <pre>
+3 0 -60
+</pre> 
+          <div></div> 
+          <h2><font color="#0070E8"><a name="SECTION0001004000000000000000">Sample<br> Output</a>&nbsp;<wbr></font></h2> 
+          <pre>
+possible&nbsp;<wbr>
+</pre> 
+          <pre>
+not possible&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;vector&gt;
+</pre> 
+          <pre>
+#include&lt;queue&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+#define INF 1&lt;&lt;28
+</pre> 
+          <pre>
+#define maxn 1005
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+int N,M;
+</pre> 
+          <pre>
+typedef struct edge{
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int a;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int w;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>edge(){}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>edge(int a1,int b1):a(a1),w(b1){}
+</pre> 
+          <pre>
+}edge;
+</pre> 
+          <pre>
+int vis[maxn];
+</pre> 
+          <pre>
+int d[maxn];
+</pre> 
+          <pre>
+vector&lt;edge&gt;E[maxn];
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+bool spfa(){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[0]++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>queue&lt;int&gt;qu;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>qu.push(0);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;N;i++)d[i]=(i==0? 0:INF);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(!qu.empty()){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int tmp=qu.front();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>qu.pop();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(vector&lt;edge&gt;::iterator iter=E[tmp].begin();iter!=E[tmp].end();iter++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(d[iter-&gt;a]&gt;d[tmp]+iter-&gt;w){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>d[iter-&gt;a]=d[tmp]+iter-&gt;w;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[iter-&gt;a]++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>qu.push(iter-&gt;a);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(vis[iter-&gt;a]&gt;N)return true;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return false;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(ncase--){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;N&gt;&gt;M;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;N;i++)E[i].clear();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int X,Y,W;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;M;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;X&gt;&gt;Y&gt;&gt;W;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>E[X].push_back(edge(Y,W));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(spfa())cout&lt;&lt;"possible"&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>else cout&lt;&lt;"not possible"&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-158 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

@@ -1,0 +1,621 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-570 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-570" class="post-570 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-内存管理（四、访问异常处理）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=570" title="上午 11:27" rel="bookmark"><time class="entry-date" datetime="2012-09-12T11:27:06+00:00" pubdate>12 九月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=570#respond" title="Comment on Linux内核-内存管理（四、访问异常处理）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div> 
+          <p>好吧我承认，再一次看不进去了，各种操作太多了，看的我眼花缭乱的，每当看不进去的时候就写博文把前面看的总结总结。</p> 
+          <p>本篇是讲Linux页式存储管理的异常处理部分，有关大略的异常处理部分可以参考：</p> 
+          <p><a href="http://codelifeliwan.github.io/?cat=44">http://codelifeliwan.github.io/?cat=44</a></p> 
+          <p>Linux<span style="font-family: 宋体;">详细的异常处理进入和退出部分将放在中断处理模块讲。</span></p> 
+          <p>当页式异常发生时会发生一个中断，进入中断处理程序，在中断时会将引起出错的线性地址（虚拟地址）存入<span style="font-family: 'Times New Roman';">CR2</span><span style="font-family: 宋体;">寄存器，同时在异常的时候会返回一个出错码。</span>当异常处理完成后<span style="font-family: 'Times New Roman';">CPU</span><span style="font-family: 宋体;">会重新执行引起异常的指令。</span></p> 
+          <p>页异常处理程序在<span style="font-family: 'Times New Roman';">arch/i386/mm/fault.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;This&nbsp;routine&nbsp;handles&nbsp;page&nbsp;faults.&nbsp;&nbsp;It&nbsp;determines&nbsp;the&nbsp;address,</p> 
+          <p>*&nbsp;and&nbsp;the&nbsp;problem,&nbsp;and&nbsp;then&nbsp;passes&nbsp;it&nbsp;off&nbsp;to&nbsp;one&nbsp;of&nbsp;the&nbsp;appropriate</p> 
+          <p>*&nbsp;routines.</p> 
+          <p>*</p> 
+          <p>*&nbsp;error_code:</p> 
+          <p>* bit&nbsp;0&nbsp;==&nbsp;0&nbsp;means&nbsp;no&nbsp;page&nbsp;found,&nbsp;1&nbsp;means&nbsp;protection&nbsp;fault</p> 
+          <p>* bit&nbsp;1&nbsp;==&nbsp;0&nbsp;means&nbsp;read,&nbsp;1&nbsp;means&nbsp;write</p> 
+          <p>* bit&nbsp;2&nbsp;==&nbsp;0&nbsp;means&nbsp;kernel,&nbsp;1&nbsp;means&nbsp;user-mode</p> 
+          <p>*/</p> 
+          <p>asmlinkage&nbsp;void&nbsp;do_page_fault(struct&nbsp;pt_regs&nbsp;*regs,&nbsp;unsigned&nbsp;long&nbsp;error_code)</p> 
+          <p>{</p> 
+          <p>struct&nbsp;task_struct&nbsp;*tsk;</p> 
+          <p>struct&nbsp;mm_struct&nbsp;*mm;</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;vma;</p> 
+          <p>unsigned&nbsp;long&nbsp;address;</p> 
+          <p>unsigned&nbsp;long&nbsp;page;</p> 
+          <p>unsigned&nbsp;long&nbsp;fixup;</p> 
+          <p>int&nbsp;write;</p> 
+          <p>siginfo_t&nbsp;info;</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;get&nbsp;the&nbsp;address&nbsp;*/</p> 
+          <p>__asm__(“movl&nbsp;%%cr2,%0″:”=r”&nbsp;(address));//<span style="font-family: 宋体;">取得</span><span style="font-family: 'Times New Roman';">CR2</span><span style="font-family: 宋体;">寄存器的值，即出错地址。</span></p> 
+          <p>&nbsp;</p> 
+          <p>tsk&nbsp;=&nbsp;current;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;We&nbsp;fault-in&nbsp;kernel-space&nbsp;virtual&nbsp;memory&nbsp;on-demand.&nbsp;The</p> 
+          <p>*&nbsp;‘reference’&nbsp;page&nbsp;table&nbsp;is&nbsp;init_mm.pgd.</p> 
+          <p>*</p> 
+          <p>*&nbsp;NOTE!&nbsp;We&nbsp;MUST&nbsp;NOT&nbsp;take&nbsp;any&nbsp;locks&nbsp;for&nbsp;this&nbsp;case.&nbsp;We&nbsp;may</p> 
+          <p>*&nbsp;be&nbsp;in&nbsp;an&nbsp;interrupt&nbsp;or&nbsp;a&nbsp;critical&nbsp;region,&nbsp;and&nbsp;should</p> 
+          <p>*&nbsp;only&nbsp;copy&nbsp;the&nbsp;information&nbsp;from&nbsp;the&nbsp;master&nbsp;page&nbsp;table,</p> 
+          <p>*&nbsp;nothing&nbsp;more.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(address&nbsp;&gt;=&nbsp;TASK_SIZE) //<span style="font-family: 宋体;">判断是否内存超出最大用户空间。</span></p> 
+          <p>goto&nbsp;vmalloc_fault;</p> 
+          <p>&nbsp;</p> 
+          <p>mm&nbsp;=&nbsp;tsk-&gt;mm;</p> 
+          <p>info.si_code&nbsp;=&nbsp;SEGV_MAPERR;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;we’re&nbsp;in&nbsp;an&nbsp;interrupt&nbsp;or&nbsp;have&nbsp;no&nbsp;user</p> 
+          <p>*&nbsp;context,&nbsp;we&nbsp;must&nbsp;not&nbsp;take&nbsp;the&nbsp;fault..</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(in_interrupt()&nbsp;||&nbsp;!mm) //<span style="font-family: 宋体;">判断是否在中断中和或否尚未分配内存</span></p> 
+          <p>goto&nbsp;no_context;</p> 
+          <p>&nbsp;</p> 
+          <p>down(&amp;mm-&gt;mmap_sem); //<span style="font-family: 宋体;">信号量的</span><span style="font-family: 'Times New Roman';">P/V</span><span style="font-family: 宋体;">操作</span></p> 
+          <p>&nbsp;</p> 
+          <p>vma&nbsp;=&nbsp;find_vma(mm,&nbsp;address);</p> 
+          <p>if&nbsp;(!vma) //<span style="font-family: 宋体;">未找到对应的虚拟内存管理块</span></p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>if&nbsp;(vma-&gt;vm_start&nbsp;&lt;=&nbsp;address) //<span style="font-family: 宋体;">起始地址在给定错误地址之下，转向这确处理</span></p> 
+          <p>goto&nbsp;good_area;</p> 
+          <p>if&nbsp;(!(vma-&gt;vm_flags&nbsp;&amp;&nbsp;VM_GROWSDOWN)) //<span style="font-family: 宋体;">判断找到的区间是否为堆栈区间</span></p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>if&nbsp;(error_code&nbsp;&amp;&nbsp;4)&nbsp;{ //<span style="font-family: 宋体;">是堆栈区间的处理</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;accessing&nbsp;the&nbsp;stack&nbsp;below&nbsp;%esp&nbsp;is&nbsp;always&nbsp;a&nbsp;bug.</p> 
+          <p>*&nbsp;The&nbsp;“+&nbsp;32″&nbsp;is&nbsp;there&nbsp;due&nbsp;to&nbsp;some&nbsp;instructions&nbsp;(like</p> 
+          <p>*&nbsp;pusha)&nbsp;doing&nbsp;post-decrement&nbsp;on&nbsp;the&nbsp;stack&nbsp;and&nbsp;that</p> 
+          <p>*&nbsp;doesn’t&nbsp;show&nbsp;up&nbsp;until&nbsp;later..</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(address&nbsp;+&nbsp;32&nbsp;&lt;&nbsp;regs-&gt;esp) //<span style="font-family: 宋体;">是否为堆栈扩展要求</span></p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>}</p> 
+          <p>if&nbsp;(expand_stack(vma,&nbsp;address)) //<span style="font-family: 宋体;">扩展堆栈</span></p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Ok,&nbsp;we&nbsp;have&nbsp;a&nbsp;good&nbsp;vm_area&nbsp;for&nbsp;this&nbsp;memory&nbsp;access,&nbsp;so</p> 
+          <p>*&nbsp;we&nbsp;can&nbsp;handle&nbsp;it..</p> 
+          <p>*/</p> 
+          <p>good_area:</p> 
+          <p>info.si_code&nbsp;=&nbsp;SEGV_ACCERR;</p> 
+          <p>write&nbsp;=&nbsp;0;</p> 
+          <p>switch&nbsp;(error_code&nbsp;&amp;&nbsp;3)&nbsp;{ //<span style="font-family: 宋体;">从</span><span style="font-family: 'Times New Roman';">error_code</span><span style="font-family: 宋体;">判断读写权限和是否存在</span></p> 
+          <p>default: /*&nbsp;3:&nbsp;write,&nbsp;present&nbsp;*/</p> 
+          <p>#ifdef&nbsp;TEST_VERIFY_AREA</p> 
+          <p>if&nbsp;(regs-&gt;cs&nbsp;==&nbsp;KERNEL_CS)</p> 
+          <p>printk(“WP&nbsp;fault&nbsp;at&nbsp;%08lx\n”,&nbsp;regs-&gt;eip);</p> 
+          <p>#endif</p> 
+          <p>/*&nbsp;fall&nbsp;through&nbsp;*/</p> 
+          <p>case&nbsp;2: /*&nbsp;write,&nbsp;not&nbsp;present&nbsp;*/</p> 
+          <p>if&nbsp;(!(vma-&gt;vm_flags&nbsp;&amp;&nbsp;VM_WRITE))</p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>write++;</p> 
+          <p>break;</p> 
+          <p>case&nbsp;1: /*&nbsp;read,&nbsp;present&nbsp;*/</p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>case&nbsp;0: /*&nbsp;read,&nbsp;not&nbsp;present&nbsp;*/</p> 
+          <p>if&nbsp;(!(vma-&gt;vm_flags&nbsp;&amp;&nbsp;(VM_READ&nbsp;|&nbsp;VM_EXEC)))</p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;for&nbsp;any&nbsp;reason&nbsp;at&nbsp;all&nbsp;we&nbsp;couldn’t&nbsp;handle&nbsp;the&nbsp;fault,</p> 
+          <p>*&nbsp;make&nbsp;sure&nbsp;we&nbsp;exit&nbsp;gracefully&nbsp;rather&nbsp;than&nbsp;endlessly&nbsp;redo</p> 
+          <p>*&nbsp;the&nbsp;fault.</p> 
+          <p>*/</p> 
+          <p>switch&nbsp;(handle_mm_fault(mm,&nbsp;vma,&nbsp;address,&nbsp;write))&nbsp;{ //<span style="font-family: 宋体;">虚存管理函数</span></p> 
+          <p>case&nbsp;1:</p> 
+          <p>tsk-&gt;min_flt++;</p> 
+          <p>break;</p> 
+          <p>case&nbsp;2:</p> 
+          <p>tsk-&gt;maj_flt++;</p> 
+          <p>break;</p> 
+          <p>case&nbsp;0:</p> 
+          <p>goto&nbsp;do_sigbus;</p> 
+          <p>default:</p> 
+          <p>goto&nbsp;out_of_memory;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Did&nbsp;it&nbsp;hit&nbsp;the&nbsp;DOS&nbsp;screen&nbsp;memory&nbsp;VA&nbsp;from&nbsp;vm86&nbsp;mode?</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(regs-&gt;eflags&nbsp;&amp;&nbsp;VM_MASK)&nbsp;{</p> 
+          <p>unsigned&nbsp;long&nbsp;bit&nbsp;=&nbsp;(address&nbsp;–&nbsp;0xA0000)&nbsp;&gt;&gt;&nbsp;PAGE_SHIFT;</p> 
+          <p>if&nbsp;(bit&nbsp;&lt;&nbsp;32)</p> 
+          <p>tsk-&gt;thread.screen_bitmap&nbsp;|=&nbsp;1&nbsp;&lt;&lt;&nbsp;bit;</p> 
+          <p>}</p> 
+          <p>up(&amp;mm-&gt;mmap_sem);</p> 
+          <p>return;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Something&nbsp;tried&nbsp;to&nbsp;access&nbsp;memory&nbsp;that&nbsp;isn’t&nbsp;in&nbsp;our&nbsp;memory&nbsp;map..</p> 
+          <p>*&nbsp;Fix&nbsp;it,&nbsp;but&nbsp;check&nbsp;if&nbsp;it’s&nbsp;kernel&nbsp;or&nbsp;user&nbsp;first..</p> 
+          <p>*/</p> 
+          <p>bad_area:</p> 
+          <p>up(&amp;mm-&gt;mmap_sem); //P/V<span style="font-family: 宋体;">操作，释放</span></p> 
+          <p>&nbsp;</p> 
+          <p>bad_area_nosemaphore:</p> 
+          <p>/*&nbsp;User&nbsp;mode&nbsp;accesses&nbsp;just&nbsp;cause&nbsp;a&nbsp;SIGSEGV&nbsp;*/</p> 
+          <p>if&nbsp;(error_code&nbsp;&amp;&nbsp;4)&nbsp;{ //<span style="font-family: 宋体;">如果错误发生在用户代码</span></p> 
+          <p>tsk-&gt;thread.cr2&nbsp;=&nbsp;address;</p> 
+          <p>tsk-&gt;thread.error_code&nbsp;=&nbsp;error_code;</p> 
+          <p>tsk-&gt;thread.trap_no&nbsp;=&nbsp;14;</p> 
+          <p>info.si_signo&nbsp;=&nbsp;SIGSEGV;</p> 
+          <p>info.si_errno&nbsp;=&nbsp;0;</p> 
+          <p>/*&nbsp;info.si_code&nbsp;has&nbsp;been&nbsp;set&nbsp;above&nbsp;*/</p> 
+          <p>info.si_addr&nbsp;=&nbsp;(void&nbsp;*)address;</p> 
+          <p>force_sig_info(SIGSEGV,&nbsp;&amp;info,&nbsp;tsk); //<span style="font-family: 宋体;">软中断处理</span></p> 
+          <p>return;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Pentium&nbsp;F0&nbsp;0F&nbsp;C7&nbsp;C8&nbsp;bug&nbsp;workaround.</p> 
+          <p>*/</p> 
+          <p>if&nbsp;(boot_cpu_data.f00f_bug)&nbsp;{</p> 
+          <p>unsigned&nbsp;long&nbsp;nr;</p> 
+          <p>&nbsp;</p> 
+          <p>nr&nbsp;=&nbsp;(address&nbsp;–&nbsp;idt)&nbsp;&gt;&gt;&nbsp;3;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(nr&nbsp;==&nbsp;6)&nbsp;{</p> 
+          <p>do_invalid_op(regs,&nbsp;0);</p> 
+          <p>return;</p> 
+          <p>}</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>no_context:</p> 
+          <p>/*&nbsp;Are&nbsp;we&nbsp;prepared&nbsp;to&nbsp;handle&nbsp;this&nbsp;kernel&nbsp;fault?&nbsp;&nbsp;*/</p> 
+          <p>if&nbsp;((fixup&nbsp;=&nbsp;search_exception_table(regs-&gt;eip))&nbsp;!=&nbsp;0)&nbsp;{ //<span style="font-family: 宋体;">搜索内核模块异常结构表</span></p> 
+          <p>regs-&gt;eip&nbsp;=&nbsp;fixup; //<span style="font-family: 宋体;">改变返回地址为异常处理地址，</span></p> 
+          <p>//<span style="font-family: 宋体;">这样返回的时候就会从内核异常处开始执行了。</span></p> 
+          <p>return;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Oops.&nbsp;The&nbsp;kernel&nbsp;tried&nbsp;to&nbsp;access&nbsp;some&nbsp;bad&nbsp;page.&nbsp;We’ll&nbsp;have&nbsp;to</p> 
+          <p>*&nbsp;terminate&nbsp;things&nbsp;with&nbsp;extreme&nbsp;prejudice.</p> 
+          <p>*/</p> 
+          <p>&nbsp;</p> 
+          <p>bust_spinlocks();</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(address&nbsp;&lt;&nbsp;PAGE_SIZE)</p> 
+          <p>printk(KERN_ALERT&nbsp;“Unable&nbsp;to&nbsp;handle&nbsp;kernel&nbsp;NULL&nbsp;pointer&nbsp;dereference”);</p> 
+          <p>else</p> 
+          <p>printk(KERN_ALERT&nbsp;“Unable&nbsp;to&nbsp;handle&nbsp;kernel&nbsp;paging&nbsp;request”);</p> 
+          <p>printk(”&nbsp;at&nbsp;virtual&nbsp;address&nbsp;%08lx\n”,address);</p> 
+          <p>printk(”&nbsp;printing&nbsp;eip:\n”);</p> 
+          <p>printk(“%08lx\n”,&nbsp;regs-&gt;eip);</p> 
+          <p>asm(“movl&nbsp;%%cr3,%0″:”=r”&nbsp;(page));</p> 
+          <p>page&nbsp;=&nbsp;((unsigned&nbsp;long&nbsp;*)&nbsp;__va(page))[address&nbsp;&gt;&gt;&nbsp;22];</p> 
+          <p>printk(KERN_ALERT&nbsp;“*pde&nbsp;=&nbsp;%08lx\n”,&nbsp;page);</p> 
+          <p>if&nbsp;(page&nbsp;&amp;&nbsp;1)&nbsp;{</p> 
+          <p>page&nbsp;&amp;=&nbsp;PAGE_MASK;</p> 
+          <p>address&nbsp;&amp;=&nbsp;0x003ff000;</p> 
+          <p>page&nbsp;=&nbsp;((unsigned&nbsp;long&nbsp;*)&nbsp;__va(page))[address&nbsp;&gt;&gt;&nbsp;PAGE_SHIFT];</p> 
+          <p>printk(KERN_ALERT&nbsp;“*pte&nbsp;=&nbsp;%08lx\n”,&nbsp;page);</p> 
+          <p>}</p> 
+          <p>die(“Oops”,&nbsp;regs,&nbsp;error_code);</p> 
+          <p>do_exit(SIGKILL);</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;We&nbsp;ran&nbsp;out&nbsp;of&nbsp;memory,&nbsp;or&nbsp;some&nbsp;other&nbsp;thing&nbsp;happened&nbsp;to&nbsp;us&nbsp;that&nbsp;made</p> 
+          <p>*&nbsp;us&nbsp;unable&nbsp;to&nbsp;handle&nbsp;the&nbsp;page&nbsp;fault&nbsp;gracefully.</p> 
+          <p>*/</p> 
+          <p>out_of_memory:</p> 
+          <p>up(&amp;mm-&gt;mmap_sem);</p> 
+          <p>printk(“VM:&nbsp;killing&nbsp;process&nbsp;%s\n”,&nbsp;tsk-&gt;comm);</p> 
+          <p>if&nbsp;(error_code&nbsp;&amp;&nbsp;4)</p> 
+          <p>do_exit(SIGKILL);</p> 
+          <p>goto&nbsp;no_context;</p> 
+          <p>&nbsp;</p> 
+          <p>do_sigbus:</p> 
+          <p>up(&amp;mm-&gt;mmap_sem);</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Send&nbsp;a&nbsp;sigbus,&nbsp;regardless&nbsp;of&nbsp;whether&nbsp;we&nbsp;were&nbsp;in&nbsp;kernel</p> 
+          <p>*&nbsp;or&nbsp;user&nbsp;mode.</p> 
+          <p>*/</p> 
+          <p>tsk-&gt;thread.cr2&nbsp;=&nbsp;address;</p> 
+          <p>tsk-&gt;thread.error_code&nbsp;=&nbsp;error_code;</p> 
+          <p>tsk-&gt;thread.trap_no&nbsp;=&nbsp;14;</p> 
+          <p>info.si_code&nbsp;=&nbsp;SIGBUS;</p> 
+          <p>info.si_errno&nbsp;=&nbsp;0;</p> 
+          <p>info.si_code&nbsp;=&nbsp;BUS_ADRERR;</p> 
+          <p>info.si_addr&nbsp;=&nbsp;(void&nbsp;*)address;</p> 
+          <p>force_sig_info(SIGBUS,&nbsp;&amp;info,&nbsp;tsk);</p> 
+          <p>&nbsp;</p> 
+          <p>/*&nbsp;Kernel&nbsp;mode?&nbsp;Handle&nbsp;exceptions&nbsp;or&nbsp;die&nbsp;*/</p> 
+          <p>if&nbsp;(!(error_code&nbsp;&amp;&nbsp;4))</p> 
+          <p>goto&nbsp;no_context;</p> 
+          <p>return;</p> 
+          <p>&nbsp;</p> 
+          <p>vmalloc_fault:</p> 
+          <p>{</p> 
+          <p>/*</p> 
+          <p>*&nbsp;Synchronize&nbsp;this&nbsp;task’s&nbsp;top&nbsp;level&nbsp;page-table</p> 
+          <p>*&nbsp;with&nbsp;the&nbsp;‘reference’&nbsp;page&nbsp;table.</p> 
+          <p>*/</p> 
+          <p>int&nbsp;offset&nbsp;=&nbsp;__pgd_offset(address);</p> 
+          <p>pgd_t&nbsp;*pgd,&nbsp;*pgd_k;</p> 
+          <p>pmd_t&nbsp;*pmd,&nbsp;*pmd_k;</p> 
+          <p>&nbsp;</p> 
+          <p>pgd&nbsp;=&nbsp;tsk-&gt;active_mm-&gt;pgd&nbsp;+&nbsp;offset;</p> 
+          <p>pgd_k&nbsp;=&nbsp;init_mm.pgd&nbsp;+&nbsp;offset;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!pgd_present(*pgd))&nbsp;{</p> 
+          <p>if&nbsp;(!pgd_present(*pgd_k))</p> 
+          <p>goto&nbsp;bad_area_nosemaphore;</p> 
+          <p>set_pgd(pgd,&nbsp;*pgd_k);</p> 
+          <p>return;</p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>pmd&nbsp;=&nbsp;pmd_offset(pgd,&nbsp;address);</p> 
+          <p>pmd_k&nbsp;=&nbsp;pmd_offset(pgd_k,&nbsp;address);</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(pmd_present(*pmd)&nbsp;||&nbsp;!pmd_present(*pmd_k))</p> 
+          <p>goto&nbsp;bad_area_nosemaphore;</p> 
+          <p>set_pmd(pmd,&nbsp;*pmd_k);</p> 
+          <p>return;</p> 
+          <p>}</p> 
+          <p>}</p> 
+          <p>当然这个函数很长，我们可以分开来看：</p> 
+          <p>首先看这个函数的传入参数：<span style="font-family: 'Times New Roman';">regs</span><span style="font-family: 宋体;">是执行异常发生前各个寄存器内容的一个副本。</span><span style="font-family: 'Times New Roman';">error_code</span><span style="font-family: 宋体;">就是出错码。函数前面的注释解释了出错码各位的用途。如果不懂，请参考《</span><span style="font-family: 'Times New Roman';">Diers</span><span style="font-family: 宋体;">操作系统设计与实现》。</span></p> 
+          <p>在函数开头定义了几个变量，<span style="font-family: 'Times New Roman';">tsk</span><span style="font-family: 宋体;">是</span><span style="font-family: 'Times New Roman';">PCB</span><span style="font-family: 宋体;">指针指向当前进程在后面：</span></p> 
+          <p>tsk=current;</p> 
+          <p>mm<span style="font-family: 宋体;">指向当前进程的内存管理结构：</span></p> 
+          <p>mm=tsk-&gt;mm;</p> 
+          <p>vma<span style="font-family: 宋体;">指向当前对应管理的虚拟的块：</span></p> 
+          <p>vma=find_vma(mm,address);</p> 
+          <p>address<span style="font-family: 宋体;">就是出错的虚拟地址了：</span></p> 
+          <p>__asm__&nbsp;(“movl&nbsp;%%cr2,%0″:”=r”&nbsp;(address));</p> 
+          <p>这里用汇编语言取得了<span style="font-family: 'Times New Roman';">CR2</span><span style="font-family: 宋体;">寄存器的内容。</span></p> 
+          <p>剩下的几个后面用到了再说。</p> 
+          <p>其中，代码上已经加上注释，</p> 
+          <p>为了方便说明，把本函数分成两部分来讲：一个是检测错误类型，一个是处理错误。</p> 
+          <h3><strong>检测错误类型：</strong></h3> 
+          <p>在这里需要提到<span style="font-family: 'Times New Roman';">in_interrupt()</span><span style="font-family: 宋体;">函数，这个函数是判断此次中断是否发生在其他的中断中，如果是的话返回非</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">表明和此进程毫无关系。</span></p> 
+          <p>down(&amp;mm-&gt;mmap_sem)函数是用来进行互斥信号量的操作的，因为内存分配不允许别的进程打扰，所以必须进行互斥信号量的<span style="font-family: 'Times New Roman';">P/V</span><span style="font-family: 宋体;">操作，同其对应的还有个</span><span style="font-family: 'Times New Roman';">up</span><span style="font-family: 宋体;">函数。</span></p> 
+          <p>那么，检测的流程如下所示：</p> 
+          <p><a href="uploads/2012/09/QQ拼音截图未命名11.jpg"><img class="aligncenter size-full wp-image-571" title="QQ拼音截图未命名1" src="uploads/2012/09/QQ拼音截图未命名11.jpg" alt="" width="655" height="635"></a></p> 
+          <p>其中<span style="font-family: 'Times New Roman';">good_area</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">bad_area</span><span style="font-family: 宋体;">分别如下：</span></p> 
+          <p>good_area:</p> 
+          <p><a href="uploads/2012/09/QQ拼音截图未命名21.jpg"><img class="aligncenter size-full wp-image-572" title="QQ拼音截图未命名2" src="uploads/2012/09/QQ拼音截图未命名21.jpg" alt="" width="538" height="570"></a></p> 
+          <p>bad_area:</p> 
+          <p><a href="uploads/2012/09/QQ拼音截图未命名31.jpg"><img class="aligncenter size-full wp-image-573" title="QQ拼音截图未命名3" src="uploads/2012/09/QQ拼音截图未命名31.jpg" alt="" width="387" height="587"></a></p> 
+          <p>其他几个地方都比较容易懂，至于vmalloc_fault<span style="font-family: 宋体;">将放在以后讲。</span></p> 
+          <p>&nbsp;</p> 
+          <h3><strong>处理错误：</strong></h3> 
+          <p>好了，检测说完了再看看上面提到的几个处理函数。首先是<span style="font-family: 'Times New Roman';">expand_stack()</span><span style="font-family: 宋体;">，这个函数定义在</span><span style="font-family: 'Times New Roman';">include/linux/mm.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>/*&nbsp;vma&nbsp;is&nbsp;the&nbsp;first&nbsp;one&nbsp;with&nbsp;&nbsp;address&nbsp;&lt;&nbsp;vma-&gt;vm_end,</p> 
+          <p>*&nbsp;and&nbsp;even&nbsp;&nbsp;address&nbsp;&lt;&nbsp;vma-&gt;vm_start.&nbsp;Have&nbsp;to&nbsp;extend&nbsp;vma.&nbsp;*/</p> 
+          <p>static&nbsp;inline&nbsp;int&nbsp;expand_stack(struct&nbsp;vm_area_struct&nbsp;*&nbsp;vma,&nbsp;unsigned&nbsp;long&nbsp;address)</p> 
+          <p>{</p> 
+          <p>unsigned&nbsp;long&nbsp;grow; //<span style="font-family: 宋体;">需要增长的页数</span></p> 
+          <p>&nbsp;</p> 
+          <p>address&nbsp;&amp;=&nbsp;PAGE_MASK;</p> 
+          <p>grow&nbsp;=&nbsp;(vma-&gt;vm_start&nbsp;–&nbsp;address)&nbsp;&gt;&gt;&nbsp;PAGE_SHIFT; //<span style="font-family: 宋体;">计算需要增长的页数</span></p> 
+          <p>if&nbsp;(vma-&gt;vm_end&nbsp;–&nbsp;address&nbsp;&gt;&nbsp;current-&gt;rlim[RLIMIT_STACK].rlim_cur&nbsp;||</p> 
+          <p>((vma-&gt;vm_mm-&gt;total_vm&nbsp;+&nbsp;grow)&nbsp;&lt;&lt;&nbsp;PAGE_SHIFT)&nbsp;&gt;&nbsp; current-&gt;rlim[RLIMIT_AS].rlim_cur) //<span style="font-family: 宋体;">判断是否会超出最大堆栈限制</span></p> 
+          <p>return&nbsp;-ENOMEM;</p> 
+          <p>vma-&gt;vm_start&nbsp;=&nbsp;address; //<span style="font-family: 宋体;">调节管理区起始地址</span></p> 
+          <p>vma-&gt;vm_pgoff&nbsp;-=&nbsp;grow;</p> 
+          <p>vma-&gt;vm_mm-&gt;total_vm&nbsp;+=&nbsp;grow;</p> 
+          <p>if&nbsp;(vma-&gt;vm_flags&nbsp;&amp;&nbsp;VM_LOCKED)</p> 
+          <p>vma-&gt;vm_mm-&gt;locked_vm&nbsp;+=&nbsp;grow;</p> 
+          <p>return&nbsp;0;</p> 
+          <p>}</p> 
+          <p>上述函数是在发生异常的地址不在虚拟管理区内且堆栈需要扩展的情况下执行的。堆栈需要扩展的时候就是堆栈标志位<span style="font-family: 'Times New Roman';">VM_GROWSDOWN</span><span style="font-family: 宋体;">置位并且找到的内存管理区在错误地址上方（若为用户程序异常还得检测其他条件）的时候。</span><span style="font-family: 'Times New Roman';">expand_stack</span><span style="font-family: 宋体;">函数检测信息并且设置</span><span style="font-family: 'Times New Roman';">vma</span><span style="font-family: 宋体;">的信息，将新增加的空间加入进去，但是</span><span style="font-family: 'Times New Roman';">expand_stack</span><span style="font-family: 宋体;">函数并未真正分配空间。</span></p> 
+          <p>当<span style="font-family: 'Times New Roman';">expand_stack</span><span style="font-family: 宋体;">函数执行完成后会跳转到</span><span style="font-family: 'Times New Roman';">good_area</span><span style="font-family: 宋体;">，在</span><span style="font-family: 'Times New Roman';">good_area</span><span style="font-family: 宋体;">中真正分配内存。</span></p> 
+          <p>在<span style="font-family: 'Times New Roman';">good_area</span><span style="font-family: 宋体;">中有这么几句：</span></p> 
+          <p>case&nbsp;2: /*&nbsp;write,&nbsp;not&nbsp;present&nbsp;*/</p> 
+          <p>if&nbsp;(!(vma-&gt;vm_flags&nbsp;&amp;&nbsp;VM_WRITE)) //<span style="font-family: 宋体;">判断是否允许写入</span></p> 
+          <p>goto&nbsp;bad_area;</p> 
+          <p>write++;</p> 
+          <p>break;</p> 
+          <p>这时候因为需要扩展的是堆栈段，所以是允许写入的，所以把<span style="font-family: 'Times New Roman';">write</span><span style="font-family: 宋体;">置为</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">后转到后面的</span><span style="font-family: 'Times New Roman';">handle_mm_fault</span><span style="font-family: 宋体;">执行，这个函数定义在</span><span style="font-family: 'Times New Roman';">mm/memory.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;By&nbsp;the&nbsp;time&nbsp;we&nbsp;get&nbsp;here,&nbsp;we&nbsp;already&nbsp;hold&nbsp;the&nbsp;mm&nbsp;semaphore</p> 
+          <p>*/</p> 
+          <p>int&nbsp;handle_mm_fault(struct&nbsp;mm_struct&nbsp;*mm,&nbsp;struct&nbsp;vm_area_struct&nbsp;*&nbsp;vma,</p> 
+          <p>unsigned&nbsp;long&nbsp;address,&nbsp;int&nbsp;write_access)</p> 
+          <p>{</p> 
+          <p>int&nbsp;ret&nbsp;=&nbsp;-1;</p> 
+          <p>pgd_t&nbsp;*pgd;</p> 
+          <p>pmd_t&nbsp;*pmd;</p> 
+          <p>&nbsp;</p> 
+          <p>pgd&nbsp;=&nbsp;pgd_offset(mm,&nbsp;address); //<span style="font-family: 宋体;">计算对应的页目录项指针</span></p> 
+          <p>pmd&nbsp;=&nbsp;pmd_alloc(pgd,&nbsp;address); //<span style="font-family: 宋体;">与</span><span style="font-family: 'Times New Roman';">pgd</span><span style="font-family: 宋体;">相同</span></p> 
+          <p>if&nbsp;(pmd)&nbsp;{</p> 
+          <p>pte_t&nbsp;*&nbsp;pte&nbsp;=&nbsp;pte_alloc(pmd,&nbsp;address);</p> 
+          <p>if&nbsp;(pte)</p> 
+          <p>ret&nbsp;=&nbsp;handle_pte_fault(mm,&nbsp;vma,&nbsp;address,&nbsp;write_access,&nbsp;pte);</p> 
+          <p>}</p> 
+          <p>return&nbsp;ret;</p> 
+          <p>}</p> 
+          <p>在此，<span style="font-family: 'Times New Roman';">pgd_offset</span><span style="font-family: 宋体;">在</span><span style="font-family: 'Times New Roman';">include/asm-i386/pgtable.h</span><span style="font-family: 宋体;">中定义如下：</span></p> 
+          <p>#define&nbsp;pgd_offset(mm,&nbsp;address)&nbsp;((mm)-&gt;pgd+pgd_index(address))</p> 
+          <p>#define&nbsp;pgd_index(address)&nbsp;((address&nbsp;&gt;&gt;&nbsp;PGDIR_SHIFT)&nbsp;&amp;&nbsp;(PTRS_PER_PGD-1))</p> 
+          <p>可见<span style="font-family: 'Times New Roman';">pgd_offset</span><span style="font-family: 宋体;">是求出对应</span><span style="font-family: 'Times New Roman';">address</span><span style="font-family: 宋体;">的也目录项指针的。</span></p> 
+          <p>而<span style="font-family: 'Times New Roman';">pmd_alloc</span><span style="font-family: 宋体;">在</span><span style="font-family: 'Times New Roman';">pgalloc-2level.h</span><span style="font-family: 宋体;">中定义如下：</span></p> 
+          <p>extern&nbsp;inline&nbsp;pmd_t&nbsp;*&nbsp;pmd_alloc(pgd_t&nbsp;*pgd,&nbsp;unsigned&nbsp;long&nbsp;address)</p> 
+          <p>{</p> 
+          <p>if&nbsp;(!pgd)</p> 
+          <p>BUG();</p> 
+          <p>return&nbsp;(pmd_t&nbsp;*)&nbsp;pgd;</p> 
+          <p>}</p> 
+          <p>可见，这里的<span style="font-family: 'Times New Roman';">pgd</span><span style="font-family: 宋体;">和</span><span style="font-family: 'Times New Roman';">pmd</span><span style="font-family: 宋体;">是一样的，所以</span><span style="font-family: 'Times New Roman';">pmd</span><span style="font-family: 宋体;">一般不为</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">（不可能为</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">？），接着执行下面</span><span style="font-family: 'Times New Roman';">pte_alloc()</span><span style="font-family: 宋体;">，在</span><span style="font-family: 'Times New Roman';">include/asm-i386/pgalloc.h</span><span style="font-family: 宋体;">中定义如下：</span></p> 
+          <p>extern&nbsp;inline&nbsp;pte_t&nbsp;*&nbsp;pte_alloc(pmd_t&nbsp;*&nbsp;pmd,&nbsp;unsigned&nbsp;long&nbsp;address)</p> 
+          <p>{</p> 
+          <p>address&nbsp;=&nbsp;(address&nbsp;&gt;&gt;&nbsp;PAGE_SHIFT)&nbsp;&amp;&nbsp;(PTRS_PER_PTE&nbsp;–&nbsp;1);</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(pmd_none(*pmd)) //<span style="font-family: 宋体;">测试</span><span style="font-family: 'Times New Roman';">pmd</span><span style="font-family: 宋体;">是否为空</span></p> 
+          <p>goto&nbsp;getnew;</p> 
+          <p>if&nbsp;(pmd_bad(*pmd))</p> 
+          <p>goto&nbsp;fix;</p> 
+          <p>return&nbsp;(pte_t&nbsp;*)pmd_page(*pmd)&nbsp;+&nbsp;address; //<span style="font-family: 宋体;">返回已经分配的页表项</span></p> 
+          <p>getnew:</p> 
+          <p>{</p> 
+          <p>unsigned&nbsp;long&nbsp;page&nbsp;=&nbsp;(unsigned&nbsp;long)&nbsp;get_pte_fast(); //<span style="font-family: 宋体;">从缓冲区中快速分配</span></p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!page) //<span style="font-family: 宋体;">快速分配不成功</span></p> 
+          <p>return&nbsp;get_pte_slow(pmd,&nbsp;address); //<span style="font-family: 宋体;">慢方法分配</span></p> 
+          <p>set_pmd(pmd,&nbsp;__pmd(_PAGE_TABLE&nbsp;+&nbsp;__pa(page))); //<span style="font-family: 宋体;">快速分配成功，</span></p> 
+          <p>//<span style="font-family: 宋体;">直接设置指针指向即可。</span></p> 
+          <p>return&nbsp;(pte_t&nbsp;*)page&nbsp;+&nbsp;address; //<span style="font-family: 宋体;">返回页表项</span></p> 
+          <p>}</p> 
+          <p>fix:</p> 
+          <p>__handle_bad_pmd(pmd);</p> 
+          <p>return&nbsp;NULL;</p> 
+          <p>}</p> 
+          <p>pte_alloc<span style="font-family: 宋体;">函数返回的就是分配的页面表项，这里需要介绍的是快速分配和慢速分配。</span></p> 
+          <p>快速分配是到缓冲池中找相应的页面表，当内核释放页面表时先不将其直接删除，而是先存入缓冲池，然后当缓冲池满的时候才将页面表真正释放，这样在找映射的时候如果先在缓冲池里面找到会大大节省时间，不需要设置页面表，建立相应映射即可。</p> 
+          <p>快速分配函数定义在<span style="font-family: 'Times New Roman';">pgalloc.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>extern&nbsp;__inline__&nbsp;pte_t&nbsp;*get_pte_fast(void)</p> 
+          <p>{</p> 
+          <p>unsigned&nbsp;long&nbsp;*ret;</p> 
+          <p>&nbsp;</p> 
+          <p>if((ret&nbsp;=&nbsp;(unsigned&nbsp;long&nbsp;*)pte_quicklist)&nbsp;!=&nbsp;NULL)&nbsp;{</p> 
+          <p>pte_quicklist&nbsp;=&nbsp;(unsigned&nbsp;long&nbsp;*)(*ret);</p> 
+          <p>ret[0]&nbsp;=&nbsp;ret[1];</p> 
+          <p>pgtable_cache_size–;</p> 
+          <p>}</p> 
+          <p>return&nbsp;(pte_t&nbsp;*)ret;</p> 
+          <p>}</p> 
+          <p>慢方法<span style="font-family: 'Times New Roman';">get_pte_slow</span><span style="font-family: 宋体;">分配函数定义在</span><span style="font-family: 'Times New Roman';">arch/i386/mm/init.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>pte_t&nbsp;*get_pte_slow(pmd_t&nbsp;*pmd,&nbsp;unsigned&nbsp;long&nbsp;offset)</p> 
+          <p>{</p> 
+          <p>unsigned&nbsp;long&nbsp;pte;</p> 
+          <p>&nbsp;</p> 
+          <p>pte&nbsp;=&nbsp;(unsigned&nbsp;long)&nbsp;__get_free_page(GFP_KERNEL);</p> 
+          <p>if&nbsp;(pmd_none(*pmd))&nbsp;{</p> 
+          <p>if&nbsp;(pte)&nbsp;{</p> 
+          <p>clear_page((void&nbsp;*)pte);</p> 
+          <p>set_pmd(pmd,&nbsp;__pmd(_PAGE_TABLE&nbsp;+&nbsp;__pa(pte)));</p> 
+          <p>return&nbsp;(pte_t&nbsp;*)pte&nbsp;+&nbsp;offset;</p> 
+          <p>}</p> 
+          <p>set_pmd(pmd,&nbsp;__pmd(_PAGE_TABLE&nbsp;+&nbsp;__pa(get_bad_pte_table())));</p> 
+          <p>return&nbsp;NULL;</p> 
+          <p>}</p> 
+          <p>free_page(pte);</p> 
+          <p>if&nbsp;(pmd_bad(*pmd))&nbsp;{</p> 
+          <p>__handle_bad_pmd(pmd);</p> 
+          <p>return&nbsp;NULL;</p> 
+          <p>}</p> 
+          <p>return&nbsp;(pte_t&nbsp;*)&nbsp;pmd_page(*pmd)&nbsp;+&nbsp;offset;</p> 
+          <p>}</p> 
+          <p>此函数在此不讲。</p> 
+          <p>当分配完页表项的时候就需要设置页表项了，回到<span style="font-family: 'Times New Roman';">handle_mm_fault</span><span style="font-family: 宋体;">中，设置页表项是用</span><span style="font-family: 'Times New Roman';">handle_pte_fault</span><span style="font-family: 宋体;">设置的，这个函数定义于</span><span style="font-family: 'Times New Roman';">mm/memory.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;These&nbsp;routines&nbsp;also&nbsp;need&nbsp;to&nbsp;handle&nbsp;stuff&nbsp;like&nbsp;marking&nbsp;pages&nbsp;dirty</p> 
+          <p>*&nbsp;and/or&nbsp;accessed&nbsp;for&nbsp;architectures&nbsp;that&nbsp;don’t&nbsp;do&nbsp;it&nbsp;in&nbsp;hardware&nbsp;(most</p> 
+          <p>*&nbsp;RISC&nbsp;architectures).&nbsp;&nbsp;The&nbsp;early&nbsp;dirtying&nbsp;is&nbsp;also&nbsp;good&nbsp;on&nbsp;the&nbsp;i386.</p> 
+          <p>*</p> 
+          <p>*&nbsp;There&nbsp;is&nbsp;also&nbsp;a&nbsp;hook&nbsp;called&nbsp;“update_mmu_cache()”&nbsp;that&nbsp;architectures</p> 
+          <p>*&nbsp;with&nbsp;external&nbsp;mmu&nbsp;caches&nbsp;can&nbsp;use&nbsp;to&nbsp;update&nbsp;those&nbsp;(ie&nbsp;the&nbsp;Sparc&nbsp;or</p> 
+          <p>*&nbsp;PowerPC&nbsp;hashed&nbsp;page&nbsp;tables&nbsp;that&nbsp;act&nbsp;as&nbsp;extended&nbsp;TLBs).</p> 
+          <p>*</p> 
+          <p>*&nbsp;Note&nbsp;the&nbsp;“page_table_lock”.&nbsp;It&nbsp;is&nbsp;to&nbsp;protect&nbsp;against&nbsp;kswapd&nbsp;removing</p> 
+          <p>*&nbsp;pages&nbsp;from&nbsp;under&nbsp;us.&nbsp;Note&nbsp;that&nbsp;kswapd&nbsp;only&nbsp;ever&nbsp;_removes_&nbsp;pages,&nbsp;never</p> 
+          <p>*&nbsp;adds&nbsp;them.&nbsp;As&nbsp;such,&nbsp;once&nbsp;we&nbsp;have&nbsp;noticed&nbsp;that&nbsp;the&nbsp;page&nbsp;is&nbsp;not&nbsp;present,</p> 
+          <p>*&nbsp;we&nbsp;can&nbsp;drop&nbsp;the&nbsp;lock&nbsp;early.</p> 
+          <p>*</p> 
+          <p>*&nbsp;The&nbsp;adding&nbsp;of&nbsp;pages&nbsp;is&nbsp;protected&nbsp;by&nbsp;the&nbsp;MM&nbsp;semaphore&nbsp;(which&nbsp;we&nbsp;hold),</p> 
+          <p>*&nbsp;so&nbsp;we&nbsp;don’t&nbsp;need&nbsp;to&nbsp;worry&nbsp;about&nbsp;a&nbsp;page&nbsp;being&nbsp;suddenly&nbsp;been&nbsp;added&nbsp;into</p> 
+          <p>*&nbsp;our&nbsp;VM.</p> 
+          <p>*/</p> 
+          <p>static&nbsp;inline&nbsp;int&nbsp;handle_pte_fault(struct&nbsp;mm_struct&nbsp;*mm,</p> 
+          <p>struct&nbsp;vm_area_struct&nbsp;*&nbsp;vma,&nbsp;unsigned&nbsp;long&nbsp;address,</p> 
+          <p>int&nbsp;write_access,&nbsp;pte_t&nbsp;*&nbsp;pte)</p> 
+          <p>{</p> 
+          <p>pte_t&nbsp;entry;</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;We&nbsp;need&nbsp;the&nbsp;page&nbsp;table&nbsp;lock&nbsp;to&nbsp;synchronize&nbsp;with&nbsp;kswapd</p> 
+          <p>*&nbsp;and&nbsp;the&nbsp;SMP-safe&nbsp;atomic&nbsp;PTE&nbsp;updates.</p> 
+          <p>*/</p> 
+          <p>spin_lock(&amp;mm-&gt;page_table_lock);</p> 
+          <p>entry&nbsp;=&nbsp;*pte; //entry<span style="font-family: 宋体;">就是页面表项</span></p> 
+          <p>if&nbsp;(!pte_present(entry))&nbsp;{ //<span style="font-family: 宋体;">物理内存页面是否存在</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;If&nbsp;it&nbsp;truly&nbsp;wasn’t&nbsp;present,&nbsp;we&nbsp;know&nbsp;that&nbsp;kswapd</p> 
+          <p>*&nbsp;and&nbsp;the&nbsp;PTE&nbsp;updates&nbsp;will&nbsp;not&nbsp;touch&nbsp;it&nbsp;later.&nbsp;So</p> 
+          <p>*&nbsp;drop&nbsp;the&nbsp;lock.</p> 
+          <p>*/</p> 
+          <p>spin_unlock(&amp;mm-&gt;page_table_lock);</p> 
+          <p>if&nbsp;(pte_none(entry)) //<span style="font-family: 宋体;">页表为空</span></p> 
+          <p>return&nbsp;do_no_page(mm,&nbsp;vma,&nbsp;address,&nbsp;write_access,&nbsp;pte); //<span style="font-family: 宋体;">找不到页面</span></p> 
+          <p>return&nbsp;do_swap_page(mm,&nbsp;vma,&nbsp;address,&nbsp;pte,&nbsp;pte_to_swp_entry(entry),&nbsp;write_access); //<span style="font-family: 宋体;">页面在交换区</span></p> 
+          <p>}</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(write_access)&nbsp;{</p> 
+          <p>if&nbsp;(!pte_write(entry))</p> 
+          <p>return&nbsp;do_wp_page(mm,&nbsp;vma,&nbsp;address,&nbsp;pte,&nbsp;entry); //<span style="font-family: 宋体;">读写异常</span></p> 
+          <p>&nbsp;</p> 
+          <p>entry&nbsp;=&nbsp;pte_mkdirty(entry);</p> 
+          <p>}</p> 
+          <p>entry&nbsp;=&nbsp;pte_mkyoung(entry);</p> 
+          <p>establish_pte(vma,&nbsp;address,&nbsp;pte,&nbsp;entry);</p> 
+          <p>spin_unlock(&amp;mm-&gt;page_table_lock);</p> 
+          <p>return&nbsp;1;</p> 
+          <p>}</p> 
+          <p>这里，<span style="font-family: 'Times New Roman';">pte_present()</span><span style="font-family: 宋体;">检测物理页面是否存在。</span><span style="font-family: 'Times New Roman';">pte_none()</span><span style="font-family: 宋体;">检测页表是否为空，若为空则表示物理页面尚未分配，不为空表示物理页面在交换区上。若物理页面存在的话那就可能是读写异常。</span></p> 
+          <p>do_no_page()<span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">memory.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;do_no_page()&nbsp;tries&nbsp;to&nbsp;create&nbsp;a&nbsp;new&nbsp;page&nbsp;mapping.&nbsp;It&nbsp;aggressively</p> 
+          <p>*&nbsp;tries&nbsp;to&nbsp;share&nbsp;with&nbsp;existing&nbsp;pages,&nbsp;but&nbsp;makes&nbsp;a&nbsp;separate&nbsp;copy&nbsp;if</p> 
+          <p>*&nbsp;the&nbsp;“write_access”&nbsp;parameter&nbsp;is&nbsp;true&nbsp;in&nbsp;order&nbsp;to&nbsp;avoid&nbsp;the&nbsp;next</p> 
+          <p>*&nbsp;page&nbsp;fault.</p> 
+          <p>*</p> 
+          <p>*&nbsp;As&nbsp;this&nbsp;is&nbsp;called&nbsp;only&nbsp;for&nbsp;pages&nbsp;that&nbsp;do&nbsp;not&nbsp;currently&nbsp;exist,&nbsp;we</p> 
+          <p>*&nbsp;do&nbsp;not&nbsp;need&nbsp;to&nbsp;flush&nbsp;old&nbsp;virtual&nbsp;caches&nbsp;or&nbsp;the&nbsp;TLB.</p> 
+          <p>*</p> 
+          <p>*&nbsp;This&nbsp;is&nbsp;called&nbsp;with&nbsp;the&nbsp;MM&nbsp;semaphore&nbsp;held.</p> 
+          <p>*/</p> 
+          <p>static&nbsp;int&nbsp;do_no_page(struct&nbsp;mm_struct&nbsp;*&nbsp;mm,&nbsp;struct&nbsp;vm_area_struct&nbsp;*&nbsp;vma,</p> 
+          <p>unsigned&nbsp;long&nbsp;address,&nbsp;int&nbsp;write_access,&nbsp;pte_t&nbsp;*page_table)</p> 
+          <p>{</p> 
+          <p>struct&nbsp;page&nbsp;*&nbsp;new_page;</p> 
+          <p>pte_t&nbsp;entry;</p> 
+          <p>&nbsp;</p> 
+          <p>if&nbsp;(!vma-&gt;vm_ops&nbsp;||&nbsp;!vma-&gt;vm_ops-&gt;nopage)</p> 
+          <p>return&nbsp;do_anonymous_page(mm,&nbsp;vma,&nbsp;page_table,&nbsp;write_access,&nbsp;address);</p> 
+          <p>&nbsp;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;The&nbsp;third&nbsp;argument&nbsp;is&nbsp;“no_share”,&nbsp;which&nbsp;tells&nbsp;the&nbsp;low-level&nbsp;code</p> 
+          <p>*&nbsp;to&nbsp;copy,&nbsp;not&nbsp;share&nbsp;the&nbsp;page&nbsp;even&nbsp;if&nbsp;sharing&nbsp;is&nbsp;possible.&nbsp;&nbsp;It’s</p> 
+          <p>*&nbsp;essentially&nbsp;an&nbsp;early&nbsp;COW&nbsp;detection.</p> 
+          <p>*/</p> 
+          <p>new_page&nbsp;=&nbsp;vma-&gt;vm_ops-&gt;nopage(vma,&nbsp;address&nbsp;&amp;&nbsp;PAGE_MASK,&nbsp;(vma-&gt;vm_flags&nbsp;&amp;&nbsp;VM_SHARED)?0:write_access);</p> 
+          <p>if&nbsp;(new_page&nbsp;==&nbsp;NULL) /*&nbsp;no&nbsp;page&nbsp;was&nbsp;available&nbsp;—&nbsp;SIGBUS&nbsp;*/</p> 
+          <p>return&nbsp;0;</p> 
+          <p>if&nbsp;(new_page&nbsp;==&nbsp;NOPAGE_OOM)</p> 
+          <p>return&nbsp;-1;</p> 
+          <p>++mm-&gt;rss;</p> 
+          <p>/*</p> 
+          <p>*&nbsp;This&nbsp;silly&nbsp;early&nbsp;PAGE_DIRTY&nbsp;setting&nbsp;removes&nbsp;a&nbsp;race</p> 
+          <p>*&nbsp;due&nbsp;to&nbsp;the&nbsp;bad&nbsp;i386&nbsp;page&nbsp;protection.&nbsp;But&nbsp;it’s&nbsp;valid</p> 
+          <p>*&nbsp;for&nbsp;other&nbsp;architectures&nbsp;too.</p> 
+          <p>*</p> 
+          <p>*&nbsp;Note&nbsp;that&nbsp;if&nbsp;write_access&nbsp;is&nbsp;true,&nbsp;we&nbsp;either&nbsp;now&nbsp;have</p> 
+          <p>*&nbsp;an&nbsp;exclusive&nbsp;copy&nbsp;of&nbsp;the&nbsp;page,&nbsp;or&nbsp;this&nbsp;is&nbsp;a&nbsp;shared&nbsp;mapping,</p> 
+          <p>*&nbsp;so&nbsp;we&nbsp;can&nbsp;make&nbsp;it&nbsp;writable&nbsp;and&nbsp;dirty&nbsp;to&nbsp;avoid&nbsp;having&nbsp;to</p> 
+          <p>*&nbsp;handle&nbsp;that&nbsp;later.</p> 
+          <p>*/</p> 
+          <p>flush_page_to_ram(new_page);</p> 
+          <p>flush_icache_page(vma,&nbsp;new_page);</p> 
+          <p>entry&nbsp;=&nbsp;mk_pte(new_page,&nbsp;vma-&gt;vm_page_prot);</p> 
+          <p>if&nbsp;(write_access)&nbsp;{</p> 
+          <p>entry&nbsp;=&nbsp;pte_mkwrite(pte_mkdirty(entry));</p> 
+          <p>}&nbsp;else&nbsp;if&nbsp;(page_count(new_page)&nbsp;&gt;&nbsp;1&nbsp;&amp;&amp;</p> 
+          <p>!(vma-&gt;vm_flags&nbsp;&amp;&nbsp;VM_SHARED))</p> 
+          <p>entry&nbsp;=&nbsp;pte_wrprotect(entry);</p> 
+          <p>set_pte(page_table,&nbsp;entry);</p> 
+          <p>/*&nbsp;no&nbsp;need&nbsp;to&nbsp;invalidate:&nbsp;a&nbsp;not-present&nbsp;page&nbsp;shouldn’t&nbsp;be&nbsp;cached&nbsp;*/</p> 
+          <p>update_mmu_cache(vma,&nbsp;address,&nbsp;entry);</p> 
+          <p>return&nbsp;2; /*&nbsp;Major&nbsp;fault&nbsp;*/</p> 
+          <p>}</p> 
+          <p>在讲<span style="font-family: 'Times New Roman';">vm_area_struct</span><span style="font-family: 宋体;">的时候里面有一个</span><span style="font-family: 'Times New Roman';">vm_ops</span><span style="font-family: 宋体;">指向一些操作，其中包括一个</span><span style="font-family: 'Times New Roman';">nopage</span><span style="font-family: 宋体;">操作，这里一般是使用</span><span style="font-family: 'Times New Roman';">nopage</span><span style="font-family: 宋体;">操作进行分配页面，这里只说</span><span style="font-family: 'Times New Roman';">nopage</span><span style="font-family: 宋体;">为空的情况，系统调用</span><span style="font-family: 'Times New Roman';">do_anonymous_page</span><span style="font-family: 宋体;">来分配物理页面了。这个函数也是定义在</span><span style="font-family: 'Times New Roman';">memory.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>/*</p> 
+          <p>*&nbsp;This&nbsp;only&nbsp;needs&nbsp;the&nbsp;MM&nbsp;semaphore</p> 
+          <p>*/</p> 
+          <p>static&nbsp;int&nbsp;do_anonymous_page(struct&nbsp;mm_struct&nbsp;*&nbsp;mm,&nbsp;struct&nbsp;vm_area_struct&nbsp;*&nbsp;vma,&nbsp;pte_t&nbsp;*page_table,&nbsp;int&nbsp;write_access,&nbsp;unsigned&nbsp;long&nbsp;addr)</p> 
+          <p>{</p> 
+          <p>struct&nbsp;page&nbsp;*page&nbsp;=&nbsp;NULL;</p> 
+          <p>pte_t&nbsp;entry&nbsp;=&nbsp;pte_wrprotect(mk_pte(ZERO_PAGE(addr),&nbsp;vma-&gt;vm_page_prot));</p> 
+          <p>if&nbsp;(write_access)&nbsp;{</p> 
+          <p>page&nbsp;=&nbsp;alloc_page(GFP_HIGHUSER);</p> 
+          <p>if&nbsp;(!page)</p> 
+          <p>return&nbsp;-1;</p> 
+          <p>clear_user_highpage(page,&nbsp;addr);</p> 
+          <p>entry&nbsp;=&nbsp;pte_mkwrite(pte_mkdirty(mk_pte(page,&nbsp;vma-&gt;vm_page_prot)));</p> 
+          <p>mm-&gt;rss++;</p> 
+          <p>flush_page_to_ram(page);</p> 
+          <p>}</p> 
+          <p>set_pte(page_table,&nbsp;entry);</p> 
+          <p>/*&nbsp;No&nbsp;need&nbsp;to&nbsp;invalidate&nbsp;–&nbsp;it&nbsp;was&nbsp;non-present&nbsp;before&nbsp;*/</p> 
+          <p>update_mmu_cache(vma,&nbsp;addr,&nbsp;entry);</p> 
+          <p>return&nbsp;1; /*&nbsp;Minor&nbsp;fault&nbsp;*/</p> 
+          <p>}</p> 
+          <p>首先对页表项进行读修正，即<span style="font-family: 'Times New Roman';">pte_wrprotect</span><span style="font-family: 宋体;">函数，这个函数定义在</span><span style="font-family: 'Times New Roman';">include/asm-i386/pgtable.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>static&nbsp;inline&nbsp;pte_t&nbsp;pte_wrprotect(pte_t&nbsp;pte) {&nbsp;(pte).pte_low&nbsp;&amp;=&nbsp;~_PAGE_RW;&nbsp;return&nbsp;pte;&nbsp;}</p> 
+          <p>这个函数将<span style="font-family: 'Times New Roman';">RW</span><span style="font-family: 宋体;">位置位</span><span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">表示只读。如果页面是可写的，还要进行写修正，即</span><span style="font-family: 'Times New Roman';">pte_mkwrite</span><span style="font-family: 宋体;">函数：</span></p> 
+          <p>static&nbsp;inline&nbsp;pte_t&nbsp;pte_mkwrite(pte_t&nbsp;pte) {&nbsp;(pte).pte_low&nbsp;|=&nbsp;_PAGE_RW;&nbsp;return&nbsp;pte;&nbsp;}</p> 
+          <p>将<span style="font-family: 'Times New Roman';">RW</span><span style="font-family: 宋体;">位置位</span><span style="font-family: 'Times New Roman';">1</span><span style="font-family: 宋体;">表示可写。只有在可写时才使用</span><span style="font-family: 'Times New Roman';">alloc_page()</span><span style="font-family: 宋体;">为其分配内存，可读的时候将其指向一个固定的只读页面</span><span style="font-family: 'Times New Roman';">ZERO_PAGE</span><span style="font-family: 宋体;">。定义在</span><span style="font-family: 'Times New Roman';">pgtable.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <p>extern&nbsp;unsigned&nbsp;long&nbsp;empty_zero_page[1024];</p> 
+          <p>#define&nbsp;ZERO_PAGE(vaddr)&nbsp;(virt_to_page(empty_zero_page))</p> 
+          <p>当需要写页面的时候再出现异常真正分配可写页面。</p> 
+          <p>&nbsp;</p> 
+          <p>从<span style="font-family: 'Times New Roman';">handle_mm_fault</span><span style="font-family: 宋体;">的一套异常处理分配内存的流程如下：</span></p> 
+          <p><a href="uploads/2012/09/QQ拼音截图未命名41.jpg"><img class="aligncenter size-full wp-image-574" title="QQ拼音截图未命名4" src="uploads/2012/09/QQ拼音截图未命名41.jpg" alt="" width="458" height="565"></a></p> 
+          <p>这些都理通了剩下的就简单了。</p> 
+          <p>&nbsp;</p> 
+          <p>The&nbsp;end.</p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-570 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-12 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-12" class="post-12 post type-post status-publish format-standard hentry category-acm tag-reserved"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">[转载]欧拉函数及其引伸</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=12" title="下午 4:32" rel="bookmark"><time class="entry-date" datetime="2011-05-04T16:32:45+00:00" pubdate>4 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=12#respond" title="Comment on [转载]欧拉函数及其引伸">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 依然终于补的差不多啦！ </p> 
+         <div class="blogzz_abstract borderc" style="padding-top:15px;margin:20px 0; border:none; border-top:1px dotted #ccc;"> 
+          <div class="blogzz_ainfo" style="margin-bottom:12px;"> 
+           <span style="margin-right:25px;"><strong>原文地址：</strong><a target="_blank" href="http://blog.sina.com.cn/s/blog_6635898a0100qz79.html" title="欧拉函数及其引伸">欧拉函数及其引伸</a></span> 
+           <span><strong>作者：</strong><a href="http://blog.sina.com.cn/u/1714784650" title="依然" target="_blank">依然</a></span> 
+          </div> 
+          <div class="blogzz_acon"> 
+           <p>欧拉函数：小于或等于n的数中，与n互质的数的数目。（互质：最大公因数为1）</p> 
+           <p>通式：φ(x) = x(1-1/p1)(1-1/p2)(1-1/p3)(1-1/p4)…..(1-1/pn)，,其中p1,<br> p2……pn为x的所有<font color="#2F3699">质因数</font>，x是不为0的整数。φ(1) = 1。</p> 
+           <p>例如：12 = 2*2*3， 那么φ(12) = 12*(1-1/2)*(1-1/3) =<br> 4，因为1,5,7,11均和12互质。</p> 
+           <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 8 = 2*2*2， 那么φ(8) = 8*(1-1/2) = 4，因为1,3,5,7均和8互质。</p> 
+           <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>7<br> =<br> 7，&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 那么φ(7) = 7*(1-1/7) = 6，因为1,2,3,4,5,6均和7互质。</p> 
+           <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>21<br> = 3*7，&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>那么φ(21)<br> = 21*(1-1/3)*(1-1/7) = 12….</p> 
+           <p> 性质：1：若n是质数p的k次幂，φ(n)=p^k-p^(k-1)=(p-1)p^(k-1)，因为除了p的倍数外，其他数都跟n互质。</p> 
+           <p>　　&nbsp;<wbr> 2：欧拉函数是积性函数，若m,n互质，φ(mn)=φ(m)φ(n)。如15和8互质，则<br> φ(120)=φ(15)φ(8)。</p> 
+           <p>　　&nbsp;<wbr> 3：当n为奇数时，φ(2n)=φ(n),<br> 如φ(30)=φ(15)，证明于上述类似。</p> 
+           <p>&nbsp;<wbr></p> 
+           <p>欧拉公式的引伸：小于或等于n的数中，与n互质的数的总和为：φ(x) * x /<br> 2。(n&gt;1)</p> 
+           <p>例子：12 = 2*2*3， 那么φ(12) * x / 2<br> =&nbsp;<wbr>24，因为1,5,7,11均和12互质，它们的和为24。</p> 
+           <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 8 = 2*2*2， 那么φ(8) * x / 2<br> =&nbsp;<wbr>16，因为1,3,5,7均和8互质，它们的和为16。</p> 
+           <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>7<br> =<br> 7，&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> 那么φ(7) * x / 2<br> =&nbsp;<wbr>21，因为1,2,3,4,5,6均和7互质，它们的和为21。</p> 
+           <p> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>21<br> = 3*7，&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>那么φ(21)<br> * x / 2 =&nbsp;<wbr>126….</p> 
+           <p>&nbsp;<wbr></p> 
+           <p>求欧拉函数的模板：</p> 
+           <p>__int64 phi(__int64 n){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> __int64 ans<br> = n;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> for(int i =<br> 2; i * i &lt;= n; i ++)<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> if(n % i == 0){<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> ans -= ans / i;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> while(n % i== 0)<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> n /= i;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> }<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> if(n<br> &gt; 1) ans -= ans / n;<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr> return<br> ans;<br> }</p> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-12 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

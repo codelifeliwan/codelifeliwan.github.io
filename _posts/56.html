@@ -1,0 +1,1987 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-56 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-56" class="post-56 post type-post status-publish format-standard hentry category-qt tag-qt-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Qt–简单计算器</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=56" title="上午 11:27" rel="bookmark"><time class="entry-date" datetime="2011-06-16T11:27:34+00:00" pubdate>16 六月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=56#respond" title="Comment on Qt–简单计算器">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 考试考完了，就是无聊的几个课程设计，我的Qt也得重新开工了，上次上机老师让用MFC做个简单计算器，实现两个数的运算，今天闲来无事，就用Qt又做了一遍。下面发代码：</p> 
+         <div>
+           //calculator.h 
+         </div> 
+         <div> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#ifndef</span><span style=" color:#c0c0c0;"> </span>CALCULATOR_H
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#define</span><span style=" color:#c0c0c0;"> </span>CALCULATOR_H
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QApplication&gt;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QDialog&gt;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QPushButton&gt;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QLineEdit&gt;</span>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">class</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">:</span><span style=" color:#808000;">public</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QDialog</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">{</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Q_OBJECT</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">protected</span><span style=" color:#000000;">:</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QLineEdit</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_3</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_4</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_5</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_6</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_7</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_8</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_9</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_ce</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_jia</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_jian</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_cheng</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_chu</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button__</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#800000;">button_dengyu</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">int</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">,</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">,</span><span style=" color:#800000;">result</span><span style=" color:#000000;">;</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">//标记第一个数，第二个数和结果</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">bool</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">;</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">//数字前面的正负号</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">int</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">;</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">//标记是第一个还是第二个数字</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">char</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">fuhao</span><span style=" color:#000000;">;</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">//运算符号</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QString</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">;</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">//显示的字符串</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">public</span><span style=" color:#000000;">:</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">private</span><span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">slots</span><span style=" color:#000000;">:</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_0_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_1_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_2_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_3_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_4_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_5_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_6_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_7_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_8_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_9_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_ce_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_jia_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_jian_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_cheng_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_chu_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button__clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span>button_dengyu_clicked<span style=" color:#000000;">();</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">};</span>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#endif</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">//</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">CALCULATOR_H</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#008000;"><br></span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#008000;">//calculator.cpp</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#008000;"><br></span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#008000;">
+</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#008000;"><span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QLayout&gt;</span></span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QHBoxLayout&gt;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QVBoxLayout&gt;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;QLineEdit&gt;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">&lt;cmath&gt;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000080;">#include</span><span style=" color:#008000;">"calculator.h"</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">()</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">result</span><span style=" color:#000000;">=</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">true</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QLineEdit</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"0"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">=</span><span style=" color:#008000;">""</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_0</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"0"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_1</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"1"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_2</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"2"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_3</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"3"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_4</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"4"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_5</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"5"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_6</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"6"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_7</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"7"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_8</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"8"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_9</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"9"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_ce</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"CE"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_cheng</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"*"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_jia</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"+"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_jian</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"-"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_chu</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"/"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button__</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"+/-"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">button_dengyu</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QPushButton</span><span style=" color:#000000;">(</span><span style=" color:#008000;">"="</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">Hl1</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">Hl2</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">Hl3</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">Hl4</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">Hl5</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QHBoxLayout</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl1</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl1</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_ce</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl2</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_1</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl2</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_2</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl2</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_3</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl2</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_jia</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl3</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_4</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl3</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_5</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl3</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_6</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl3</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_jian</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl4</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_7</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl4</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_8</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl4</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_9</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl4</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_cheng</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl5</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button__</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl5</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_0</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl5</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_dengyu</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">Hl5</span><span style=" color:#000000;">-&gt;</span>addWidget<span style=" color:#000000;">(</span><span style=" color:#800000;">button_chu</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QVBoxLayout</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">V1</span><span style=" color:#000000;">=</span><span style=" color:#808000;">new</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QVBoxLayout</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">V1</span><span style=" color:#000000;">-&gt;</span>addLayout<span style=" color:#000000;">(</span><span style=" color:#000000;">Hl1</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">V1</span><span style=" color:#000000;">-&gt;</span>addLayout<span style=" color:#000000;">(</span><span style=" color:#000000;">Hl2</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">V1</span><span style=" color:#000000;">-&gt;</span>addLayout<span style=" color:#000000;">(</span><span style=" color:#000000;">Hl3</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">V1</span><span style=" color:#000000;">-&gt;</span>addLayout<span style=" color:#000000;">(</span><span style=" color:#000000;">Hl4</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">V1</span><span style=" color:#000000;">-&gt;</span>addLayout<span style=" color:#000000;">(</span><span style=" color:#000000;">Hl5</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_0</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_0_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_1</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_1_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_2</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_2_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_3</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_3_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_4</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_4_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_5</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_5_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_6</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_6_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_7</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_7_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_8</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_8_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_9</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_9_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_jia</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_jia_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_jian</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_jian_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_cheng</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_cheng_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_chu</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_chu_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_dengyu</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_dengyu_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button_ce</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button_ce_clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>connect<span style=" color:#000000;">(</span><span style=" color:#800000;">button__</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SIGNAL</span><span style=" color:#000000;">(</span>clicked<span style=" color:#000000;">()),</span><span style=" color:#808000;">this</span><span style=" color:#000000;">,</span><span style=" color:#808000;">SLOT</span><span style=" color:#000000;">(</span>button__clicked<span style=" color:#000000;">()));</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span>setLayout<span style=" color:#000000;">(</span><span style=" color:#000000;">V1</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_0_clicked<span style=" color:#000000;">()</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"0"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_1_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"1"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_2_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"2"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_3_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"3"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">3</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">3</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">3</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">3</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_4_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"4"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">4</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">4</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">4</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">4</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_5_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"5"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">5</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">5</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">5</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">5</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_6_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"6"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">6</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">6</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">6</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">6</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_7_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"7"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">7</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">7</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">7</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">7</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_8_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"8"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">8</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">8</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">8</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">8</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_9_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"9"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">mark</span><span style=" color:#000000;">==</span><span style=" color:#000080;">1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">9</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">9</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">+</span><span style=" color:#000080;">9</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span><span style=" color:#808000;">else</span><span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">*</span><span style=" color:#000080;">10</span><span style=" color:#000000;">-</span><span style=" color:#000080;">9</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_jia_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"+"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">true</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">fuhao</span><span style=" color:#000000;">=</span><span style=" color:#008000;">'+'</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_jian_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"-"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">true</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">fuhao</span><span style=" color:#000000;">=</span><span style=" color:#008000;">'-'</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_cheng_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"*"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">true</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">fuhao</span><span style=" color:#000000;">=</span><span style=" color:#008000;">'*'</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_chu_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"/"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">true</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">fuhao</span><span style=" color:#000000;">=</span><span style=" color:#008000;">'/'</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">2</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button__clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"-"</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">false</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_dengyu_clicked<span style=" color:#000000;">(){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=</span><span style=" color:#008000;">"="</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#008000;">//</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">lineEditor-&gt;setText(S);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">switch</span><span style=" color:#000000;">(</span><span style=" color:#800000;">fuhao</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">case</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">'+'</span><span style=" color:#000000;">:</span><span style=" color:#800000;">result</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">+</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">;</span><span style=" color:#808000;">break</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">case</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">'-'</span><span style=" color:#000000;">:</span><span style=" color:#800000;">result</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">-</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">;</span><span style=" color:#808000;">break</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">case</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">'*'</span><span style=" color:#000000;">:</span><span style=" color:#800000;">result</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">*</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">;</span><span style=" color:#808000;">break</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">case</span><span style=" color:#c0c0c0;"> </span><span style=" color:#008000;">'/'</span><span style=" color:#000000;">:</span><span style=" color:#808000;">if</span><span style=" color:#000000;">(</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">)</span><span style=" color:#800000;">result</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num1</span><span style=" color:#000000;">/</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">;</span><span style=" color:#808000;">break</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">int</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">i</span><span style=" color:#000000;">=</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">int</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">result1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">result</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">while</span><span style=" color:#000000;">(</span><span style=" color:#000000;">result1</span><span style=" color:#000000;">){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">i</span><span style=" color:#000000;">++;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">result1</span><span style=" color:#000000;">/=</span><span style=" color:#000080;">10</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">for</span><span style=" color:#000000;">(;</span><span style=" color:#000000;">i</span><span style=" color:#000000;">;</span><span style=" color:#000000;">i</span><span style=" color:#000000;">--){</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">+=(</span><span style=" color:#800000;">result</span><span style=" color:#000000;">/(</span><span style=" color:#808000;">int</span><span style=" color:#000000;">)</span>pow<span style=" color:#000000;">(</span><span style=" color:#000080;">10</span><span style=" color:#000000;">,</span><span style=" color:#000000;">i</span><span style=" color:#000000;">-</span><span style=" color:#000080;">1</span><span style=" color:#000000;">)+</span><span style=" color:#008000;">'0'</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">result</span><span style=" color:#000000;">%=(</span><span style=" color:#808000;">int</span><span style=" color:#000000;">)</span>pow<span style=" color:#000000;">(</span><span style=" color:#000080;">10</span><span style=" color:#000000;">,</span><span style=" color:#000000;">i</span><span style=" color:#000000;">-</span><span style=" color:#000080;">1</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#800000;">S</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">true</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">=</span><span style=" color:#008000;">""</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">void</span><span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#000000;">::</span>button_ce_clicked<span style=" color:#000000;">()</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">zhenghao</span><span style=" color:#000000;">=</span><span style=" color:#808000;">false</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">S</span><span style=" color:#000000;">=</span><span style=" color:#008000;">""</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">lineEditor</span><span style=" color:#000000;">-&gt;</span>setText<span style=" color:#000000;">(</span><span style=" color:#008000;">"0"</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">num1</span><span style=" color:#000000;">=</span><span style=" color:#800000;">num2</span><span style=" color:#000000;">=</span><span style=" color:#000080;">0</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800000;">mark</span><span style=" color:#000000;">=</span><span style=" color:#000080;">1</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;"><br></span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">//main.cpp</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;"><br></span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">
+</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;"><span style=" color:#000080;">#include</span><span style=" color:#008000;">"calculator.h"</span></span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#808000;">int</span><span style=" color:#c0c0c0;"> </span>main<span style=" color:#000000;">(</span><span style=" color:#808000;">int</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">argc</span><span style=" color:#000000;">,</span><span style=" color:#808000;">char</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">*</span><span style=" color:#000000;">argv</span><span style=" color:#000000;">[])</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">{</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">QApplication</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">app</span><span style=" color:#000000;">(</span><span style=" color:#000000;">argc</span><span style=" color:#000000;">,</span><span style=" color:#000000;">argv</span><span style=" color:#000000;">);</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#800080;">Calculator</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">cal</span><span style=" color:#000000;">;</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">cal</span><span style=" color:#000000;">.</span>show<span style=" color:#000000;">();</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#c0c0c0;"> </span><span style=" color:#808000;">return</span><span style=" color:#c0c0c0;"> </span><span style=" color:#000000;">app</span><span style=" color:#000000;">.</span>exec<span style=" color:#000000;">();</span>
+</pre> 
+          <pre>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;">}</span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<span style=" color:#000000;"><br></span>
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+运行结果：
+</pre> 
+          <pre style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+<a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100uq62&amp;url=http://s5.sinaimg.cn/orignal/6730a3aaga5cc05ed86e4" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s5.sinaimg.cn/middle/6730a3aaga5cc05ed86e4&amp;690" width="393" height="220" alt="Qt--简单计算器" title="Qt--简单计算器"></a><br>
+<br>
+<a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100uq62&amp;url=http://s11.sinaimg.cn/orignal/6730a3aaga5cc06a8edca" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s11.sinaimg.cn/middle/6730a3aaga5cc06a8edca&amp;690" width="396" height="220" alt="Qt--简单计算器" title="Qt--简单计算器"></a><br>
+<br>
+<a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100uq62&amp;url=http://s3.sinaimg.cn/orignal/6730a3aaga5cc07851c62" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s3.sinaimg.cn/middle/6730a3aaga5cc07851c62&amp;690" name="image_operate_23001308195652486" alt="Qt--简单计算器" title="Qt--简单计算器"></a><br>
+<br>
+</pre> 
+          <pre>
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+          <pre style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
+</pre> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-56 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

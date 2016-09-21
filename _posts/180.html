@@ -1,0 +1,262 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-180 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-180" class="post-180 post type-post status-publish format-standard hentry category-java tag-java-2"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Java多线程【三、同步与死锁】</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=180" title="下午 8:46" rel="bookmark"><time class="entry-date" datetime="2011-09-29T20:46:48+00:00" pubdate>29 九月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=180#respond" title="Comment on Java多线程【三、同步与死锁】">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="layout-grid:15.6000pt;"> 
+          <h1 style="margin-bottom:0pt; margin-top:0pt; text-align:center;"> <span style="mso-spacerun:'yes'; font-weight:bold; font-size:22.0000pt; font-family:'宋体';"><br> 同步与死锁</span></h1> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> 同步：</span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">看如下程序：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">int&nbsp;<wbr>num=5;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">for(int&nbsp;<wbr>i=0;i&lt;100;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">if(num&gt;0){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">Thread.sleep(1000);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}catch(Exception&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">e.printStackTrace();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">System.out.println(“name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>“+num–);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest003</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">new&nbsp;<wbr>Thread(t,”—001—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">new&nbsp;<wbr>Thread(t,”—002—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">new&nbsp;<wbr>Thread(t,”—003—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">}</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">运行结果：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>0</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>-1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么看结果出现了负数，并且数据是三个三个出现的，为什么呢？</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">再看程序，在判断<font face="Times New Roman">num&gt;0</font><font face="宋体">以后又出现了延迟，那么在延迟中，其他的进程可能正在执行，执行的时候将</font><font face="Times New Roman">num-1</font><font face="宋体">，那么在打印后就出现了负数的情况。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-size:10.5000pt; font-family:'宋体';">那么这里就出现了同步的状况，为了让其延迟的时间里，其他的进程不再执行，那么需要将进程锁住，执行完了再让其他进程执行。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:bold; font-size:10.5000pt; font-family:'宋体';"><br> 要想解决资源共享的同步操作问题可以使用同步代码块及同步方法两种方法来完成。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 使用同步代码块，则需要使用<font face="Times New Roman">synchronized</font><font face="宋体">关键字声明。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 声明格式：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized(<font face="宋体">同步对象</font><font face="Times New Roman">){</font></span></p> 
+          <p style="text-indent:21.0000pt; margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 需要同步的代码</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 看如下代码：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num=5;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> for(int&nbsp;<wbr>i=0;i&lt;100;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized(this){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> if(num&gt;0){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread.sleep(300);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }catch(Exception&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> e.printStackTrace();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> System.out.println(Thread.currentThread().getName()+”name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>“+num–);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest003</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> new&nbsp;<wbr>Thread(t,”—001—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> new&nbsp;<wbr>Thread(t,”—002—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> new&nbsp;<wbr>Thread(t,”—003—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 结果如下：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> —001—name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>5</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> —001—name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>4</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> —001—name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>3</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> —003—name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>2</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> —003—name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>1</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 由输出可见：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 数据是一个一个出来的，而且没有<font face="Times New Roman">0</font><font face="宋体">和负数出现。但是其运行效率要低于异步处理的。</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 除了同步代码块以外，还有同步方法：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 同步方法也是使用<font face="Times New Roman">synchronized</font><font face="宋体">关键字声明，格式：</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized&nbsp;<wbr><font face="宋体">返回值&nbsp;</font><wbr>方法名称&nbsp;<wbr><font face="Times New Roman">(</font><font face="宋体">参数列表</font><font face="Times New Roman">){}</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 将上面代码改改就变成如下程序：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> class&nbsp;<wbr>MyThread&nbsp;<wbr>implements&nbsp;<wbr>Runnable</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> int&nbsp;<wbr>num=5;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>run(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> for(int&nbsp;<wbr>i=0;i&lt;100;i++){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> fun();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>synchronized&nbsp;<wbr>void&nbsp;<wbr>fun(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> if(num&gt;0){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread.sleep(300);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }catch(Exception&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> e.printStackTrace();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> System.out.println(Thread.currentThread().getName()+”name&nbsp;<wbr>:&nbsp;<wbr>num=&nbsp;<wbr>“+num–);</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>class&nbsp;<wbr>ThreadTest003</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> {</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> MyThread&nbsp;<wbr>t=new&nbsp;<wbr>MyThread();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> new&nbsp;<wbr>Thread(t,”—001—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> new&nbsp;<wbr>Thread(t,”—002—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> new&nbsp;<wbr>Thread(t,”—003—“).start();</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 执行结果和上面一样。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <h2 style="margin-bottom:0pt; margin-top:0pt;"><span style="mso-spacerun:'yes'; font-weight:bold; font-size:16.0000pt; font-family:'黑体';"><br> 死锁：</span></h2> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(255,0,0); font-weight:bold; font-size:10.5000pt; font-family:'宋体';"><br> 资源共享时需要进行同步操作！</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; color:rgb(255,0,0); font-weight:bold; font-size:10.5000pt; font-family:'宋体';"><br> 程序中过多的同步会产生死锁！</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 引用菲菲的一段话，就是十个人十支筷子吃饭，人要想吃饭就必须要有两支筷子，那么必须要有人放下筷子给别人使用才能吃饭，那么如果十个人都在等待着别人放下筷子，那么谁也吃不到饭，就出现了死锁现象。就像两个人打架，一个人在楼上喊道：“你上来！”另一个人在楼下喊道：“你下来！”一样。。。。。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 也就是说，死锁一般就是表示进程间互相等待对方执行，现在谁也不执行的情况。</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 例如：</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100x3qr&amp;url=http://s3.sinaimg.cn/orignal/6730a3aagae13e968fa12" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s3.sinaimg.cn/middle/6730a3aagae13e968fa12&amp;690" width="690" height="217" name="image_operate_66641317300467182" alt="Java多线程【三、同步与死锁】" title="Java多线程【三、同步与死锁】"></a></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> class&nbsp;<wbr>Zhangsan{</span> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">定义张三类</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>say(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> System.out.println(“<font face="宋体">张三对李四说：“你给我画，我就把书给你。”</font><font face="Times New Roman">“)&nbsp;<wbr>;</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>get(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> System.out.println(“<font face="宋体">张三得到画了。</font><font face="Times New Roman">“)&nbsp;<wbr>;</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> class&nbsp;<wbr>Lisi{</span> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">定义李四类</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>say(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> System.out.println(“<font face="宋体">李四对张三说：“你给我书，我就把画给你”</font><font face="Times New Roman">“)&nbsp;<wbr>;</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>get(){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> System.out.println(“<font face="宋体">李四得到书了。</font><font face="Times New Roman">“)&nbsp;<wbr>;</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>class&nbsp;<wbr>ThreadDeadLock&nbsp;<wbr>implements&nbsp;<wbr>Runnable{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> private&nbsp;<wbr>static&nbsp;<wbr>Zhangsan&nbsp;<wbr>zs&nbsp;<wbr>=&nbsp;<wbr>new&nbsp;<wbr>Zhangsan()&nbsp;<wbr>;</span><br> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">实例化</font><font face="Times New Roman">static</font><font face="宋体">型对象</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> private&nbsp;<wbr>static&nbsp;<wbr>Lisi&nbsp;<wbr>ls&nbsp;<wbr>=&nbsp;<wbr>new&nbsp;<wbr>Lisi()&nbsp;<wbr>;</span><br> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">实例化</font><font face="Times New Roman">static</font><font face="宋体">型对象</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> private&nbsp;<wbr>boolean&nbsp;<wbr>flag&nbsp;<wbr>=&nbsp;<wbr>false&nbsp;<wbr>;</span><br> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">声明标志位，判断那个先说话</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>void&nbsp;<wbr>run(){</span><br> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">覆写</font><font face="Times New Roman">run()</font><font face="宋体">方法</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> if(flag){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized(zs){</span> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">同步张三</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> zs.say()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread.sleep(500)&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }catch(InterruptedException&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> e.printStackTrace()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized(ls){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> zs.get()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }else{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized(ls){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> ls.say()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> try{</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread.sleep(500)&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }catch(InterruptedException&nbsp;<wbr>e){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> e.printStackTrace()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> synchronized(zs){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> ls.get()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> public&nbsp;<wbr>static&nbsp;<wbr>void&nbsp;<wbr>main(String&nbsp;<wbr>args[]){</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> ThreadDeadLock&nbsp;<wbr>t1&nbsp;<wbr>=&nbsp;<wbr>new&nbsp;<wbr>ThreadDeadLock()&nbsp;<wbr>;</span><br> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">控制张三</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> ThreadDeadLock&nbsp;<wbr>t2&nbsp;<wbr>=&nbsp;<wbr>new&nbsp;<wbr>ThreadDeadLock()&nbsp;<wbr>;</span><br> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> //&nbsp;<wbr><font face="宋体">控制李四</font></span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> t1.flag&nbsp;<wbr>=&nbsp;<wbr>true&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> t2.flag&nbsp;<wbr>=&nbsp;<wbr>false&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread&nbsp;<wbr>thA&nbsp;<wbr>=&nbsp;<wbr>new&nbsp;<wbr>Thread(t1)&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> Thread&nbsp;<wbr>thB&nbsp;<wbr>=&nbsp;<wbr>new&nbsp;<wbr>Thread(t2)&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> thA.start()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> thB.start()&nbsp;<wbr>;</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> }</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> };</span></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;">&nbsp;<wbr></p> 
+          <p style="margin-bottom:0pt; margin-top:0pt;"> <span style="mso-spacerun:'yes'; font-weight:normal; font-size:10.5000pt; font-family:'宋体';"><br> 张三说了话等待李四回应，李四说了话也等待张三回应，于是。。。。。死锁了。。。。。</span></p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-180 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

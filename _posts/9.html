@@ -1,0 +1,162 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-9 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-9" class="post-9 post type-post status-publish format-standard hentry category-acm tag-zatan"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">判断三角形的内点个数</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=9" title="上午 10:50" rel="bookmark"><time class="entry-date" datetime="2011-01-19T10:50:54+00:00" pubdate>19 一月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=9#respond" title="Comment on 判断三角形的内点个数">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 记得有一次比赛就是考的这个，当时还没做出来，今天看书看到这个觉得比较有代表性，遂写此文。</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 题目就是给出很多点，坐标分别从</span><span lang="EN-US" xml:lang="EN-US">1</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">到</span><span lang="EN-US" xml:lang="EN-US">99</span><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri">的二维矩阵，现在输入三角形的三个顶点的</span><span lang="EN-US" xml:lang="EN-US">x</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">，</span><span lang="EN-US" xml:lang="EN-US">y</span><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri">坐标，要求输出在三角形内的点的个数，包括在三角形的边上的点。</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 此题就是使用三角形的面积，如果点在三角形内部，</span> <span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri"><br> 则连接点到三角形的三个顶点，将大三角形分成三个小三角形，三个小三角形的面积之和等于大三角形的面积。而在三角形外部的点则不等于。</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 在此处三角形的面积求法有多种方法，有什么正弦公式，海伦公式等，但是那些误差太大，因为三角形的顶点坐标不一定是整数，所以不得不考虑误差问题。所以在这书上给了一个公式：</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 设三角形面积为</span><span lang="EN-US" xml:lang="EN-US">A</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">，三个顶点分别为</span><span lang="EN-US" xml:lang="EN-US">(x0,y0),(x1,y1),(x2,y2)</span><span style="font-family:宋体; mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">，则：</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">2A=&nbsp;<wbr></span><a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100nqvu&amp;url=http://s7.sinaimg.cn/orignal/6730a3aan9a2a1e3f0ea6" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s7.sinaimg.cn/middle/6730a3aan9a2a1e3f0ea6&amp;690" width="75" height="50" alt="判断三角形的内点个数" title="判断三角形的内点个数"></a>=x0*y1+x2*y0+x1*y2-x2*y1-x0*y2-x1*y0</p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 这个公式也有误差，但是比其他的乘方开方的误差稍微小了点。在使用公式的时候要考虑误差，就是在一定误差范围内认为它等于一个数。</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 下面看代码：</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">#include&lt;stdio.h&gt;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">#include&lt;math.h&gt;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">struct Point</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">{</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> double x;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> double y;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">};</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">double area2(struct Point<br> p0,struct Point p1,struct Point p2)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">{</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> return<br> fabs(p0.x*p1.y+p2.x*p0.y+p1.x*p2.y-p2.x*p1.y-p0.x*p2.y-p1.x*p0.y);//</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">求三角形面积函数</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">}</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">int main()</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">{</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> struct Point p[10000],sanjiao[3];</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> double area,area1;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> int k,i;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> freopen(“test.txt”,”r”,stdin);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> for(i=0;i&lt;=9800;i++)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> p[i].x=i�+1;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> p[i].y=i/99+1;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> while(scanf(“%lf%lf%lf%lf%lf%lf”,&amp;sanjiao[0].x,&amp;sanjiao[0].y,&amp;sanjiao[1].x,&amp;sanjiao[1].y,&amp;sanjiao[2].x,&amp;sanjiao[2].y)!=EOF)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> k=0;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> area=area2(sanjiao[0],sanjiao[1],sanjiao[2]);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> for(i=0;i&lt;=9800;i++)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:3">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> area1=area2(sanjiao[1],sanjiao[2],p[i])+area2(sanjiao[0],sanjiao[2],p[i])+area2(sanjiao[0],sanjiao[1],p[i]);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:3">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> if(area1-area&lt;=1e-9) //</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family: Calibri">误差分析，在一定误差范围内认为相等</span><span lang="EN-US" xml:lang="EN-US">,</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">误差范围为</span><span lang="EN-US" xml:lang="EN-US">10^-9</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:4">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> k++;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> printf(“%dn”,k);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> return 0;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">}</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 这个是从第一个到最后一个挨个判断的，比较耗费时间，我们在中间加个判断，进行第一步过滤代码如下：</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">#include&lt;stdio.h&gt;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">#include&lt;math.h&gt;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">struct Point</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">{</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> double x;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> double y;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">};</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">double area2(struct Point<br> p0,struct Point p1,struct Point p2)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">{</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> return<br> fabs(p0.x*p1.y+p2.x*p0.y+p1.x*p2.y-p2.x*p1.y-p0.x*p2.y-p1.x*p0.y);//</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">求三角形面积函数</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">}</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">int main()</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">{</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> struct Point p[10000],sanjiao[3];</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> double area,area1;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> int k,i;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> freopen(“test.txt”,”r”,stdin);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> for(i=0;i&lt;=9800;i++)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> p[i].x=i�+1;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> p[i].y=i/99+1;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> while(scanf(“%lf%lf%lf%lf%lf%lf”,&amp;sanjiao[0].x,&amp;sanjiao[0].y,&amp;sanjiao[1].x,&amp;sanjiao[1].y,&amp;sanjiao[2].x,&amp;sanjiao[2].y)!=EOF)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> k=0;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> area=area2(sanjiao[0],sanjiao[1],sanjiao[2]);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> for(i=0;i&lt;=9800;i++)</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> if((p[i].x&gt;sanjiao[0].x&amp;&amp;p[i].x&gt;sanjiao[1].x&amp;&amp;p[i].x&gt;sanjiao[2].x)||(p[i].x&lt;sanjiao[0].x&amp;&amp;p[i].x&lt;sanjiao[1].x&amp;&amp;p[i].x&lt;sanjiao[2].x))</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> continue;//</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">第一步过滤</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> if((p[i].y&gt;sanjiao[0].y&amp;&amp;p[i].y&gt;sanjiao[1].y&amp;&amp;p[i].y&gt;sanjiao[2].y)||(p[i].y&lt;sanjiao[0].y&amp;&amp;p[i].y&lt;sanjiao[1].y&amp;&amp;p[i].y&lt;sanjiao[2].y))</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> {</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> continue;//</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri">第一步过滤</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> <span style="mso-spacerun:yes">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:3">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> area1=area2(sanjiao[1],sanjiao[2],p[i])+area2(sanjiao[0],sanjiao[2],p[i])+area2(sanjiao[0],sanjiao[1],p[i]);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:3">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> if(area1-area&lt;=1e-9) //</span><span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family: Calibri">误差分析，在一定误差范围内认为相等</span><span lang="EN-US" xml:lang="EN-US">,</span> <span style="font-family:宋体;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri"><br> 误差范围为</span><span lang="EN-US" xml:lang="EN-US">10^-9</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">&nbsp;<wbr></span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:4">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> k++;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:2">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> printf(“%dn”,k);</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> }</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US"><span style="mso-tab-count:1">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span><br> return 0;</span></p> 
+         <p><span lang="EN-US" xml:lang="EN-US">}</span></p> 
+         <p><span style="font-family:宋体;mso-ascii-font-family:Calibri; mso-hansi-font-family:Calibri"><br> 这个经过运行，结果比上面的那个快了很多！</span></p> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-9 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

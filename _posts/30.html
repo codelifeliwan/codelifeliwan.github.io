@@ -1,0 +1,324 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-30 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-30" class="post-30 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10014&nbsp;–&nbsp;Simple&nbsp;calculations&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=30" title="下午 4:48" rel="bookmark"><time class="entry-date" datetime="2011-05-19T16:48:53+00:00" pubdate>19 五月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=30#comments" title="Comment on UVA&nbsp;10014&nbsp;–&nbsp;Simple&nbsp;calculations&nbsp;解题报告">1 Comment ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 此题意思很简单，就不翻译了。。。。。</p> 
+         <div>
+           这个题比较纠结，六次才AC，绝对得纪念一下，首先用递归暴力然后就RE了，又把递归改成记忆的了，还是RE，后来推出来公式，结果忘了考虑特殊情况，WA了，再后来又多乘了个2，又WA了一次，再后来又忘了输出空行，又WA了一次，再后来就AC了。。。。。 
+         </div> 
+         <div>
+           题目也比较简单，就是多写几种情况然后迭代出一个公式就OK了。 
+         </div> 
+         <div>
+           当n=1或者n=0的时候直接输出就行了，当n&gt;1时： 
+         </div> 
+         <div>
+           a1=(a0+a2)/2-c1; 
+         </div> 
+         <div>
+           a2=(a1+a3)/2-c2; 
+         </div> 
+         <div>
+           a3=(a2+a4)/2-c3; 
+         </div> 
+         <div>
+           … 
+         </div> 
+         <div>
+           a(n-1)=(a(n-1)+a(n))/2-c(n-1); 
+         </div> 
+         <div>
+           a(n)=(a(n-1)+a(n+1))/2-c(n); 
+         </div> 
+         <div></div> 
+         <div>
+           然后叠加： 
+         </div> 
+         <div>
+           a1+a(n)=a0/2+a1/2+a(n)/2+a(n+1)/2-(c1+c2+…+c(n)); 
+         </div> 
+         <div>
+           a1+a(n-1)=a0/2+a1/2+a(n-1)/2+a(n)/2-(c1+c2+…c(n-1)); 
+         </div> 
+         <div>
+           … 
+         </div> 
+         <div>
+           a1+a2=a0/2+a1/2+a2/2+a3/2-(c1+c2); 
+         </div> 
+         <div>
+           注意最后一个特殊情况： 
+         </div> 
+         <div>
+           a1+a1=a0+a2-2*c1; 
+         </div> 
+         <div></div> 
+         <div>
+           最后叠加得： 
+         </div> 
+         <div>
+           (n+1)*a1=n*a0+a(n+1)-2*((c1+c2+…+c(n))+…+(c1+c2)+c1); 
+         </div> 
+         <div>
+           最后解出a1即可。 
+         </div> 
+         <div></div> 
+         <div> 
+          <b>题目：</b> 
+         </div> 
+         <div> 
+          <div align="center" style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> 
+           <table border="0" cellpadding="0" bgcolor="#0060F0" style="background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(0, 96, 240); background-position: initial initial; background-repeat: initial initial;"> 
+            <tbody> 
+             <tr> 
+              <td style="padding-top: 0.75pt; padding-right: 0.75pt; padding-bottom: 0.75pt; padding-left: 0.75pt;"> <p style="margin-right: 0cm; margin-left: 0cm; font-size: 12pt; font-family: 'Times new roman'; margin-top: 0cm; margin-bottom: 0.0001pt;"> <a name="SECTION0001000000000000000000"><b><span lang="EN-US" style="font-size: 18pt; color: rgb(192, 255, 255);" xml:lang="EN-US">Simple calculations</span></b></a><b><span lang="EN" xml:lang="EN">&nbsp;<wbr></span></b></p> </td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001002000000000000000"><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">The<br> Problem</span></a></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10pt; font-family: 'Courier new'; margin-top: 0cm; margin-bottom: 0.0001pt; font-weight: normal; line-height: normal;"> <span lang="EN-US" style="font-size: 12pt; font-family: 'Times new roman';" xml:lang="EN-US">There is a sequence of n+2 elements a<sub>0</sub>,<br> a<sub>1</sub>,…, a<sub>n+1</sub>&nbsp;<wbr>(n<br> &lt;= 3000; -1000 &lt;=<br> &nbsp;<wbr>a<sub>i</sub>&nbsp;<wbr>1000). It is known<br> that&nbsp;<wbr><b>a<sub>i</sub>&nbsp;</b><wbr>=<br> (a<sub>i–1</sub>&nbsp;<wbr>+&nbsp;<wbr>a<sub>i+1</sub>)/2&nbsp;<wbr>–&nbsp;<wbr>c<sub>i</sub><span>&nbsp;</span><wbr>&nbsp;<wbr></span><span>&nbsp;<wbr></span>for<br> each i=1, 2, …, n. You are given a<sub>0</sub>, a<sub>n+1</sub>,<br> c<sub>1</sub>, … , c<sub>n</sub>. Write a program which<br> calculates a<sub>1</sub>.</p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001003000000000000000"><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">The Input</span></a></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10pt; font-family: 'Courier new'; margin-top: 0cm; margin-bottom: 0.0001pt; font-weight: normal; line-height: normal;"> <a name="SECTION0001004000000000000000"><span lang="EN-US" style="font-size: 12pt; font-family: 'Times new roman';" xml:lang="EN-US">The first line is the number of test cases, followed by a<br> blank line.</span></a></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 12pt; font-family: 'Times new roman'; font-weight: normal; line-height: normal;"> <a name="SECTION0001004000000000000000">For each test case, the first line<br> of an input file contains an integer n. The next two lines consist<br> of numbers a<sub>0</sub>&nbsp;<wbr>and<br> a<sub>n+1</sub>&nbsp;<wbr>each having two digits after<br> decimal point, and the next n lines contain numbers<br> c<sub>i</sub>&nbsp;<wbr>(also with two digits after decimal<br> point), one number per line.</a></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 12pt; font-family: 'Times new roman'; font-weight: normal; line-height: normal;"> <a name="SECTION0001004000000000000000">Each test case will be separated by<br> a single line.</a></p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <span><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">The Output</span></span></h2> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 10pt; font-family: 'Courier new'; margin-top: 0cm; margin-bottom: 0.0001pt; font-weight: normal; line-height: normal;"> <a name="SECTION0001005000000000000000"><span lang="EN-US" style="font-size: 12pt; font-family: 'Times new roman';" xml:lang="EN-US">For each test case, the output file should contain<br> a<sub>1</sub>&nbsp;<wbr>in the same format as<br> a<sub>0</sub>&nbsp;<wbr>and a<sub>n+1</sub>.</span></a></p> 
+          <p style="margin-right: 0cm; margin-left: 0cm; font-size: 12pt; font-family: 'Times new roman'; font-weight: normal; line-height: normal;"> <a name="SECTION0001005000000000000000">Print a blank line between the<br> outputs for two consecutive test cases.</a></p> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <span><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Sample Input</span></span></h2> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+<span style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;">1&nbsp;<wbr></span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+<br>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+1&nbsp;<wbr>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+50.50&nbsp;<wbr>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+25.50&nbsp;<wbr>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+10.15
+</pre> 
+          <h2 style="font-family: 'Apple Garamond'; font-weight: normal; line-height: normal; font-size: medium;"> <a name="SECTION0001006000000000000000"><span lang="EN" style="color: rgb(0, 112, 232);" xml:lang="EN">Sample<br> Output</span></a></h2> 
+          <pre style="line-height: normal; font-weight: normal; margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+27.85
+</pre> 
+          <pre style="line-height: normal; font-weight: normal; margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+<br>
+</pre> 
+          <pre style="line-height: normal; font-weight: bold; margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt; font-size: 10pt; font-family: 'Courier new';">
+代码：
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><br></span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">#include&lt;iostream&gt;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">#include&lt;fstream&gt;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">#include&lt;cstdio&gt;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">#include&lt;cstring&gt;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">using namespace std;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><br></span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">int n;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">double c[3005];</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">double a0,an1;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><br></span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><br></span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">double add()</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">{</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>double re=c[1];</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>double tmp=c[1];</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>for(int i=2;i&lt;=n;i++)</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>{</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>tmp+=c[i];</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>re+=tmp;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>}</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>return re;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">}</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><br></span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">int main()</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">{</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>int ncase;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>cin&gt;&gt;ncase;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>while(ncase--)</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>{</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>cin&gt;&gt;n;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>cin&gt;&gt;a0&gt;&gt;an1;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>for(int i=1;i&lt;=n;i++)</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>{</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>cin&gt;&gt;c[i];</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>}</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>double result=0.0;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>if(0==n)result=an1;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>else if(1==n)result=(a0+an1)/2-c[1];</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>else result=(n*a0+an1-2*add())/(n+1);</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>printf("%.2lfn",result);</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>if(ncase)cout&lt;&lt;endl;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>}</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;"><span style="white-space:pre"> </span>return 0;</span>
+</pre> 
+          <pre style="margin-top: 0cm; margin-right: 0cm; margin-left: 0cm; margin-bottom: 0.0001pt;">
+<span style="font-size: 13px; line-height: 19px;">}</span>
+</pre> 
+          <div style="font-family: 'Courier new'; font-size: 10pt; line-height: normal; font-weight: bold;"> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-30 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

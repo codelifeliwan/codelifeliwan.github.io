@@ -1,0 +1,294 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-95 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-95" class="post-95 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;439&nbsp;–&nbsp;Knight&nbsp;Moves&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=95" title="下午 8:42" rel="bookmark"><time class="entry-date" datetime="2011-07-26T20:42:30+00:00" pubdate>26 七月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=95#respond" title="Comment on UVA&nbsp;439&nbsp;–&nbsp;Knight&nbsp;Moves&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 按照中国象棋里面的马走的路线，搜索最少跳步，简单广度优先搜索。</p> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <table bgcolor="#0060F0"> 
+           <tbody> 
+            <tr> 
+             <td><b><a name="SECTION0001000000000000000000"><font color="#C0FFFF" size="5">Knight Moves</font></a>&nbsp;<wbr></b></td> 
+            </tr> 
+           </tbody> 
+          </table> 
+          <p>A friend of you is doing research on the <em>Traveling Knight<br> Problem (TKP)</em> where you are to find the shortest closed tour<br> of knight moves that visits each square of a given set of <i>n</i><br> squares on a chessboard exactly once. He thinks that the most<br> difficult part of the problem is determining the smallest number of<br> knight moves between two given squares and that, once you have<br> accomplished this, finding the tour would be easy.</p> 
+          <p>Of course you know that it is vice versa. So you offer him to<br> write a program that solves the “difficult” part.</p> 
+          <p>Your job is to write a program that takes two squares <i>a</i><br> and <i>b</i> as input and then determines the number of knight<br> moves on a shortest route from <i>a</i> to <i>b</i>.</p> 
+          <h2><a name="SECTION0001001000000000000000"><font color="#0070E8">Input<br> Specification</font></a></h2> 
+          <p>The input file will contain one or more test cases. Each test<br> case consists of one line containing two squares separated by one<br> space. A square is a string consisting of a letter (<tt>a-h</tt>)<br> representing the column and a digit (<tt>1-8</tt>) representing the<br> row on the chessboard.</p> 
+          <h2><a name="SECTION0001002000000000000000"><font color="#0070E8">Output<br> Specification</font></a></h2> 
+          <p>For each test case, print one line saying “<tt>To get from<br> <i>xx</i> to <i>yy</i> takes <i>n</i> knight moves.</tt>“.</p> 
+          <h2><a name="SECTION0001003000000000000000"><font color="#0070E8">Sample<br> Input</font></a></h2> 
+          <pre>
+e2 e4&nbsp;<wbr>
+</pre> 
+          <pre>
+a1 b2&nbsp;<wbr>
+</pre> 
+          <pre>
+b2 c3&nbsp;<wbr>
+</pre> 
+          <pre>
+a1 h8&nbsp;<wbr>
+</pre> 
+          <pre>
+a1 h7&nbsp;<wbr>
+</pre> 
+          <pre>
+h8 a1&nbsp;<wbr>
+</pre> 
+          <pre>
+b1 c3&nbsp;<wbr>
+</pre> 
+          <pre>
+f6 f6
+</pre> 
+          <h2><a name="SECTION0001004000000000000000"><font color="#0070E8">Sample<br> Output</font></a></h2> 
+          <pre>
+To get from e2 to e4 takes 2 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from a1 to b2 takes 4 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from b2 to c3 takes 2 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from a1 to h8 takes 6 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from a1 to h7 takes 5 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from h8 to a1 takes 6 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from b1 to c3 takes 1 knight moves.&nbsp;<wbr>
+</pre> 
+          <pre>
+To get from f6 to f6 takes 0 knight moves.
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+#define maxn 8
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+char command[2][5];
+</pre> 
+          <pre>
+int step[8][2]={{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
+</pre> 
+          <pre>
+int x1,y1,x2,y2;
+</pre> 
+          <pre>
+int vis[8][8];
+</pre> 
+          <pre>
+int a[1000];
+</pre> 
+          <pre>
+int count_num[1000];
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int bfs(int x,int y){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int front=0,rear=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>a[front++]=x*8+y;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[x][y]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(front&gt;rear){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>x=a[rear]/8;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>y=a[rear]%8;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(x==x2&amp;&amp;y==y2)return count_num[rear];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;8;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int nx=x+step[i][0];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ny=y+step[i][1];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(nx&gt;=0&amp;&amp;ny&gt;=0&amp;&amp;nx&lt;8&amp;&amp;ny&lt;8&amp;&amp;vis[nx][ny]==0){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[nx][ny]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>a[front]=nx*8+ny;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>count_num[front++]=count_num[rear]+1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>rear++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(cin&gt;&gt;command[0]&gt;&gt;command[1]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(count_num,0,sizeof(count_num));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>x1=command[0][1]-'1';
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>y1=command[0][0]-'a';
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>x2=command[1][1]-'1';
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>y2=command[1][0]-'a';
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int re=bfs(x1,y1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;"To get from "&lt;&lt;command[0]&lt;&lt;" to "&lt;&lt;command[1]&lt;&lt;" takes "&lt;&lt;re&lt;&lt;" knight moves."&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-95 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

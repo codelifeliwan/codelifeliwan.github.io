@@ -1,0 +1,93 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-138 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-138" class="post-138 post type-post status-publish format-standard hentry category-acm tag-backpack"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">背包问题的变化——求方案数</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=138" title="上午 9:55" rel="bookmark"><time class="entry-date" datetime="2011-08-11T09:55:15+00:00" pubdate>11 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=138#respond" title="Comment on 背包问题的变化——求方案数">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div style="text-indent:2em;">
+           此文来自： 
+          <a href="http://hi.baidu.com/knowledgetime/blog/item/f6d507025b0660037bec2ce3.html">http://hi.baidu.com/knowledgetime/blog/item/f6d507025b0660037bec2ce3<wbr>.html</a> 
+          <p></p> 
+          <div></div> 
+          <div> 
+           <p align="center" style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <span style="color: rgb(80, 80, 80); font-family: Arial; line-height: 18px; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px; font-size: 12px;"><br> <i><font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><span style="line-height: normal;">背包问题的变化——求</span><span style="line-height: normal;">方案数</span></font></font></i></span></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">背包问题是经典的动态规划问题，一般的背包问题是求最最优值。而对于背包问题的变化——求最优的方案数。</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">今天，我学习了背包问题的一些变化，在这我想总结下我学的这些知识。先看两个题目。</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">问题</span><span style="line-height: normal;">&nbsp;<wbr>1</span><span style="line-height: normal;">：</span><span style="line-height: normal;">&nbsp;<wbr></span><span style="line-height: normal;">硬币问题</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">有</span><span style="line-height: normal;">n</span><span style="line-height: normal;">种硬币，面值分别为</span><span style="line-height: normal;">V1</span><span style="line-height: normal;">，</span><span style="line-height: normal;">V2</span><span style="line-height: normal;">，……</span><span style="line-height: normal;">Vn</span><span style="line-height: normal;">，每种都有无限多。给定一个非负整数</span><span style="line-height: normal;">S</span><span style="line-height: normal;">，可以选用多少个硬币，使得面值之和恰好为</span><span style="line-height: normal;">S</span><span style="line-height: normal;">？输出硬币数码的最大值和最小值。若无解，则输出</span><span style="line-height: normal;">-1</span><span style="line-height: normal;">。</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;">1</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">n</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">100,0</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">S</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">10000,1</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">Vi</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">S.</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">问题</span><span style="line-height: normal;">&nbsp;<wbr>2</span><span style="line-height: normal;">：货币系统</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; text-indent: 52.5pt; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;">众所周知，货币在人类社会中起着举足轻重的作用；所以，我们有必要研究货币的一些问题。在人民币中有</span><span style="line-height: normal;">1</span><span style="line-height: normal;">元，</span><span style="line-height: normal;">5</span><span style="line-height: normal;">元，</span><span style="line-height: normal;">10</span><span style="line-height: normal;">元……那么有了这些面值，你可以组合成任何的钱数。当然了，每种面值都是无限的。现在给你</span><span style="line-height: normal;">n</span><span style="line-height: normal;">种面值为</span><span style="line-height: normal;">V1</span><span style="line-height: normal;">，</span><span style="line-height: normal;">V2…Vn</span><span style="line-height: normal;">，再给定钱数</span><span style="line-height: normal;">M</span><span style="line-height: normal;">，请求出最多有多少种组和方案使得结果恰好为</span><span style="line-height: normal;">M</span><span style="line-height: normal;">。</span><span style="line-height: normal;">1</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">n</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">25</span><span style="line-height: normal;">，</span><span style="line-height: normal;">1</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">M</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">10000,<br> 1</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">Vi</span><span style="line-height: normal;">≤</span><span style="line-height: normal;">25000</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <span style="line-height: normal;"><span style="line-height: normal;"><font face="Times New Roman" style="line-height: normal;" size="3"><i>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></i></font></span></span></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">显然上面两题与背包问题相似，但求的是方案数。仔细观察，上面两题也是不同的。</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <i>&nbsp;<wbr></i></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">对于第一题：</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">我们设当前的状态为</span><span style="line-height: normal;">j</span><span style="line-height: normal;">，每使用一个硬币</span><span style="line-height: normal;">i</span><span style="line-height: normal;">，则状态就是</span><span style="line-height: normal;">j-Vi,</span><span style="line-height: normal;">令</span><span style="line-height: normal;">f[i][j]</span><span style="line-height: normal;">表示当前前</span><span style="line-height: normal;">i</span><span style="line-height: normal;">种硬币能达到面值</span><span style="line-height: normal;">j</span><span style="line-height: normal;">的最大数目</span><span style="line-height: normal;">/</span><span style="line-height: normal;">最小数目，那么状态转移方程就是</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;">f[i][j]=max/min{f[i-1][j],f[i][j-v[i]+1},</span><span style="line-height: normal;">还有这题的初始化是非常重要的，</span><span style="line-height: normal;">f[0..n][0]=0,</span><span style="line-height: normal;">对于</span><span style="line-height: normal;">max-&gt;&nbsp;<wbr></span><span style="line-height: normal;">其他的赋值为</span><span style="line-height: normal;">-</span><span style="line-height: normal;">∞，对于</span><span style="line-height: normal;">min-&gt;&nbsp;<wbr></span><span style="line-height: normal;">其他赋值为∞。（想想为什么？假如出现一个面值为</span><span style="line-height: normal;">0</span><span style="line-height: normal;">的怎么办呢？若初始化为</span><span style="line-height: normal;">0</span><span style="line-height: normal;">，由于每个面值是无限的，那么它会有无限多。）注意当</span><span style="line-height: normal;">f[n][S]&lt;0</span><span style="line-height: normal;">时，无解。</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <i>&nbsp;<wbr></i></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">对于第二题：</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;"><span style="line-height: normal;">&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr></span></span><span style="line-height: normal;">由于是求的组合方案数，同样我们设当前状态为</span><span style="line-height: normal;">j</span><span style="line-height: normal;">，每使用一个硬币</span><span style="line-height: normal;">i</span><span style="line-height: normal;">，则状态为</span><span style="line-height: normal;">j-Vi</span><span style="line-height: normal;">，令</span><span style="line-height: normal;">f[i][j]</span><span style="line-height: normal;">表是当前前</span><span style="line-height: normal;">i</span><span style="line-height: normal;">种硬币能组合成面值为</span><span style="line-height: normal;">j</span><span style="line-height: normal;">的最大数目，状态转移方程为</span></i></font></font></p> 
+           <p style="text-align: left;line-height: normal; margin-top: 0cm; margin-right: 0cm; margin-bottom: 0pt; margin-left: 0cm;"> <font face="Times New Roman" style="line-height: normal;"><font style="line-height: normal;" size="3"><i><span style="line-height: normal;">f[i][j]=f[i-1][j]+f[i][j-v[i]],</span><span style="line-height: normal;">初始化</span><span style="line-height: normal;">f[0..n][0]=1</span><span style="line-height: normal;">，没有这个初始化那么结果都是</span><span style="line-height: normal;">0</span><span style="line-height: normal;">。</span></i></font></font></p> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-138 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

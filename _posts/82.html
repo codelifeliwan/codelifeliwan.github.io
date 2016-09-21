@@ -1,0 +1,92 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-82 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-82" class="post-82 post type-post status-publish format-standard hentry category-ubuntu tag-reserved"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">[转载]emacs配置</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=82" title="上午 11:03" rel="bookmark"><time class="entry-date" datetime="2011-06-23T11:03:25+00:00" pubdate>23 六月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=82#respond" title="Comment on [转载]emacs配置">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div class="blogzz_abstract borderc" style="padding-top:15px;margin:20px 0; border:none; border-top:1px dotted #ccc;"> 
+          <div class="blogzz_ainfo" style="margin-bottom:12px;"> 
+           <span style="margin-right:25px;"><strong>原文地址：</strong><a target="_blank" href="http://blog.sina.com.cn/s/blog_62e1f3380100iux2.html" title="emacs配置">emacs配置</a></span> 
+           <span><strong>作者：</strong><a href="http://blog.sina.com.cn/u/1658975032" title="badboy" target="_blank">badboy</a></span> 
+          </div> 
+          <div class="blogzz_acon">
+            emacs配置：.emacs文件用来配置emacs，当配置过多混乱时候，.emacs.d就有作用了。在.emacs.d下创建两个目录 
+           <p></p> 
+           <p>config(放配置文件)，packages（放插件包），这样就可以不在.emacs中写过多的代码。<br> 在packages中创建subdirs.el(作用是使emacs能够自动搜索.emacs.d的子目录)<br> 在subdirs.el中写入：<br> ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p> 
+           <p>(defun my-add-subdirs-to-load-path (dir)<br> (let ((default-directory (concat dir “/”)))<br> (setq load-path (cons dir load-path))<br> (normal-top-level-add-subdirs-to-load-path)))</p> 
+           <p>(my-add-subdirs-to-load-path “~/.emacs.d/packages”)</p> 
+           <p>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br> 接着在.emacs(可能刚开始时没有.emacs文件，M-x customize后改动保存就会有.emacs文件)中写入：<br> ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p> 
+           <p>(load “~/.emacs.d/packages/subdirs.el”)<br> (mapc ‘load (directory-files “~/.emacs.d/config” t “.el$”))</p> 
+           <p>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p> 
+           <p> 以下是正式的配置：<br> 背景比较方便apt-get install emacs-goodies-el(不知道这是到哪个目录去了)<br> 然后两行代码加在.emacs中：(require ‘color-theme)<br> &nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr>&nbsp;<wbr><br> (color-theme-主题颜色)<br> 主题颜色可以在M-x color-theme-select得到</p> 
+           <p>ecb+cedet:<br> 直接上官网<strong><a href="http://ecb.sourceforge.net.sixxs.org/">http://ecb.sourceforge.net/</a>和</strong><strong><a href="http://cedet.sourceforge.net.sixxs.org/">http://cedet.sourceforge.net/</a>下载最新版</strong></p> 
+           <strong> </strong> 
+           <p><strong>解压，cp到packages，进入cedet的目录：<br></strong>emacs -Q -l cedet-build.el<br> -f cedet-build<br> 用make可能有各种错误(这个还真不懂)，抑或warning，直接无视(还是用上面那个吧)<br> 然后在.emacs中：</p> 
+           <p><code>(load-file<br> "~/.emacs.d/packages/cedet-1.0pre7/common/cedet.el")（这个我还真不知到为什么要加）</code></p> 
+           <code> </code> 
+           <p><code>(semantic-load-enable-excessive-code-helpers)<br> (global-ede-mode t)<br> (require 'semantic-ia)<br> (require 'semantic-gcc)<br> (global-srecode-minor-mode 1)</code><br> 接着安装ecb：<br> .emacs中：<br> <code>(require 'ecb)<br> (ecb-activate)<br> ecb默认不支持鼠标操作：ecb-preferences-most important<br> 找到ecb primary secondary mouse buttons:点击show<br> value,选第三项，save，ok。<br> emacs 执行M-x ecb-byte-compile编译加快运行速度。<br> M-x customize-option RET ecb-source-path RET设置源码目录。-<br></code><br> 关于ecb+cedet的详细使用请务必参见他们的manual文档以及他们各自的主页</p> 
+           <p> muse：<strong><a href="http://download.gna.org.sixxs.org/muse-el/">http://download.gna.org/muse-el/</a></strong></p> 
+           <p>将Makefile.defs.default改成Makefile.defs<br> 接着make(提示么有makeinfo那就apt-get install texinfo)<br> 接着make install。<br> .emacs中：<br> <code>(require 'muse-mode)<br> (require 'muse-html)<br> (require 'muse-latex)<br> (require 'muse-texinfo)<br> (require 'muse-docbook)<br> (require 'muse-project)</code><br> 如果你希望在emacs中创建工程：<br> <code>(setq muse-project-alist<br> '(("website" ("~/Pages" :default "index")<br> (:base "html" :path "~/public_html")<br> (:base "pdf" :path "~/public_html/pdf"))))<br> 一切OK。<br></code></p> 
+          </div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-82 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

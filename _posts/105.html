@@ -1,0 +1,381 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-105 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-105" class="post-105 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;11205&nbsp;–&nbsp;The&nbsp;broken&nbsp;pedometer&nbsp;解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=105" title="下午 3:23" rel="bookmark"><time class="entry-date" datetime="2011-07-31T15:23:31+00:00" pubdate>31 七月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=105#respond" title="Comment on UVA&nbsp;11205&nbsp;–&nbsp;The&nbsp;broken&nbsp;pedometer&nbsp;解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> 越到后面英语越难了啊！！！NND！</p> 
+         <div>
+           本题题意是想从给出的矩阵里面找出最小的n列来，使得这n列按顺序组成的序列各不相同。 
+         </div> 
+         <div>
+           就是刘汝佳白书121页上的位向量法构造子集。 
+         </div> 
+         <div>
+           题目： 
+         </div> 
+         <div> 
+          <div align="center"> 
+           <center> 
+            <p></p> 
+            <table style="page-break-before: always" cellpadding="0" cellspacing="2" bgcolor="#0060F0" border="0"> 
+             <tbody> 
+              <tr> 
+               <td><b><font color="#C0FFFF" size="5">The Broken<br> Pedometer</font>&nbsp;<wbr></b></td> 
+              </tr> 
+             </tbody> 
+            </table> 
+            <p></p> 
+           </center> 
+          </div> 
+          <h2 lang="en-GB" xml:lang="en-GB"><font color="#0070E8">The<br> Problem</font></h2> 
+          <p style="margin-bottom: 0cm" lang="en-GB" xml:lang="en-GB">A<br> marathon runner uses a pedometer with which he is having problems.<br> In the pedometer the symbols are represented by seven segments (or<br> LEDs):</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205a.gif" name="graphics1" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" xml:lang="en-GB">But the<br> pedometer does not work properly (possibly the sweat affected the<br> batteries) and only some of the LEDs are active. The runner wants<br> to know if all the possible symbols:</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205b.gif" name="graphics2" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="left" xml:lang="en-GB">can be correctly identified. For example, when the active<br> LEDs are:</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205c.gif" name="graphics3" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="left" xml:lang="en-GB">numbers 2 and 3 are seen as:</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205d.gif" name="graphics4" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" xml:lang="en-GB">so they<br> cannot be distinguished. But when the active LEDs are:</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205e.gif" name="graphics5" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="left" xml:lang="en-GB">the numbers are seen as:</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205f.gif" name="graphics6" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="left" xml:lang="en-GB">and all of them have a different representation.</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="left" xml:lang="en-GB">Because the runner teaches algorithms at University, and he<br> has some hours to think while he is running, he has thought up a<br> programming problem which generalizes the problem of his sweat<br> pedometer. The problem consists of obtaining the minimum number of<br> active LEDs necessary to identify each one of the symbols, given a<br> number <em>P</em> of LEDs, and <em>N</em> symbols to be represented<br> with these LEDs (along with the codification of each symbol).</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="left" xml:lang="en-GB">For example, in the previous sample <em>P</em> = 7 and<br> <em>N</em> = 10. Supposing the LEDs are numbered as:</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" align="center" xml:lang="en-GB"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://uva.onlinejudge.org/external/112/p11205g.gif" name="graphics7" border="0" alt="UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告"><wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” TITLE=”UVA&nbsp;<wbr>11205&nbsp;<wbr>-&nbsp;<wbr>The&nbsp;<wbr>broken&nbsp;<wbr>pedometer&nbsp;<wbr>解题报告” /&gt;</p> 
+          <p style="margin-bottom: 0cm" lang="en-GB" xml:lang="en-GB">The<br> codification of the symbols is: “0” = 1 1 1 0 1 1 1; “1” = 0 0 1 0<br> 0 1 0; “2” = 1 0 1 1 1 0 1; “3” = 1 0 1 1 0 1 1; “4” = 0 1 1 1 0 1<br> 0; “5” = 1 1 0 1 0 1 1; “6” = 1 1 0 1 1 1 1; “7” = 1 0 1 0 0 1 1;<br> “8” = 1 1 1 1 1 1 1; “9” = 1 1 1 1 0 1 1. In this case, LEDs 5 and<br> 6 can be suppressed without losing information, so the solution is<br> 5.</p> 
+          <h2 lang="en-GB" xml:lang="en-GB"><font color="#0070E8">The<br> Input</font></h2> 
+          <p style="margin-bottom: 0cm" lang="en-GB" xml:lang="en-GB">The<br> input file consists of a first line with the number of problems to<br> solve. Each problem consists of a first line with the number of<br> LEDs (<em>P</em>), a second line with the number of symbols<br> (<em>N</em>), and <em>N</em> lines each one with the codification<br> of a symbol. For each symbol, the codification is a succession of<br> 0s and 1s, with a space between them. A 1 means the corresponding<br> LED is part of the codification of the symbol. The maximum value of<br> <em>P</em> is 15 and the maximum value of <em>N</em> is 100. All<br> the symbols have different codifications.</p> 
+          <h2 lang="en-GB" xml:lang="en-GB"><font color="#0070E8">The<br> Output</font></h2> 
+          <p style="margin-bottom: 0cm" lang="en-GB" xml:lang="en-GB">The<br> output will consist of a line for each problem, with the minimum<br> number of active LEDs necessary to identify all the given<br> symbols.</p> 
+          <h2 lang="en-GB" xml:lang="en-GB"><font color="#0070E8">Sample<br> Input</font></h2> 
+          <pre>
+2
+</pre> 
+          <pre>
+7
+</pre> 
+          <pre>
+10
+</pre> 
+          <pre>
+1 1 1 0 1 1 1
+</pre> 
+          <pre>
+0 0 1 0 0 1 0
+</pre> 
+          <pre>
+1 0 1 1 1 0 1
+</pre> 
+          <pre>
+1 0 1 1 0 1 1
+</pre> 
+          <pre>
+0 1 1 1 0 1 0
+</pre> 
+          <pre>
+1 1 0 1 0 1 1
+</pre> 
+          <pre>
+1 1 0 1 1 1 1
+</pre> 
+          <pre>
+1 0 1 0 0 1 0
+</pre> 
+          <pre>
+1 1 1 1 1 1 1
+</pre> 
+          <pre>
+1 1 1 1 0 1 1
+</pre> 
+          <pre>
+6
+</pre> 
+          <pre>
+10
+</pre> 
+          <pre>
+0 1 1 1 0 0
+</pre> 
+          <pre>
+1 0 0 0 0 0
+</pre> 
+          <pre>
+1 0 1 0 0 0
+</pre> 
+          <pre>
+1 1 0 0 0 0
+</pre> 
+          <pre>
+1 1 0 1 0 0
+</pre> 
+          <pre>
+1 0 0 1 0 0
+</pre> 
+          <pre>
+1 1 1 0 0 0
+</pre> 
+          <pre>
+1 1 1 1 0 0
+</pre> 
+          <pre>
+1 0 1 1 0 0
+</pre> 
+          <pre>
+0 1 1 0 0 0
+</pre> 
+          <h2 lang="en-GB" xml:lang="en-GB"><font color="#0070E8">Sample<br> Output</font></h2> 
+          <pre>
+5&nbsp;<wbr>
+</pre> 
+          <pre>
+4&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+int map[105][20];
+</pre> 
+          <pre>
+int vis[20];
+</pre> 
+          <pre>
+int hang,lie;
+</pre> 
+          <pre>
+int result;
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+void chuli(){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;hang-1;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=i+1;j&lt;hang;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>bool found=false;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int k=0;k&lt;lie;k++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(vis[k]&amp;&amp;map[i][k]!=map[j][k]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>found=true;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(!found)return;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int num=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;lie;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(vis[i])num++;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(num&lt;result)result=num;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+void solve(int n){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(n==lie){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>chuli();
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}else{
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[n]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>solve(n+1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[n]=0;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>solve(n+1);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(ncase--){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;lie&gt;&gt;hang;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;hang;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=0;j&lt;lie;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;map[i][j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>result=lie;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>solve(0);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cout&lt;&lt;result&lt;&lt;endl;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-105 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

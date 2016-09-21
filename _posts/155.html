@@ -1,0 +1,327 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-155 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-155" class="post-155 post type-post status-publish format-standard hentry category-acm tag-uva"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">UVA&nbsp;10369&nbsp;–&nbsp;Arctic&nbsp;Network【最小生成树，Prim】</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=155" title="下午 4:31" rel="bookmark"><time class="entry-date" datetime="2011-08-24T16:31:53+00:00" pubdate>24 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=155#respond" title="Comment on UVA&nbsp;10369&nbsp;–&nbsp;Arctic&nbsp;Network【最小生成树，Prim】">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div>
+           要输出第P-S小的边的长度。 
+         </div> 
+         <div></div> 
+         <p>题目：</p> 
+         <div> 
+          <h2>Problem C: Arctic Network</h2> 
+          <p>The Department of National Defence (DND) wishes to connect several<br> northern outposts by a wireless network. Two different<br> communication technologies are to be used in establishing the<br> network: every outpost will have a radio transceiver and some<br> outposts will in addition have a satellite channel.</p> 
+         </div> 
+         <div> 
+          <a href="http://photo.blog.sina.com.cn/showpic.html#blogid=6730a3aa0100w9r5&amp;url=http://s1.sinaimg.cn/orignal/6730a3aagab3c2f6859b0" target="_blank"><img src="http://simg.sinajs.cn/blog7style/images/common/sg_trans.gif" real_src="http://s1.sinaimg.cn/middle/6730a3aagab3c2f6859b0&amp;690" alt="UVA&nbsp;<wbr>10369&nbsp;<wbr>-&nbsp;<wbr>Arctic&nbsp;<wbr>Network【最小生成树，Prim】"><wbr>10369&nbsp;<wbr>-&nbsp;<wbr>Arctic&nbsp;<wbr>Network【最小生成树，Prim】” TITLE=”UVA&nbsp;<wbr>10369&nbsp;<wbr>-&nbsp;<wbr>Arctic&nbsp;<wbr>Network【最小生成树，Prim】” /&gt;</a> 
+          <p></p> 
+          <p>&nbsp;<wbr>&nbsp;<wbr><br> </p> 
+          <p>Any two outposts with a satellite channel can communicate via<br> the satellite, regardless of their location. Otherwise, two<br> outposts can communicate by radio only if the distance between them<br> does not exceed D, which depends of the power of the transceivers.<br> Higher power yields higher D but costs more. Due to purchasing and<br> maintenance considerations, the transceivers at the outposts must<br> be identical; that is, the value of D is the same for every pair of<br> outposts.</p> 
+          <p>Your job is to determine the minimum D required for the<br> transceivers. There must be at least one communication path (direct<br> or indirect) between every pair of outposts.</p> 
+          <p>The first line of input contains N, the number of test cases.<br> The first line of each test case contains 1 &lt;= S<br> &lt;= 100, the number of satellite channels, and S<br> &lt; P &lt;= 500, the number of outposts. P<br> lines follow, giving the (x,y) coordinates of each outpost in km<br> (coordinates are integers between 0 and 10,000). For each case,<br> output should consist of a single line giving the minimum D<br> required to connect the network. Output should be specified to 2<br> decimal points.</p> 
+          <h3>Sample Input</h3> 
+          <pre>
+1
+</pre> 
+          <pre>
+2 4
+</pre> 
+          <pre>
+0 100
+</pre> 
+          <pre>
+0 300
+</pre> 
+          <pre>
+0 600
+</pre> 
+          <pre>
+150 750
+</pre> 
+          <h3>Sample Output</h3> 
+          <pre>
+212.13&nbsp;<wbr>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+代码：
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+#include&lt;iostream&gt;
+</pre> 
+          <pre>
+#include&lt;cstring&gt;
+</pre> 
+          <pre>
+#include&lt;algorithm&gt;
+</pre> 
+          <pre>
+#include&lt;fstream&gt;
+</pre> 
+          <pre>
+#include&lt;cstdio&gt;
+</pre> 
+          <pre>
+#include&lt;cmath&gt;
+</pre> 
+          <pre>
+#define INF 99999999
+</pre> 
+          <pre>
+#define maxn 505
+</pre> 
+          <pre>
+using namespace std;
+</pre> 
+          <pre>
+typedef struct node{
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int x;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int y;
+</pre> 
+          <pre>
+}node;
+</pre> 
+          <pre>
+int S,P;
+</pre> 
+          <pre>
+node N[maxn];
+</pre> 
+          <pre>
+double dist[maxn][maxn];
+</pre> 
+          <pre>
+double D[maxn];
+</pre> 
+          <pre>
+int vis[maxn];
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+double dis(node a,node b){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+bool mycmp(double a,double b){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return a&lt;b;
+</pre> 
+          <pre>
+}
+</pre> 
+          <pre>
+<br>
+</pre> 
+          <pre>
+int main()
+</pre> 
+          <pre>
+{
+</pre> 
+          <pre>
+//<span style="white-space:pre"> </span>freopen("test.txt","r",stdin);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;ncase;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>while(ncase--){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;S&gt;&gt;P;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;P;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>cin&gt;&gt;N[i].x&gt;&gt;N[i].y;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(dist,0,sizeof(dist));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>memset(vis,0,sizeof(vis));
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;P;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=i+1;j&lt;P;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>dist[i][j]=dist[j][i]=dis(N[i],N[j]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=0;i&lt;P;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>D[i]=dist[0][i];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[0]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int i=1;i&lt;P;i++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>double tmp=INF;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>int mark;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=0;j&lt;P;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(vis[j]==0&amp;&amp;tmp&gt;D[j]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>tmp=D[j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>mark=j;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>vis[mark]=1;
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>for(int j=0;j&lt;P;j++){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>if(vis[j]==0&amp;&amp;D[j]&gt;dist[mark][j]){
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>D[j]=dist[mark][j];
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>sort(D,D+P,mycmp);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>printf("%.2lfn",D[P-S]);
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>}
+</pre> 
+          <pre>
+<span style="white-space:pre"> </span>return 0;
+</pre> 
+          <pre>
+}
+</pre> 
+          <div></div> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-155 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

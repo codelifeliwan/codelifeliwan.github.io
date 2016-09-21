@@ -1,0 +1,2196 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-152 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-152" class="post-152 post type-post status-publish format-standard hentry category-acm tag-qingdao"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Qingdao&nbsp;Tec&nbsp;Practice&nbsp;比赛解题报告</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=152" title="下午 11:48" rel="bookmark"><time class="entry-date" datetime="2011-08-20T23:48:25+00:00" pubdate>20 八月, 2011</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=152#respond" title="Comment on Qingdao&nbsp;Tec&nbsp;Practice&nbsp;比赛解题报告">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div>
+           第一题：HDOJ 1028 
+         </div> 
+         <div>
+           此题为一个DP，是背包问题方案数的问题，理论上有两种方法，一种可以使用记忆话递归搜索，另一种是直接递推，感觉两种方法都差不多，但是记忆话递归的超时，郁闷。。。。。 
+         </div> 
+         <div></div> 
+         <div>
+           下面给出两种方法代码： 
+         </div> 
+         <div>
+           【一】：AC代码： 
+         </div> 
+         <div></div> 
+         <div>
+           状态转移方程：V[j]=V[j-i],其中j表示“当前背包容量”，i表示现在计算的数字是i 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cstring&gt; 
+         </div> 
+         <div>
+           #include&lt;algorithm&gt; 
+         </div> 
+         <div>
+           #include&lt;fstream&gt; 
+         </div> 
+         <div>
+           #define maxn 125 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           int V[maxn]; 
+         </div> 
+         <div>
+           int num; 
+         </div> 
+         <div></div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           freopen(“test.txt”,”r”,stdin); 
+         </div> 
+         <div>
+           while(cin&gt;&gt;num){ 
+         </div> 
+         <div>
+           memset(V,0,sizeof(V)); 
+         </div> 
+         <div>
+           V[0]=1; 
+         </div> 
+         <div>
+           for(int i=1;i&lt;=num;i++){ 
+         </div> 
+         <div>
+           for(int j=i;j&lt;=num;j++){ 
+         </div> 
+         <div>
+           V[j]+=V[j-i]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           cout&lt;&lt;V[num]&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           【二】：TLE代码： 
+         </div> 
+         <div></div> 
+         <div>
+           状态转移方程：V[i][j]=sum(V[n-x][x]); 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cstring&gt; 
+         </div> 
+         <div>
+           #include&lt;algorithm&gt; 
+         </div> 
+         <div>
+           #include&lt;fstream&gt; 
+         </div> 
+         <div>
+           #define maxn 125 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           int V[maxn*maxn][maxn]; 
+         </div> 
+         <div>
+           int num; 
+         </div> 
+         <div></div> 
+         <div>
+           int dp(int n,int m){ 
+         </div> 
+         <div>
+           if(n==0)return 1; 
+         </div> 
+         <div>
+           int ans=V[n][m]; 
+         </div> 
+         <div>
+           if(ans)return ans; 
+         </div> 
+         <div>
+           for(int i=m;i&lt;=n;i++){ 
+         </div> 
+         <div>
+           ans+=dp(n-i,i); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return ans; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           // freopen(“test.txt”,”r”,stdin); 
+         </div> 
+         <div>
+           memset(V,0,sizeof(V)); 
+         </div> 
+         <div>
+           while(cin&gt;&gt;num){ 
+         </div> 
+         <div>
+           cout&lt;&lt;dp(num,1)&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           第二题：HDOJ 1045 
+         </div> 
+         <div>
+           深度优先搜索。 
+         </div> 
+         <div></div> 
+         <div>
+           代码： 
+         </div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;memory.h&gt; 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           char map[6][6]; 
+         </div> 
+         <div>
+           int vis[6][6]; 
+         </div> 
+         <div>
+           int num; 
+         </div> 
+         <div>
+           int a[2]={1,-1}; 
+         </div> 
+         <div>
+           int maxn=0; 
+         </div> 
+         <div></div> 
+         <div>
+           int judge(int i,int j) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           int mark=0; 
+         </div> 
+         <div>
+           if(map[i][j]==’X’) 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           if(vis[i][j]==1) 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           for(int temp=0;temp&lt;4;temp++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           if(temp==0||temp==1) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int 
+          <br> temp1=i;temp1&lt;num&amp;&amp;temp1&gt;=0;) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           if(map[temp1][j]==’X’) 
+         </div> 
+         <div>
+           break; 
+         </div> 
+         <div>
+           else if(vis[temp1][j]==1) 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           temp1=temp1+a[temp%2]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           else 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int 
+          <br> temp1=j;temp1&lt;num&amp;&amp;temp1&gt;=0;) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           if(map[i][temp1]==’X’) 
+         </div> 
+         <div>
+           break; 
+         </div> 
+         <div>
+           else if(vis[i][temp1]==1) 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           temp1=temp1+a[temp%2]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 1; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           void Fire(int n) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           if(n&gt;maxn)maxn=n; 
+         </div> 
+         <div>
+           for(int i=0;i&lt;num;i++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int j=0;j&lt;num;j++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           if(judge(i,j)) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           vis[i][j]=1; 
+         </div> 
+         <div>
+           Fire(n+1); 
+         </div> 
+         <div>
+           vis[i][j]=0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           // freopen(“test.txt”,”r”,stdin); 
+         </div> 
+         <div>
+           while(cin&gt;&gt;num&amp;&amp;num!=0) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int i=0;i&lt;num;i++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int j=0;j&lt;num;j++) 
+         </div> 
+         <div>
+           cin&gt;&gt;map[i][j]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           memset(vis,0,sizeof(vis)); 
+         </div> 
+         <div>
+           maxn=0; 
+         </div> 
+         <div>
+           Fire(0); 
+         </div> 
+         <div>
+           cout&lt;&lt;maxn&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           第三题：HDOJ 1026 
+         </div> 
+         <div>
+           广度优先搜索。 
+         </div> 
+         <div></div> 
+         <div>
+           代码： 
+         </div> 
+         <div></div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cstring&gt; 
+         </div> 
+         <div>
+           #include&lt;algorithm&gt; 
+         </div> 
+         <div>
+           #include&lt;fstream&gt; 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           const int maxn=101; 
+         </div> 
+         <div>
+           char map[maxn][maxn]; 
+         </div> 
+         <div>
+           int dir[4][2]={{0,1},{0,-1},{-1,0},{1,0}}; 
+         </div> 
+         <div>
+           int vis[maxn][maxn]; 
+         </div> 
+         <div>
+           int Time[maxn][maxn]; 
+         </div> 
+         <div>
+           int fa[maxn][maxn]; 
+         </div> 
+         <div>
+           int q[maxn*maxn*maxn]; 
+         </div> 
+         <div>
+           int hang,lie; 
+         </div> 
+         <div>
+           bool found; 
+         </div> 
+         <div>
+           int Timeall; 
+         </div> 
+         <div></div> 
+         <div>
+           void bfs(int x=0,int y=0) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           int front=0,rear=0,u; 
+         </div> 
+         <div>
+           u=x*lie+y; 
+         </div> 
+         <div>
+           vis[x][y]=1; 
+         </div> 
+         <div>
+           q[rear++]=u; 
+         </div> 
+         <div>
+           Time[x][y]=0; 
+         </div> 
+         <div>
+           while(rear&gt;front) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           u=q[front++]; 
+         </div> 
+         <div>
+           x=u/lie;y=u%lie; 
+         </div> 
+         <div>
+           int Time1=Time[x][y]; 
+         </div> 
+         <div>
+           for(int i=0;i&lt;4;i++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           int nx=x+dir[i][0]; 
+         </div> 
+         <div>
+           int ny=y+dir[i][1]; 
+         </div> 
+         <div>
+           if(nx==hang-1&amp;&amp;ny==lie-1)found=true; 
+         </div> 
+         <div>
+           if(nx&gt;=0&amp;&amp;nx&lt;hang&amp;&amp;ny&gt;=0&amp;&amp;ny&lt;lie&amp;&amp;map[nx][ny]!=’X’) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           if(!vis[nx][ny]) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           int Time2=Time1; 
+         </div> 
+         <div>
+           Time2++; 
+         </div> 
+         <div>
+           vis[nx][ny]=1; 
+         </div> 
+         <div>
+           if(map[nx][ny]&gt;’0’&amp;&amp;map[nx][ny]&lt;=’9′) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           Time2+=(map[nx][ny]-‘0′); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           Time[nx][ny]=Time2; 
+         </div> 
+         <div>
+           q[rear++]=nx*lie+ny; 
+         </div> 
+         <div>
+           fa[nx][ny]=u; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           else 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           int Time2=Time1; 
+         </div> 
+         <div>
+           Time2+=1; 
+         </div> 
+         <div>
+           if(map[nx][ny]&gt;=’0’&amp;&amp;map[nx][ny]&lt;=’9′) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           Time2+=(map[nx][ny]-‘0′); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           if(Time2&lt;Time[nx][ny]) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           Time[nx][ny]=Time2; 
+         </div> 
+         <div>
+           fa[nx][ny]=u; 
+         </div> 
+         <div>
+           q[rear++]=nx*lie+ny; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           void print_path(int x,int y) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           int fx=fa[x][y]/lie; 
+         </div> 
+         <div>
+           int fy=fa[x][y]%lie; 
+         </div> 
+         <div>
+           if(x&gt;0||y&gt;0) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           print_path(fx,fy); 
+         </div> 
+         <div>
+           if(map[x][y]&gt;=’0’&amp;&amp;map[x][y]&lt;=’9′) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           cout&lt;&lt;Timeall++&lt;&lt;“s:(“&lt;&lt;fx&lt;&lt;“,”&lt;&lt;fy&lt;&lt;“)-&gt;(“&lt;&lt;x&lt;&lt;“,”&lt;&lt;y&lt;&lt;“)”&lt;&lt;endl; 
+         </div> 
+         <div>
+           for(int i=0;i&lt;map[x][y]-‘0′;i++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           cout&lt;&lt;Timeall++&lt;&lt;“s:FIGHT 
+          <br> AT 
+          <br> (“&lt;&lt;x&lt;&lt;“,”&lt;&lt;y&lt;&lt;“)”&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           else 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           cout&lt;&lt;Timeall++&lt;&lt;“s:(“&lt;&lt;fx&lt;&lt;“,”&lt;&lt;fy&lt;&lt;“)-&gt;(“&lt;&lt;x&lt;&lt;“,”&lt;&lt;y&lt;&lt;“)”&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           // freopen(“test.txt”,”r”,stdin); 
+         </div> 
+         <div>
+           while(cin&gt;&gt;hang&gt;&gt;lie) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int i=0;i&lt;hang;i++) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           for(int j=0;j&lt;lie;j++) 
+         </div> 
+         <div>
+           cin&gt;&gt;map[i][j]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           found=false; 
+         </div> 
+         <div>
+           memset(vis,0,sizeof(vis)); 
+         </div> 
+         <div>
+           memset(Time,0,sizeof(Time)); 
+         </div> 
+         <div>
+           memset(fa,0,sizeof(fa)); 
+         </div> 
+         <div>
+           bfs(0,0); 
+         </div> 
+         <div>
+           if(!found) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           cout&lt;&lt;“God please help our poor 
+          <br> hero.”&lt;&lt;endl&lt;&lt;“FINISH”&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           else 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           cout&lt;&lt;“It takes 
+          <br> “&lt;&lt;Time[hang-1][lie-1]&lt;&lt;” 
+          <br> seconds to reach the target position, let me show you the 
+          <br> way.”&lt;&lt;endl; 
+         </div> 
+         <div>
+           Timeall=1; 
+         </div> 
+         <div>
+           print_path(hang-1,lie-1); 
+         </div> 
+         <div>
+           cout&lt;&lt;“FINISH”&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div>
+           第四题：HDOJ 1116 
+         </div> 
+         <div>
+           欧拉图的判定 
+         </div> 
+         <div></div> 
+         <div>
+           代码： 
+         </div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cstring&gt; 
+         </div> 
+         <div>
+           #include&lt;cstdio&gt; 
+         </div> 
+         <div>
+           #include&lt;cstdlib&gt; 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           int T,N; 
+         </div> 
+         <div>
+           int a[27][27]; 
+         </div> 
+         <div>
+           int fa[27]; 
+         </div> 
+         <div>
+           int h[27]; 
+         </div> 
+         <div>
+           inline int getf(int t) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int l=t; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> while(fa[t]!=t)t=fa[t]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> fa[l]=t; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> return t; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int i; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int r[27],c[27]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> //freopen(“dfs.dat”,”r”,stdin); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> cin&gt;&gt;T; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> while(T–) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> cin&gt;&gt;N; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> char str[1010]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> memset(a,0,sizeof(a)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> memset(h,0,sizeof(h)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> memset(r,0,sizeof(r)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> memset(c,0,sizeof(c)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(i=0;i&lt;26;i++)fa[i]=i; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> int u,v; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(i=0;i&lt;N;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> cin&gt;&gt;str; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int 
+          <br> l=strlen(str); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> u=str[0]-‘a’,v=str[l-1]-‘a'; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int 
+          <br> fu=getf(u), fv=getf(v); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> if(fu!=fv)fa[fu]=fa[fv]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> a[u][v]++; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> h[u]=h[v]=1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> v=getf(u); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(i=0;i&lt;26;i++)if(h[i]) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> if(getf(i)!=v)break; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> 
+          <br> if(i&lt;26){cout&lt;&lt;“The 
+          <br> door cannot be 
+          <br> opened.”&lt;&lt;endl;continue;} 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(i=0;i&lt;26;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> for(int 
+          <br> j=0;j&lt;26;j++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> r[i]+=a[i][j]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> c[i]+=a[j][i]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> int time=0; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(i=0;i&lt;26;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> if(r[i]!=c[i]) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> if(abs(r[i]-c[i])==1&amp;&amp;time&lt;2)time++; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> else break; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> 
+          <br> if(i&lt;26)cout&lt;&lt;“The 
+          <br> door cannot be opened.”&lt;&lt;endl; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> else 
+          <br> cout&lt;&lt;“Ordering is 
+          <br> possible.”&lt;&lt;endl; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           第五题：HDOJ 1221 
+         </div> 
+         <div>
+           计算几何 
+         </div> 
+         <div></div> 
+         <div>
+           代码：【from internet 
+          <p></p> 
+          <p>http://hi.baidu.com/����үү/blog/item/7daaf0efab6419e7cf1b3e03<wbr>.html】</p> 
+         </div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cmath&gt; 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           struct point &nbsp; 
+          <wbr> //定义点坐标结构体 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           double x; 
+         </div> 
+         <div>
+           double y; 
+         </div> 
+         <div>
+           }; 
+         </div> 
+         <div>
+           struct sideps //定义点到直线最短距离和最长距离结构体 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           double smax; 
+         </div> 
+         <div>
+           double smin; 
+         </div> 
+         <div>
+           }; 
+         </div> 
+         <div>
+           double tp_d(point p1,point p2)//传入两点坐标返回两点间距离 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           return 
+          <br> sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y)); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           double t_a(point p1,point p2,point 
+          <br> p3)//输入三点坐标，海伦公式求三角形面积 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           double side1=tp_d(p1,p2); 
+         </div> 
+         <div>
+           double side2=tp_d(p1,p3); 
+         </div> 
+         <div>
+           double side3=tp_d(p2,p3); 
+         </div> 
+         <div>
+           double ps=(side1+side2+side3)*0.5; 
+         </div> 
+         <div>
+           return 
+          <br> sqrt(ps*(ps-side1)*(ps-side2)*(ps-side3));&nbsp; 
+          <wbr> 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           double in_pt(point p1,point p2,point p3)//算两向量内积 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           return (p2.x-p1.x)*(p3.x-p1.x)+(p2.y-p1.y)*(p3.y-p1.y); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           sideps p_s_sxn(point p1,point p2,point 
+          <br> p3)//计算点到直线最短距离和最长距离 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           sideps smn; 
+         </div> 
+         <div>
+           smn.smax=tp_d(p1,p3)&gt;tp_d(p1,p2)?tp_d(p1,p3):tp_d(p1,p2); 
+         </div> 
+         <div>
+           if(in_pt(p3,p1,p2)*in_pt(p2,p3,p1)&gt;=0) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>smn.smin=t_a(p1,p2,p3)*2.0/tp_d(p2,p3); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           else 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>smn.smin=tp_d(p1,p3)&lt;tp_d(p1,p2)?tp_d(p1,p3):tp_d(p1,p2); 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return smn; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           sideps s1,s2,s3,s4; 
+         </div> 
+         <div>
+           point p1,p2,p3; 
+         </div> 
+         <div>
+           double r,x1,x2,y1,y2; 
+         </div> 
+         <div>
+           int t; 
+         </div> 
+         <div>
+           cin&gt;&gt;t; 
+         </div> 
+         <div>
+           while(t–) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>cin&gt;&gt;p1.x&gt;&gt;p1.y&gt;&gt;r&gt;&gt;x1&gt;&gt;y1&gt;&gt;x2&gt;&gt;y2; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p2.x=x1;p2.y=y1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p3.x=x1;p3.y=y2; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>s1=p_s_sxn(p1,p2,p3); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p2.x=x1;p2.y=y2; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p3.x=x2;p3.y=y2; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>s2=p_s_sxn(p1,p2,p3); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p2.x=x2;p2.y=y2; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p3.x=x2;p3.y=y1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>s3=p_s_sxn(p1,p2,p3); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p2.x=x2;p2.y=y1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>p3.x=x1;p3.y=y1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>s4=p_s_sxn(p1,p2,p3); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr>if((s1.smax&lt;r&amp;&amp;s2.smax&lt;r&amp;&amp;s3.smax&lt;r&amp;&amp;s4.smax&lt;r)||(s1.smin&gt;r&amp;&amp;s2.smin&gt;r&amp;&amp;s3.smin&gt;r&amp;&amp;s4.smin&gt;r)) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> cout&lt;&lt;“NO”&lt;&lt;endl; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr>else 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> cout&lt;&lt;“YES”&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div>
+           第六题：HDOJ 1257 
+         </div> 
+         <div>
+           DP【最长上升子序列】 
+         </div> 
+         <div></div> 
+         <div>
+           代码： 
+         </div> 
+         <div></div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cstring&gt; 
+         </div> 
+         <div>
+           #include&lt;algorithm&gt; 
+         </div> 
+         <div>
+           #include&lt;fstream&gt; 
+         </div> 
+         <div>
+           #define maxn 1005 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div>
+           int M[maxn]; 
+         </div> 
+         <div>
+           int a[maxn]; 
+         </div> 
+         <div>
+           int num; 
+         </div> 
+         <div></div> 
+         <div>
+           int b_search(int begin,int end,int x){ 
+         </div> 
+         <div>
+           if(x&lt;=a[begin])return 0; 
+         </div> 
+         <div>
+           int m; 
+         </div> 
+         <div>
+           while(begin&lt;end){ 
+         </div> 
+         <div>
+           m=(begin+end)/2; 
+         </div> 
+         <div>
+           if(a[m-1]&lt;x&amp;&amp;a[m]&gt;=x)return 
+          <br> m; 
+         </div> 
+         <div>
+           else if(a[m]&lt;x)begin=m; 
+         </div> 
+         <div>
+           else end=m; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return end; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           int main() 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           // freopen(“test.txt”,”r”,stdin); 
+         </div> 
+         <div>
+           while(cin&gt;&gt;num){ 
+         </div> 
+         <div>
+           for(int i=0;i&lt;num;i++){ 
+         </div> 
+         <div>
+           cin&gt;&gt;M[i]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           a[0]=M[0]; 
+         </div> 
+         <div>
+           int ans=1; 
+         </div> 
+         <div>
+           for(int i=1;i&lt;num;i++){ 
+         </div> 
+         <div>
+           if(M[i]&gt;a[ans-1]){ 
+         </div> 
+         <div>
+           a[ans]=M[i]; 
+         </div> 
+         <div>
+           ans++; 
+         </div> 
+         <div>
+           }else{ 
+         </div> 
+         <div>
+           int r=b_search(0,ans,M[i]); 
+         </div> 
+         <div>
+           a[r]=M[i]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           cout&lt;&lt;ans&lt;&lt;endl; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div></div> 
+         <div>
+           第七题：HDOJ 1142 
+         </div> 
+         <div>
+           图论：Dijkstra+记忆化搜索 
+         </div> 
+         <div></div> 
+         <div>
+           代码：【来自鹤鹤的解题报告：http://blog.sina.com.cn/s/blog_7c2a1aa30100qkun.html】 
+         </div> 
+         <div>
+           #include&lt;iostream&gt; 
+         </div> 
+         <div>
+           #include&lt;cstdio&gt; 
+         </div> 
+         <div>
+           #include&lt;cstring&gt; 
+         </div> 
+         <div>
+           using namespace std; 
+         </div> 
+         <div></div> 
+         <div>
+           #define inf 10000000 
+         </div> 
+         <div>
+           #define MAX 1005 
+         </div> 
+         <div>
+           #define min(a,b) ((a)&lt;(b)?(a):(b)) 
+         </div> 
+         <div></div> 
+         <div>
+           int N; 
+         </div> 
+         <div>
+           int map[MAX][MAX]; 
+         </div> 
+         <div>
+           int dist[MAX]; 
+         </div> 
+         <div>
+           int vist[MAX]; 
+         </div> 
+         <div>
+           int dp[MAX]; 
+         </div> 
+         <div>
+           void dijkstra(int node) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> memset(vist,0,sizeof(vist)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> for(int 
+          <br> i=1;i&lt;=N;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> dist[i]=inf; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> dist[node]=0; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> for(int 
+          <br> i=1;i&lt;=N;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> int x=0,m=inf; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(int y=1;y&lt;=N;y++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> if(!vist[y]&amp;&amp;dist[y]&lt;m) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> x=y; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> m=dist[y]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> if(x==0) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> break; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> vist[x]=1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(int y=1;y&lt;=N;y++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> dist[y]=min(dist[y],dist[x]+map[x][y]); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div></div> 
+         <div>
+           int dfs(int node) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> if(dp[node]!=-1) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> return dp[node]; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> if(node==2) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> return 1; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> dp[node]=0; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> for(int 
+          <br> i=1;i&lt;=N;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> 
+          <br> if(map[i][node]!=inf&amp;&amp;dist[i]&lt;dist[node]) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> dp[node]+=dfs(i); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> return dp[node]; 
+         </div> 
+         <div>
+           } 
+         </div> 
+         <div>
+           int main(void) 
+         </div> 
+         <div>
+           { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int i,j,k; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> int M; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> while(scanf(“%d%d”,&amp;N,&amp;M)&amp;&amp;N) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> memset(dp,-1,sizeof(dp)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> for(i=1;i&lt;=N;i++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> for(j=1;j&lt;=N;j++) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> map[i][j]=inf; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> while(M–) 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> { 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> scanf(“%d%d%d”,&amp;i,&amp;j,&amp;k); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> map[i][j]=map[j][i]=k; 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> dijkstra(2); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> 
+          <br> &nbsp; 
+          <wbr> printf(“%dn”,dfs(1)); 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> } 
+         </div> 
+         <div>
+           &nbsp; 
+          <wbr> &nbsp; 
+          <wbr> return 0; 
+         </div> 
+         <div>
+           } 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-152 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

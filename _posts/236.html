@@ -1,0 +1,566 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-236 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-236" class="post-236 post type-post status-publish format-standard hentry category-professional_exchanges tag-emacs"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">/home/username/.emacs</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=236" title="上午 10:42" rel="bookmark"><time class="entry-date" datetime="2012-04-18T10:42:17+00:00" pubdate>18 四月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=236#respond" title="Comment on /home/username/.emacs">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <p> Come from:<a href="http://hi.baidu.com/zhonghuage/blog/item/c5d8b13e986d95f1828b1300.html">http://hi.baidu.com/zhonghuage/blog/item/c5d8b13e986d95f1828b1300<wbr>.html</a></p> 
+         <div> 
+          <div style="font-family: 微软雅黑; word-wrap: break-word; word-break: break-all; visibility: visible !important; zoom: 1 !important; filter: none; font-size: 16px; line-height: 20px !important; font-weight: bold; color: rgb(51, 51, 51); text-align: left; background-image: url(http://hiphotos.baidu.com/С����/pic/item/6cb0bf283f67fb70d42af18c.jpg); background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(185, 206, 127); height: 50px; padding-top: 7px; text-indent: 50px; overflow-x: hidden; overflow-y: hidden; background-position: 0% 0%; background-repeat: no-repeat no-repeat;">
+            .emacs配置备份 
+          </div> 
+          <div style="font-family: Verdana; word-wrap: break-word; word-break: break-all; visibility: visible !important; zoom: 1 !important; filter: none; font-size: 12px; line-height: 20px !important; margin-top: -26px; margin-right: 0px; margin-bottom: 10px; margin-left: 50px; color: rgb(51, 51, 51); text-align: left; background-color: rgb(185, 206, 127);">
+            2010-02-08 23:01 
+          </div> 
+          <table style="line-height: 20px !important; table-layout: fixed; font-family: Arial; background-color: rgb(185, 206, 127); width: 950px;"> 
+           <tbody> 
+            <tr> 
+             <td style="font-family: Arial; word-wrap: break-word; word-break: break-all; visibility: visible !important; zoom: 1 !important; filter: none; font-size: 12px; line-height: 20px !important;"> 
+              <div style="font-family: Georgia; word-wrap: break-word; word-break: break-all; visibility: visible !important; zoom: 1 !important; filter: none; line-height: 20px; color: rgb(51, 51, 51); letter-spacing: 2px; overflow-x: hidden; overflow-y: hidden; position: relative !important;">
+                ;===== 语言环境字符集设置=== 
+               <br style="line-height: normal;"> 
+               <br> (set-language-environment ‘Chinese-GB) 
+               <br style="line-height: normal;"> 
+               <br> (set-keyboard-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (set-clipboard-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (set-terminal-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (set-buffer-file-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (set-default-coding-systems ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (set-selection-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (modify-coding-system-alist ‘process “*” ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (setq default-process-coding-system ‘(utf-8 . utf-8)) 
+               <br style="line-height: normal;"> 
+               <br> (setq-default pathname-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (set-file-name-coding-system ‘utf-8) 
+               <br style="line-height: normal;"> 
+               <br> (setq ansi-color-for-comint-mode t) 
+               <br> ;;处理shell-mode乱码,好像没作用 
+               <br style="line-height: normal;"> 
+               <br> ;==== 语言环境字符集设置结束 ===== 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;－－－－－－－－－－－－－－基本设置－－－－－－－－－－－－－－－－ 
+               <br style="line-height: normal;"> 
+               <br> ;关闭启动画面 
+               <br style="line-height: normal;"> 
+               <br> (custom-set-variables 
+               <br style="line-height: normal;"> 
+               <br> ;; custom-set-variables was added by Custom. 
+               <br style="line-height: normal;"> 
+               <br> ;; If you edit it by hand, you could mess it up, so be 
+               <br> careful. 
+               <br style="line-height: normal;"> 
+               <br> ;; Your init file should contain only one such instance. 
+               <br style="line-height: normal;"> 
+               <br> ;; If there is more than one, they won’t work right. 
+               <br style="line-height: normal;"> 
+               <br> ‘(ecb-options-version “2.32”) 
+               <br style="line-height: normal;"> 
+               <br> ‘(inhibit-startup-screen t)) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;设置背景色和字体色 
+               <br style="line-height: normal;"> 
+               <br> (set-foreground-color “grey”) 
+               <br style="line-height: normal;"> 
+               <br> (set-background-color “black”) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; 支持emacs和外部程序的粘贴 
+               <br style="line-height: normal;"> 
+               <br> (setq x-select-enable-clipboard t) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;查找时候严格区分大小写 
+               <br style="line-height: normal;"> 
+               <br> (setq case-fold-search nil) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;设置kill-ring-max为200 
+               <br style="line-height: normal;"> 
+               <br> (setq kill-ring-max 200) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;把 fill-column 设为 60. 这样的文字更好读。 
+               <br style="line-height: normal;"> 
+               <br> (setq default-fill-column 60) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;在模式栏中显示行号列号 
+               <br style="line-height: normal;"> 
+               <br> (column-number-mode t) 
+               <br style="line-height: normal;"> 
+               <br> (line-number-mode t) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;显示匹配括号 
+               <br style="line-height: normal;"> 
+               <br> (show-paren-mode t) 
+               <br style="line-height: normal;"> 
+               <br> (setq show-paren-style ‘parentheses) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;高亮显示匹配的括号。 
+               <br style="line-height: normal;"> 
+               <br> (show-paren-mode 1) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;光标靠近鼠标指针时，让鼠标指针自动让开，别挡住视线。 
+               <br style="line-height: normal;"> 
+               <br> (mouse-avoidance-mode ‘animate) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;指针不闪，不恍花眼睛。 
+               <br style="line-height: normal;"> 
+               <br> (blink-cursor-mode -1) 
+               <br style="line-height: normal;"> 
+               <br> (transient-mark-mode 1) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;让 Emacs 可以直接打开和显示图片。 
+               <br style="line-height: normal;"> 
+               <br> (auto-image-file-mode) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;语法加亮 
+               <br style="line-height: normal;"> 
+               <br> (global-font-lock-mode t) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;设置 sentence-end 可以识别中文标点。不用在 fill 时在句号后插入两个空格。 
+               <br style="line-height: normal;"> 
+               <br> (setq sentence-end “\([。！？]\|……\|[.?!][]”‘)}]*\($\|[ 
+               <br> t]\)\)[ tn]*”) 
+               <br style="line-height: normal;"> 
+               <br> (setq sentence-end-double-space nil) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;把缺省的 major mode 设置为 text-mode, 而不是几乎什么功能 
+               <br style="line-height: normal;"> 
+               <br> ;;也没有的 fundamental-mode. 
+               <br style="line-height: normal;"> 
+               <br> (setq default-major-mode ‘text-mode) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;以 y/n代表 yes/no 
+               <br style="line-height: normal;"> 
+               <br> (fset ‘yes-or-no-p ‘y-or-n-p) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;滚动条在右侧 
+               <br style="line-height: normal;"> 
+               <br> (set-scroll-bar-mode ‘right) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;在标题栏显示buffer的名字 
+               <br style="line-height: normal;"> 
+               <br> (setq frame-title-format “%b@emacs”) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;所有的备份文件都放置在~/backups目录下 
+               <br style="line-height: normal;"> 
+               <br> (setq backup-directory-alist (quote ((“.” . 
+               <br> “~/backups”)))) 
+               <br style="line-height: normal;"> 
+               <br> (setq version-control t) 
+               <br style="line-height: normal;"> 
+               <br> (setq kept-old-versions 2) 
+               <br style="line-height: normal;"> 
+               <br> (setq kept-new-versions 5) 
+               <br style="line-height: normal;"> 
+               <br> (setq delete-old-versions t) 
+               <br style="line-height: normal;"> 
+               <br> (setq backup-directory-alist ‘((“.” . “~/backups”))) 
+               <br style="line-height: normal;"> 
+               <br> (setq backup-by-copying t) 
+               <br style="line-height: normal;"> 
+               <br> ;;emacs中，改变文件时，默认都会产生备份文件（以~结尾的文件）。可以完全去掉 
+               <br style="line-height: normal;"> 
+               <br> ;;（并不可取），也可以制定备份的方式。这里采用的是，把所有的文件备份都放在一个 
+               <br style="line-height: normal;"> 
+               <br> ;;固定的地方。对于每个备份文件，保留最原始的两个版本和最新的五个版本。 
+               <br style="line-height: normal;"> 
+               <br> ;;并且备份的时候，备份文件是复件，而不是原件。 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;不产生备份文件 
+               <br style="line-height: normal;"> 
+               <br> ;(setq make-backup-files nil) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;可以递归的使用 minibuffer 
+               <br style="line-height: normal;"> 
+               <br> (setq enable-recursive-minibuffers t) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; 在行首 C-k 时，同时删除该行 
+               <br style="line-height: normal;"> 
+               <br> (setq-default kill-whole-line t) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; 自动的在文件末增加一新行 
+               <br style="line-height: normal;"> 
+               <br> (setq require-final-newline t) 
+               <br style="line-height: normal;"> 
+               <br> ;; 当光标在行尾上下移动的时候，始终保持在行尾。 
+               <br style="line-height: normal;"> 
+               <br> (setq track-eol t) 
+               <br style="line-height: normal;"> 
+               <br> ;; 当浏览 man page 时，直接跳转到 man buffer。 
+               <br style="line-height: normal;"> 
+               <br> (setq Man-notify-method ‘pushy) 
+               <br style="line-height: normal;"> 
+               <br> ;; 当使用 M-x COMMAND 后，过 1 秒钟显示该 COMMAND 绑定的键 
+               <br style="line-height: normal;"> 
+               <br> (setq suggest-key-bindings 1) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;－－－－－－－－－－－－－全局快捷键－－－－－－－－－－－－－－－－ 
+               <br style="line-height: normal;"> 
+               <br> ;;;F1：列举我的书签 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “&lt;f1&gt;”) 
+               <br> ‘list-bookmarks) 
+               <br style="line-height: normal;"> 
+               <br> ;;;Ctrl+F1：设置我的书签 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [C-f1] ‘bookmark-set) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; F2:保存buffer 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “&lt;f2&gt;”) 
+               <br> ‘save-buffer ) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;;Ctrl+F2：保存当前桌面 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [C-f2] ‘desktop-save) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;F3:跳转到寄存器保存的位子 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “&lt;f3&gt;”) 
+               <br> ‘jump-to-register) 
+               <br style="line-height: normal;"> 
+               <br> ;;Ctrl+F3:记录当前光标位子到寄存器 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [C-f3] ‘point-to-register) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; F5:最大化当前buffer: 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(f5)] ‘delete-other-windows) 
+               <br style="line-height: normal;"> 
+               <br> ;; F6:关闭buffer 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(f6)] ‘kill-buffer-and-window) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;编译和调试 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [f7] ‘compile) 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [C-f7] ‘gdb) 
+               <br style="line-height: normal;"> 
+               <br> (setq-default compile-command “make”) 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [C-f8] ‘previous-error) 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [f8] ‘next-error) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ; F9:格式化代码 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [f9] ‘c-indent-line-or-region) 
+               <br style="line-height: normal;"> 
+               <br> ; F10:注释 / 取消注释 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [f10] ‘comment-or-uncomment-region) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;Ctrl+F11:复制区域到寄存器 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [C-f11] ‘copy-to-register) 
+               <br style="line-height: normal;"> 
+               <br> ;;F11:粘贴寄存器内容 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(f11)] ‘insert-register) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(control tab)] ‘other-window);切换窗口 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “C-z”) ‘undo);撤消 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “C-a”) ‘mark-whole-buffer);全选 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(meta g)] ‘goto-line);跳到某行 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “C-x b”) ‘ibuffer);打开ibuffer 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key (kbd “C-x v”) 
+               <br> ‘browse-kill-ring);打开browse-kill-ring 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(meta left)] ‘tabbar-backward);;切换前一个tab 
+               <br style="line-height: normal;"> 
+               <br> (global-set-key [(meta 
+               <br> right)]&nbsp; 
+               <wbr>&nbsp; 
+               <wbr>&nbsp; 
+               <wbr>&nbsp; 
+               <wbr>&nbsp; 
+               <wbr>&nbsp; 
+               <wbr> 
+               <br> ‘tabbar-forward);;切换下一个tab 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;显示日期 
+               <br style="line-height: normal;"> 
+               <br> (setq display-time-day-and-date t) 
+               <br style="line-height: normal;"> 
+               <br> ;;显示时间 
+               <br style="line-height: normal;"> 
+               <br> (display-time) 
+               <br style="line-height: normal;"> 
+               <br> ;;时间为24小时制 
+               <br style="line-height: normal;"> 
+               <br> (setq display-time-24hr-format t) 
+               <br style="line-height: normal;"> 
+               <br> ;;时间显示包括日期和具体时间 
+               <br style="line-height: normal;"> 
+               <br> (setq display-time-day-and-date t) 
+               <br style="line-height: normal;"> 
+               <br> ;;时间栏旁边启动邮件设置 
+               <br style="line-height: normal;"> 
+               <br> (setq display-time-use-mail-icon t) 
+               <br style="line-height: normal;"> 
+               <br> ;;时间的变化频率 
+               <br style="line-height: normal;"> 
+               <br> (setq display-time-interval 10) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; 设置时间戳，标识出最后一次保存文件的时间。 
+               <br style="line-height: normal;"> 
+               <br> (setq time-stamp-active t) 
+               <br style="line-height: normal;"> 
+               <br> (setq time-stamp-warn-inactive t) 
+               <br style="line-height: normal;"> 
+               <br> (setq time-stamp-format “%:y-m-d : H:M:S K.T”) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; 默认的日记文件 
+               <br style="line-height: normal;"> 
+               <br> (setq diary-file “~/diary/rj”) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;设置所在地的经纬度和地名，calendar 可以根据这些信息告知你每天的 
+               <br style="line-height: normal;"> 
+               <br> ;;日出和日落的时间。 
+               <br style="line-height: normal;"> 
+               <br> (setq calendar-latitude +31.8653) 
+               <br style="line-height: normal;"> 
+               <br> (setq calendar-longitude +117.2797) 
+               <br style="line-height: normal;"> 
+               <br> (setq calendar-location-name “Hefei”) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;节日 
+               <br style="line-height: normal;"> 
+               <br> (setq calendar-remove-frame-by-deleting t) 
+               <br style="line-height: normal;"> 
+               <br> (setq calendar-week-start-day 1) 
+               <br style="line-height: normal;"> 
+               <br> ;;不过基督教的节日 
+               <br style="line-height: normal;"> 
+               <br> (setq christian-holidays nil) 
+               <br style="line-height: normal;"> 
+               <br> ;;不过希伯来人的节日 
+               <br style="line-height: normal;"> 
+               <br> (setq hebrew-holidays nil) 
+               <br style="line-height: normal;"> 
+               <br> ;;不过伊斯兰教的节日 
+               <br style="line-height: normal;"> 
+               <br> (setq islamic-holidays nil) 
+               <br style="line-height: normal;"> 
+               <br> ;;不过太阳节 
+               <br style="line-height: normal;"> 
+               <br> (setq solar-holidays nil) 
+               <br style="line-height: normal;"> 
+               <br> ;;要过的节日 
+               <br style="line-height: normal;"> 
+               <br> (setq general-holidays ‘((holiday-fixed 1 1 “元旦”) 
+               <br style="line-height: normal;"> 
+               <br> (holiday-fixed 5 1 “劳动节”) 
+               <br style="line-height: normal;"> 
+               <br> (holiday-float 5 0 2 “母亲节”) 
+               <br style="line-height: normal;"> 
+               <br> (holiday-float 6 0 3 “父亲节”) 
+               <br style="line-height: normal;"> 
+               <br> (holiday-float 10 1 “国庆节”) 
+               <br style="line-height: normal;"> 
+               <br> (holiday-float 12 27 “我的生日”))) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;日历中突出标记节日和生日 
+               <br style="line-height: normal;"> 
+               <br> (setq mark-holidays-in-calendar t) 
+               <br style="line-height: normal;"> 
+               <br> ;;打开calendar自动打开节日和生日列表 
+               <br style="line-height: normal;"> 
+               <br> (setq view-calendar-holidays-initially t) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;; Calendar 中 p C 可以看到我们的阴历有中文的天干地支。 
+               <br style="line-height: normal;"> 
+               <br> (setq mark-diary-entries-in-calendar t) 
+               <br style="line-height: normal;"> 
+               <br> (setq appt-issue-message nil) 
+               <br style="line-height: normal;"> 
+               <br> (setq mark-holidays-in-calendar nil) 
+               <br style="line-height: normal;"> 
+               <br> (setq view-calendar-holidays-initially nil) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> (setq chinese-calendar-celestial-stem 
+               <br style="line-height: normal;"> 
+               <br> [“甲” “乙” “丙” “丁” “戊” “己” “庚” “辛” “壬” “癸”]) 
+               <br style="line-height: normal;"> 
+               <br> (setq chinese-calendar-terrestrial-branch 
+               <br style="line-height: normal;"> 
+               <br> [“子” “丑” “寅” “卯” “辰” “巳” “午” “未” “申” “酉” “戌” “亥”]) 
+               <br style="line-height: normal;"> 
+               <br> 
+               <br style="line-height: normal;"> 
+               <br> ;;—————————————c和cpp环境设定—————————————— 
+               <br style="line-height: normal;"> 
+               <p></p> 
+               <p>(add-hook ‘c-mode-hook ‘linux-c-mode)<br style="line-height: normal;"><br> (add-hook ‘c++-mode-hook ‘linux-cpp-mode)<br style="line-height: normal;"><br> (defun linux-c-mode()<br style="line-height: normal;"><br> ;; 将回车代替C-j的功能，换行的同时对齐<br style="line-height: normal;"><br> (define-key c-mode-map [return] ‘newline-and-indent)<br style="line-height: normal;"><br> (interactive)<br style="line-height: normal;"><br> ;; 设置C程序的对齐风格<br style="line-height: normal;"><br> (c-set-style “K&amp;R”)<br style="line-height: normal;"><br> ;; 自动模式，在此种模式下当你键入{时，会自动根据你设置的对齐风格对齐<br style="line-height: normal;"><br> (c-toggle-auto-state)<br style="line-height: normal;"><br> ;; 此模式下，当按Backspace时会删除最多的空格<br style="line-height: normal;"><br> (c-toggle-hungry-state)<br style="line-height: normal;"><br> ;; TAB键的宽度设置为8<br style="line-height: normal;"><br> (setq c-basic-offset 8)<br style="line-height: normal;"><br> ;; 在菜单中加入当前Buffer的函数索引<br style="line-height: normal;"><br> (imenu-add-menubar-index)<br style="line-height: normal;"><br> ;; 在状态条上显示当前光标在哪个函数体内部<br style="line-height: normal;"><br> (which-function-mode)<br style="line-height: normal;"><br> )<br style="line-height: normal;"><br> (defun linux-cpp-mode()<br style="line-height: normal;"><br> (define-key c++-mode-map [return] ‘newline-and-indent)<br style="line-height: normal;"><br> (define-key c++-mode-map [(control c) (c)] ‘compile)<br style="line-height: normal;"><br> (interactive)<br style="line-height: normal;"><br> (c-set-style “K&amp;R”)<br style="line-height: normal;"><br> (c-toggle-auto-state)<br style="line-height: normal;"><br> (c-toggle-hungry-state)<br style="line-height: normal;"><br> (setq c-basic-offset 8)<br style="line-height: normal;"><br> (imenu-add-menubar-index)<br style="line-height: normal;"><br> (which-function-mode)<br style="line-height: normal;"><br> )<br style="line-height: normal;"><br> (custom-set-faces<br style="line-height: normal;"><br> ;; custom-set-faces was added by Custom.<br style="line-height: normal;"><br> ;; If you edit it by hand, you could mess it up, so be<br> careful.<br style="line-height: normal;"><br> ;; Your init file should contain only one such instance.<br style="line-height: normal;"><br> ;; If there is more than one, they won’t work right.<br style="line-height: normal;"><br> )<br style="line-height: normal;"><br> <br style="line-height: normal;"><br> (require ‘ecb)<br style="line-height: normal;"><br> ‘(ecb-options-version “2.32”)<br style="line-height: normal;"><br> <br style="line-height: normal;"><br> ;;;; 自动启动ecb，并且不显示每日提示<br style="line-height: normal;"><br> <br style="line-height: normal;"><br> (setq ecb-auto-activate t<br style="line-height: normal;"><br> ecb-tip-of-the-day nil)<br style="line-height: normal;"><br> <br style="line-height: normal;"><br> ;;load cedet.el<br style="line-height: normal;"><br> ;;———————————————————–<br style="line-height: normal;"></p> 
+               <p>(add-to-list ‘load-path<br> “/usr/share/emacs/site-lisp/cedet-common”)</p> 
+              </div> </td> 
+            </tr> 
+           </tbody> 
+          </table> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-236 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>

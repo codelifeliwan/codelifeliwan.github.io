@@ -1,0 +1,2702 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+ <!--<![endif]-->
+ <head>      
+  <link rel="stylesheet" type="text/css" media="all" href="stylesheets/style.css">     
+  <link rel="stylesheet" id="codebox-css" href="stylesheets/codebox.css" type="text/css" media="screen">             
+ </head> 
+ <body class="single single-post postid-722 single-format-standard content-sidebar"> 
+  <div id="page" class="hfeed"> 
+   <header id="branding" role="banner"> 
+    <hgroup> 
+     <h1 id="site-title"><span><a href="http://codelifeliwan.github.io/" title="Code_Life_LiWan" rel="home">Code_Life_LiWan</a></span></h1> 
+     <h2 id="site-description">My heart will go on and on…</h2> 
+    </hgroup>  
+    <!-- #access --> 
+   </header>
+   <!-- #branding --> 
+   <div id="main" class="clearfix"> 
+    <div id="primary"> 
+     <div id="content" role="main"> 
+      <!-- #nav-single --> 
+      <article id="post-722" class="post-722 post type-post status-publish format-standard hentry category-linux_kernel_source_code_notes"> 
+       <header class="entry-header"> 
+        <h1 class="entry-title">Linux内核-基于socket的进程通信（二、socket的绑定、监听、请求连接、接受请求）</h1> 
+        <div class="entry-meta"> 
+         <span class="sep">Posted on </span>
+         <a href="http://codelifeliwan.github.io/?p=722" title="下午 5:48" rel="bookmark"><time class="entry-date" datetime="2012-11-30T17:48:50+00:00" pubdate>30 十一月, 2012</time></a>
+         <span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="http://codelifeliwan.github.io/?author=1" title="View all posts by wanli" rel="author">wanli</a></span></span> 
+         <span class="sep"> — </span> 
+         <span class="comments-link"> <a href="http://codelifeliwan.github.io/?p=722#respond" title="Comment on Linux内核-基于socket的进程通信（二、socket的绑定、监听、请求连接、接受请求）">No Comments ↓</a> </span> 
+        </div>
+        <!-- .entry-meta --> 
+       </header>
+       <!-- .entry-header --> 
+       <div class="entry-content">
+        <div class="entry-content"> 
+         <div> 
+          <p>大学里面的考试终于全部考完了，可以放心学内核了&nbsp;&nbsp;<img src="http://codelifeliwan.github.io/wp-includes/images/smilies/icon_smile.gif" alt=":-)" class="wp-smiley"></p> 
+          <p>有个开了没多长时间的网站，学习<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">的，推荐：</span><a href="http://www.linuxcast.net/">http://www.linuxcast.net/</a></p> 
+          <p>上一篇我们也看了<span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">通信的大概流程，在这里首先说一个数据结构：</span><span style="font-family: 'Times New Roman';">sockaddr</span><span style="font-family: 宋体;">，这个数据结构定义在</span><span style="font-family: 'Times New Roman';">include/linux/socket.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7221"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+</pre></td> 
+              <td class="code" id="p722code1"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> sockaddr <span style="color: #009900;">{</span>
+	sa_family_t	sa_family<span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* address family, AF_xxx	*/</span>
+	<span style="color: #993333;">char</span>		sa_data<span style="color: #009900;">[</span><span style="color: #0000dd;">14</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>	<span style="color: #808080; font-style: italic;">/* 14 bytes of protocol address	*/</span>
+<span style="color: #009900;">}</span><span style="color: #339933;">;</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>这个数据结构用来标识一个地址，<span style="font-family: 'Times New Roman';">sa_family</span><span style="font-family: 宋体;">是地址族，</span><span style="font-family: 'Times New Roman';">sa_data</span><span style="font-family: 宋体;">是具体的地址，这个</span><span style="font-family: 'Times New Roman';">14</span><span style="font-family: 宋体;">字节的地址实际上长度是不固定的，一般由一个</span><span style="font-family: 'Times New Roman';">addrlen</span><span style="font-family: 宋体;">来制定地址长度，通常这个地址是个字符串，但是也有特殊情况以</span><span style="font-family: 'Times New Roman';">‘\0′</span><span style="font-family: 宋体;">开头的，在</span><span style="font-family: 'Times New Roman';">UNIX</span><span style="font-family: 宋体;">域的插口实际上是个文件路径，所以</span><span style="font-family: 'Times New Roman';">14</span><span style="font-family: 宋体;">字节也可能用不完，也可能不够，所以这个数据结构的大小是根据实际情况来进行分配的。</span></p> 
+          <p>我们在实际进行<span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">编程的时候一般不使用</span><span style="font-family: 'Times New Roman';">sockaddr</span><span style="font-family: 宋体;">数据结构，一般使用</span><span style="font-family: 'Times New Roman';">sockaddr_in</span><span style="font-family: 宋体;">数据结构。</span></p> 
+          <h2>1、绑定</h2> 
+          <p>绑定的系统调用函数关系图如下：</p> 
+          <p><a href="uploads/2012/11/1.jpg"><img class="aligncenter size-full wp-image-723" title="1" src="uploads/2012/11/1.jpg" alt="" width="560" height="250"></a></p> 
+          <p>Socket<span style="font-family: 宋体;">绑定地址的系统调用是</span><span style="font-family: 'Times New Roman';">sys_bind()</span><span style="font-family: 宋体;">，定义在</span><span style="font-family: 'Times New Roman';">net/socket.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7222"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td> 
+              <td class="code" id="p722code2"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">long</span> sys_bind<span style="color: #009900;">(</span><span style="color: #993333;">int</span> fd<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span>umyaddr<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> addrlen<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">;</span>
+	<span style="color: #993333;">char</span> address<span style="color: #009900;">[</span>MAX_SOCK_ADDR<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span>sock <span style="color: #339933;">=</span> sockfd_lookup<span style="color: #009900;">(</span>fd<span style="color: #339933;">,&amp;</span>err<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">!=</span>NULL<span style="color: #009900;">)</span>	
+	<span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span><span style="color: #009900;">(</span>err<span style="color: #339933;">=</span>move_addr_to_kernel<span style="color: #009900;">(</span>umyaddr<span style="color: #339933;">,</span>addrlen<span style="color: #339933;">,</span>address<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">&gt;=</span><span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+			err <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">-&gt;</span>bind<span style="color: #009900;">(</span>sock<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span><span style="color: #009900;">)</span>address<span style="color: #339933;">,</span> addrlen<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sockfd_put<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>			
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>地址的绑定实现将一个<span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">绑定到一个指定的地址来进行通信。传入的参数是需要绑定</span><span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">的打开文件号</span><span style="font-family: 'Times New Roman';">fd</span><span style="font-family: 宋体;">，需要绑定的地址</span><span style="font-family: 'Times New Roman';">umyaddr</span><span style="font-family: 宋体;">以及地址的长度</span><span style="font-family: 'Times New Roman';">addrlen</span><span style="font-family: 宋体;">。</span></p> 
+          <p>函数的功能很简单，就是使用<span style="font-family: 'Times New Roman';">sockfd_lookup()</span><span style="font-family: 宋体;">函数来根据打开的文件号来找到其</span><span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">数据结构，然后使用</span><span style="font-family: 'Times New Roman';">move_addr_to_kernel()</span><span style="font-family: 宋体;">函数来将地址从用户空间复制到系统空间，最后调用</span><span style="font-family: 'Times New Roman';">sock</span><span style="font-family: 宋体;">数据结构里面的</span><span style="font-family: 'Times New Roman';">bind</span><span style="font-family: 宋体;">函数指针来进行一系列的绑定操作。</span></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">sockfd_lookup()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/socket.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7223"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+</pre></td> 
+              <td class="code" id="p722code3"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/**
+ *	sockfd_lookup	- 	Go from a file number to its socket slot
+ *	@fd: file handle
+ *	@err: pointer to an error code return
+ *
+ *	The file handle passed in is locked and the socket it is bound
+ *	too is returned. If an error occurs the err pointer is overwritten
+ *	with a negative errno code and NULL is returned. The function checks
+ *	for both invalid handles and passing a handle which is not a socket.
+ *
+ *	On a success the socket object pointer is returned.
+ */</span>
+&nbsp;
+<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sockfd_lookup<span style="color: #009900;">(</span><span style="color: #993333;">int</span> fd<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span>err<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> file <span style="color: #339933;">*</span>file<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> inode <span style="color: #339933;">*</span>inode<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span><span style="color: #009900;">(</span>file <span style="color: #339933;">=</span> fget<span style="color: #009900;">(</span>fd<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+	<span style="color: #009900;">{</span>
+		<span style="color: #339933;">*</span>err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EBADF<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	inode <span style="color: #339933;">=</span> file<span style="color: #339933;">-&gt;</span>f_dentry<span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>inode<span style="color: #339933;">-&gt;</span>i_sock <span style="color: #339933;">||</span> <span style="color: #339933;">!</span><span style="color: #009900;">(</span>sock <span style="color: #339933;">=</span> socki_lookup<span style="color: #009900;">(</span>inode<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+	<span style="color: #009900;">{</span>
+		<span style="color: #339933;">*</span>err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ENOTSOCK<span style="color: #339933;">;</span>
+		fput<span style="color: #009900;">(</span>file<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>file <span style="color: #339933;">!=</span> file<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		printk<span style="color: #009900;">(</span>KERN_ERR <span style="color: #ff0000;">"socki_lookup: socket file changed!<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sock<span style="color: #339933;">-&gt;</span>file <span style="color: #339933;">=</span> file<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> sock<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">extern</span> __inline__ <span style="color: #993333;">void</span> sockfd_put<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	fput<span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>file<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>找到<span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">结构以后就根据里面的</span><span style="font-family: 'Times New Roman';">ops</span><span style="font-family: 宋体;">指针找到相应驱动跳转结构</span><span style="font-family: 'Times New Roman';">unix_stream_ops</span><span style="font-family: 宋体;">或</span><span style="font-family: 'Times New Roman';">unix_dgram_ops</span><span style="font-family: 宋体;">来进行</span><span style="font-family: 'Times New Roman';">bind</span><span style="font-family: 宋体;">函数的跳转，在前面一篇文章中我们看到，这两个结构的</span><span style="font-family: 'Times New Roman';">bind</span><span style="font-family: 宋体;">都指向了</span><span style="font-family: 'Times New Roman';">unix_bind()</span><span style="font-family: 宋体;">函数。所以</span><span style="font-family: 'Times New Roman';">UNIX</span><span style="font-family: 宋体;">域的</span><span style="font-family: 'Times New Roman';">bind()</span><span style="font-family: 宋体;">操作是由</span><span style="font-family: 'Times New Roman';">unix_bind()</span><span style="font-family: 宋体;">函数来完成的。</span></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">unix_bind()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7224"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+</pre></td> 
+              <td class="code" id="p722code4"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> unix_bind<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span>uaddr<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> addr_len<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *一般在内核实际使用的是sockaddr_un数据结构，它与sockaddr区别在于
+　　 *它的字符数组大小为108字节
+　　 */</span>
+	<span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span>sunaddr<span style="color: #339933;">=</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span><span style="color: #009900;">)</span>uaddr<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//转换成sockaddr_un数据结构</span>
+	<span style="color: #993333;">struct</span> dentry <span style="color: #339933;">*</span> dentry <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> nameidata nd<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> hash<span style="color: #339933;">;</span>
+　　<span style="color: #993333;">struct</span> unix_address <span style="color: #339933;">*</span>addr<span style="color: #339933;">;</span>
+	unix_socket <span style="color: #339933;">**</span>list<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_family <span style="color: #339933;">!=</span> AF_UNIX<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *如果参数addrlen指示插口地址大小为2，即仅为sa_family_t的大小时就是要求
+　　 *由系统自动生成一个地址，通过unix_autobind()来生成并完成绑定
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>addr_len<span style="color: #339933;">==</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">short</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">=</span> unix_autobind<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> unix_mkname<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">,</span> addr_len<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>hash<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//对插口地址进行检查和处理</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+	addr_len <span style="color: #339933;">=</span> err<span style="color: #339933;">;</span>
+&nbsp;
+	down<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">readsem</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_up<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ENOMEM<span style="color: #339933;">;</span>
+	addr <span style="color: #339933;">=</span> kmalloc<span style="color: #009900;">(</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>addr<span style="color: #009900;">)</span><span style="color: #339933;">+</span>addr_len<span style="color: #339933;">,</span> GFP_KERNEL<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>addr<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_up<span style="color: #339933;">;</span>
+&nbsp;
+	memcpy<span style="color: #009900;">(</span>addr<span style="color: #339933;">-&gt;</span>name<span style="color: #339933;">,</span> sunaddr<span style="color: #339933;">,</span> addr_len<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	addr<span style="color: #339933;">-&gt;</span>len <span style="color: #339933;">=</span> addr_len<span style="color: #339933;">;</span>
+	addr<span style="color: #339933;">-&gt;</span>hash <span style="color: #339933;">=</span> hash<span style="color: #339933;">^</span>sk<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">;</span>
+	atomic_set<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>addr<span style="color: #339933;">-&gt;</span>refcnt<span style="color: #339933;">,</span> <span style="color: #0000dd;">1</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *如果插口地址为常规文件的路径名的时候，这个时候字符数组的第一个
+　　 *字节不为'\0'，就通过path_init()和path_walk()来根据给定的路径名找到
+　　 *父节点，并确认目标节点尚且不存在
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Get the parent directory, calculate the hash for last
+		 * component.
+		 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>path_init<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #339933;">,</span> LOOKUP_PARENT<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			err <span style="color: #339933;">=</span> path_walk<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_mknod_parent<span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Yucky last component or no last component at all?
+		 * (foo/., foo/.., /////)
+		 */</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EEXIST<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>nd.<span style="color: #202020;">last_type</span> <span style="color: #339933;">!=</span> LAST_NORM<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_mknod<span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Lock the directory.
+		 */</span>
+		down<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">-&gt;</span>i_sem<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Do the final lookup.
+		 */</span>
+		dentry <span style="color: #339933;">=</span> lookup_hash<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd.<span style="color: #202020;">last</span><span style="color: #339933;">,</span> nd.<span style="color: #202020;">dentry</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		err <span style="color: #339933;">=</span> PTR_ERR<span style="color: #009900;">(</span>dentry<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>IS_ERR<span style="color: #009900;">(</span>dentry<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_mknod_unlock<span style="color: #339933;">;</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ENOENT<span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * Special case - lookup gave negative, but... we had foo/bar/
+		 * From the vfs_mknod() POV we just have a negative dentry -
+		 * all is fine. Let's be bastards - you had / on the end, you've
+		 * been asking for (non-existent) directory. -ENOENT for you.
+		 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>nd.<span style="color: #202020;">last</span>.<span style="color: #202020;">name</span><span style="color: #009900;">[</span>nd.<span style="color: #202020;">last</span>.<span style="color: #202020;">len</span><span style="color: #009900;">]</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>dentry<span style="color: #339933;">-&gt;</span>d_inode<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_mknod_dput<span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 * All right, let's create it.
+ 		 *通过vfs_mknod()来在文件系统的目录树里面建立文件节点
+		 */</span>
+		err <span style="color: #339933;">=</span> vfs_mknod<span style="color: #009900;">(</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">,</span> dentry<span style="color: #339933;">,</span>
+			S_IFSOCK<span style="color: #339933;">|</span>sock<span style="color: #339933;">-&gt;</span>inode<span style="color: #339933;">-&gt;</span>i_mode<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_mknod_dput<span style="color: #339933;">;</span>
+		up<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">-&gt;</span>i_sem<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		dput<span style="color: #009900;">(</span>nd.<span style="color: #202020;">dentry</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		nd.<span style="color: #202020;">dentry</span> <span style="color: #339933;">=</span> dentry<span style="color: #339933;">;</span>
+&nbsp;
+		addr<span style="color: #339933;">-&gt;</span>hash <span style="color: #339933;">=</span> UNIX_HASH_SIZE<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	write_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>unix_table_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *UNIX域的插口也可以不用路径名作为地址，也就是“抽象地址”，
+　　 *其第一个字节必须是'\0'，采用抽象地址的插口在文件系统中不存在
+　　 *插口文件，在socket创建的时候将其挂入unix_socket_table中的最后
+　　 *一个队列中，这个队列超出了哈希表的下标，所以正常情况下不会访问
+　　 *到，而现在已经为其制定了插口地址，那么就需要将其转入正常的哈希
+　　 *队列中了。
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *对于非常规插口地址，由于无节点结构，在为插口指定一个地址时
+　　 *不能保证这个地址的唯一性，所以需要先根据地址来计算杂凑值
+　　 *检查一下这个地址是否已经存在
+　　 */</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EADDRINUSE<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>__unix_find_socket_byname<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">,</span> addr_len<span style="color: #339933;">,</span>
+					      sk<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">,</span> hash<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			unix_release_addr<span style="color: #009900;">(</span>addr<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+&nbsp;
+		list <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>unix_socket_table<span style="color: #009900;">[</span>addr<span style="color: #339933;">-&gt;</span>hash<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *对于常规地址，由于所创建的文件节点号是唯一的，所以不会重复，其i
+　　 *节点号的低8位被用作哈希表中的下标
+　　 */</span>
+		list <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>unix_socket_table<span style="color: #009900;">[</span>dentry<span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">-&gt;</span>i_ino <span style="color: #339933;">&amp;</span> <span style="color: #009900;">(</span>UNIX_HASH_SIZE<span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #009900;">)</span><span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+		sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">dentry</span> <span style="color: #339933;">=</span> nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">;</span>
+		sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">mnt</span> <span style="color: #339933;">=</span> nd.<span style="color: #202020;">mnt</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+	__unix_remove_socket<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span> <span style="color: #339933;">=</span> addr<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//地址和sock关联</span>
+	__unix_insert_socket<span style="color: #009900;">(</span>list<span style="color: #339933;">,</span> sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+out_unlock<span style="color: #339933;">:</span>
+	write_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>unix_table_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out_up<span style="color: #339933;">:</span>
+	up<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">readsem</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+&nbsp;
+out_mknod_dput<span style="color: #339933;">:</span>
+	dput<span style="color: #009900;">(</span>dentry<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out_mknod_unlock<span style="color: #339933;">:</span>
+	up<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">-&gt;</span>i_sem<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out_mknod<span style="color: #339933;">:</span>
+	path_release<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out_mknod_parent<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #339933;">==-</span>EEXIST<span style="color: #009900;">)</span>
+		err<span style="color: #339933;">=-</span>EADDRINUSE<span style="color: #339933;">;</span>
+	unix_release_addr<span style="color: #009900;">(</span>addr<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">goto</span> out_up<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">unix_mkname()</span><span style="font-family: 宋体;">用来检查和处理地址，函数定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7225"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td> 
+              <td class="code" id="p722code5"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ *	Check unix socket name:
+ *		- should be not zero length.
+ *	        - if started by not zero, should be NULL terminated (FS object)
+ *		- if started by zero, it is abstract name.
+ */</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #993333;">int</span> unix_mkname<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span> sunaddr<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> len<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #339933;">*</span>hashp<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>len <span style="color: #339933;">&lt;=</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">short</span><span style="color: #009900;">)</span> <span style="color: #339933;">||</span> len <span style="color: #339933;">&gt;</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>sunaddr<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sunaddr <span style="color: #339933;">||</span> sunaddr<span style="color: #339933;">-&gt;</span>sun_family <span style="color: #339933;">!=</span> AF_UNIX<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *UNIX域的插口地址有两种，一种是常规的插口地址，不是以'\0'开头
+　　 *但是也不一定以'\0'结束；还有一种以'\0'开头的，称为抽象地址，在
+　　 *前面我们看到了这种地址是不分配节点空间的
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span>
+	<span style="color: #009900;">{</span>	<span style="color: #666666; font-style: italic;">//常规地址的长度检查和调整</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 *	This may look like an off by one error but it is
+		 *	a bit more subtle. 108 is the longest valid AF_UNIX
+		 *	path for a binding. sun_path[108] doesnt as such
+		 *	exist. However in kernel space we are guaranteed that
+		 *	it is a valid memory location in our kernel
+		 *	address buffer.
+		 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>len <span style="color: #339933;">&gt;</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>sunaddr<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			len <span style="color: #339933;">=</span> <span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #339933;">*</span>sunaddr<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">char</span> <span style="color: #339933;">*</span><span style="color: #009900;">)</span>sunaddr<span style="color: #009900;">)</span><span style="color: #009900;">[</span>len<span style="color: #009900;">]</span><span style="color: #339933;">=</span><span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+		len <span style="color: #339933;">=</span> strlen<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #009900;">)</span><span style="color: #339933;">+</span><span style="color: #0000dd;">1</span><span style="color: #339933;">+</span><span style="color: #993333;">sizeof</span><span style="color: #009900;">(</span><span style="color: #993333;">short</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">return</span> len<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #339933;">*</span>hashp <span style="color: #339933;">=</span> unix_hash_fold<span style="color: #009900;">(</span>csum_partial<span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">char</span><span style="color: #339933;">*</span><span style="color: #009900;">)</span>sunaddr<span style="color: #339933;">,</span> len<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> len<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">vfs_mknod()</span><span style="font-family: 宋体;">在文件系统的目录树中建立一个文件节点，函数定义在</span><span style="font-family: 'Times New Roman';">fs/namei.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7226"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td> 
+              <td class="code" id="p722code6"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">int</span> vfs_mknod<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> inode <span style="color: #339933;">*</span>dir<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> dentry <span style="color: #339933;">*</span>dentry<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> mode<span style="color: #339933;">,</span> dev_t dev<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> error <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EPERM<span style="color: #339933;">;</span>
+&nbsp;
+	mode <span style="color: #339933;">&amp;=</span> ~current<span style="color: #339933;">-&gt;</span>fs<span style="color: #339933;">-&gt;</span>umask<span style="color: #339933;">;</span>
+&nbsp;
+	down<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dir<span style="color: #339933;">-&gt;</span>i_zombie<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>S_ISCHR<span style="color: #009900;">(</span>mode<span style="color: #009900;">)</span> <span style="color: #339933;">||</span> S_ISBLK<span style="color: #009900;">(</span>mode<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>capable<span style="color: #009900;">(</span>CAP_MKNOD<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> exit_lock<span style="color: #339933;">;</span>
+&nbsp;
+	error <span style="color: #339933;">=</span> may_create<span style="color: #009900;">(</span>dir<span style="color: #339933;">,</span> dentry<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>error<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> exit_lock<span style="color: #339933;">;</span>
+&nbsp;
+	error <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EPERM<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>dir<span style="color: #339933;">-&gt;</span>i_op <span style="color: #339933;">||</span> <span style="color: #339933;">!</span>dir<span style="color: #339933;">-&gt;</span>i_op<span style="color: #339933;">-&gt;</span>mknod<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> exit_lock<span style="color: #339933;">;</span>
+&nbsp;
+	DQUOT_INIT<span style="color: #009900;">(</span>dir<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	lock_kernel<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	error <span style="color: #339933;">=</span> dir<span style="color: #339933;">-&gt;</span>i_op<span style="color: #339933;">-&gt;</span>mknod<span style="color: #009900;">(</span>dir<span style="color: #339933;">,</span> dentry<span style="color: #339933;">,</span> mode<span style="color: #339933;">,</span> dev<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	unlock_kernel<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+exit_lock<span style="color: #339933;">:</span>
+	up<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>dir<span style="color: #339933;">-&gt;</span>i_zombie<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>error<span style="color: #009900;">)</span>
+		inode_dir_notify<span style="color: #009900;">(</span>dir<span style="color: #339933;">,</span> DN_CREATE<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> error<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>好了，看了以上部分可以知道，所谓绑定就是检查并处理给出的地址，创建文件系统中的节点，然后将地址和主机的<span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">相关联，最后链入相应队列即可。</span></p> 
+          <h2>2、监听</h2> 
+          <p>监听是处于服务器端的一种方式，当服务器端完成绑定后一般就会调用函数来监听端口，这个时候服务器处于被动的监听状态。等待来自客户端的请求。区分服务器端和客户端的方式就是是否监听，只要在插口创建后调用了<span style="font-family: 'Times New Roman';">listen()</span><span style="font-family: 宋体;">，这个插口就称为</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">插口了，凡是</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">插口都不能主动去与别的插口建立连接，而只能被动地通过</span><span style="font-family: 'Times New Roman';">accept()</span><span style="font-family: 宋体;">接受来自插口的请求，而</span><span style="font-family: 'Times New Roman';">client</span><span style="font-family: 宋体;">插口正好相反，不能调用</span><span style="font-family: 'Times New Roman';">accept()</span><span style="font-family: 宋体;">来接受连接请求，而只能主动通过</span><span style="font-family: 'Times New Roman';">connect()</span><span style="font-family: 宋体;">提出连接请求。</span></p> 
+          <p>监听是通过系统调用<span style="font-family: 'Times New Roman';">listen()</span><span style="font-family: 宋体;">来进行的，其原函数为</span><span style="font-family: 'Times New Roman';">sys_listen()</span><span style="font-family: 宋体;">，定义在</span><span style="font-family: 'Times New Roman';">net/socket.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7227"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td> 
+              <td class="code" id="p722code7"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ *	Perform a listen. Basically, we allow the protocol to do anything
+ *	necessary for a listen, and if that works, we mark the socket as
+ *	ready for listening.
+ */</span>
+&nbsp;
+asmlinkage <span style="color: #993333;">long</span> sys_listen<span style="color: #009900;">(</span><span style="color: #993333;">int</span> fd<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> backlog<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *根据打开文件号找到socket结构
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>sock <span style="color: #339933;">=</span> sockfd_lookup<span style="color: #009900;">(</span>fd<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> NULL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span><span style="color: #009900;">)</span> backlog <span style="color: #339933;">&gt;</span> SOMAXCONN<span style="color: #009900;">)</span>
+			backlog <span style="color: #339933;">=</span> SOMAXCONN<span style="color: #339933;">;</span>
+		err<span style="color: #339933;">=</span>sock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">-&gt;</span>listen<span style="color: #009900;">(</span>sock<span style="color: #339933;">,</span> backlog<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sockfd_put<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>首先，根据打开文件号找到<span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">数据结构，然后调用</span><span style="font-family: 'Times New Roman';">ops</span><span style="font-family: 宋体;">的</span><span style="font-family: 'Times New Roman';">listen</span><span style="font-family: 宋体;">函数指针所指向的函数来进行监听。前一章可以看出，对于有连接模式，这个指针指向</span><span style="font-family: 'Times New Roman';">unix_listen()</span><span style="font-family: 宋体;">，对于无连接模式指向</span><span style="font-family: 'Times New Roman';">sock_no_listen()</span><span style="font-family: 宋体;">不允许监听。</span></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">unix_listen()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7228"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td> 
+              <td class="code" id="p722code8"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ *	Perform a listen. Basically, we allow the protocol to do anything
+ *	necessary for a listen, and if that works, we mark the socket as
+ *	ready for listening.
+ */</span>
+&nbsp;
+asmlinkage <span style="color: #993333;">long</span> sys_listen<span style="color: #009900;">(</span><span style="color: #993333;">int</span> fd<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> backlog<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *根据打开文件号找到socket结构
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>sock <span style="color: #339933;">=</span> sockfd_lookup<span style="color: #009900;">(</span>fd<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> NULL<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span><span style="color: #993333;">unsigned</span><span style="color: #009900;">)</span> backlog <span style="color: #339933;">&gt;</span> SOMAXCONN<span style="color: #009900;">)</span>
+			backlog <span style="color: #339933;">=</span> SOMAXCONN<span style="color: #339933;">;</span>
+		err<span style="color: #339933;">=</span>sock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">-&gt;</span>listen<span style="color: #009900;">(</span>sock<span style="color: #339933;">,</span> backlog<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sockfd_put<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>这个函数主要做的就是设置插口主的身份，并且把状态改为<span style="font-family: 'Times New Roman';">TCP_LISTEN</span><span style="font-family: 宋体;">，当</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">接受请求时要将这些信息返回给请求连接的一方，让其知道究竟是谁接受了连接请求。还有就是当</span><span style="font-family: 'Times New Roman';">listen()</span><span style="font-family: 宋体;">时都会设置一个最大连接数</span><span style="font-family: 'Times New Roman';">backlog</span><span style="font-family: 宋体;">，表示最大能同时处理连接请求的数目，若连接请求的进程数目大于最大连接数时会使超出的部分睡眠，所以这里本次设置的最大连接数目如果大于原最大连接数目，可能需要唤醒等待队列里面睡眠的进程。</span></p> 
+          <h2>3、请求连接</h2> 
+          <p>在<span style="font-family: 'Times New Roman';">Linux</span><span style="font-family: 宋体;">中，不管是有连接还是无连接的插口都可以请求连接，但是意义不同。请求连接函数是</span><span style="font-family: 'Times New Roman';">sys_connect()</span><span style="font-family: 宋体;">，二者可以公用，但是安装在插口上的</span><span style="font-family: 'Times New Roman';">ops</span><span style="font-family: 宋体;">却不一样，在那里区分是否连接并且转入不同的处理程序等，请求连接是客户端请求的。</span></p> 
+          <p>在讲函数之前先来看看函数的调用关系图：</p> 
+          <p>当是有连接模式的时候，函数调用关系图如下：</p> 
+          <p><a href="uploads/2012/11/21.jpg"><img class="aligncenter size-full wp-image-724" title="2" src="uploads/2012/11/21.jpg" alt="" width="665" height="556"></a></p> 
+          <p>当为无连接模式的时候，调用关系如下：</p> 
+          <p><a href="uploads/2012/11/31.jpg"><img class="aligncenter size-full wp-image-725" title="3" src="uploads/2012/11/31.jpg" alt="" width="662" height="225"></a></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">sys_connect()</span><span style="font-family: 宋体;">的定义在</span><span style="font-family: 'Times New Roman';">net/socket.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p7229"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td> 
+              <td class="code" id="p722code9"><pre class="c" style="font-family:monospace;"><span style="color: #808080; font-style: italic;">/*
+ *	Attempt to connect to a socket with the server address.  The address
+ *	is in user space so we verify it is OK and move it to kernel space.
+ *
+ *	For 1003.1g we need to add clean support for a bind to AF_UNSPEC to
+ *	break bindings
+ *
+ *	NOTE: 1003.1g draft 6.3 is broken with respect to AX.25/NetROM and
+ *	other SEQPACKET protocols that take time to connect() as it doesn't
+ *	include the -EINPROGRESS status for such sockets.
+ */</span>
+&nbsp;
+asmlinkage <span style="color: #993333;">long</span> sys_connect<span style="color: #009900;">(</span><span style="color: #993333;">int</span> fd<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span>uservaddr<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> addrlen<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">;</span>
+	<span style="color: #993333;">char</span> address<span style="color: #009900;">[</span>MAX_SOCK_ADDR<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+	sock <span style="color: #339933;">=</span> sockfd_lookup<span style="color: #009900;">(</span>fd<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sock<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+	err <span style="color: #339933;">=</span> move_addr_to_kernel<span style="color: #009900;">(</span>uservaddr<span style="color: #339933;">,</span> addrlen<span style="color: #339933;">,</span> address<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_put<span style="color: #339933;">;</span>
+	err <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">-&gt;</span>connect<span style="color: #009900;">(</span>sock<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span><span style="color: #009900;">)</span> address<span style="color: #339933;">,</span> addrlen<span style="color: #339933;">,</span>
+				 sock<span style="color: #339933;">-&gt;</span>file<span style="color: #339933;">-&gt;</span>f_flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out_put<span style="color: #339933;">:</span>
+	sockfd_put<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>程序首先是通过<span style="font-family: 'Times New Roman';">sockfd_lookup()</span><span style="font-family: 宋体;">来找到</span><span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">结构，然后将地址复制到系统空间，最后调用</span><span style="font-family: 'Times New Roman';">ops</span><span style="font-family: 宋体;">指针的</span><span style="font-family: 'Times New Roman';">connect</span><span style="font-family: 宋体;">指针来进行处理。</span></p> 
+          <h3>有连接模式：</h3> 
+          <p>当插口处于有连接模式的时候，<span style="font-family: 'Times New Roman';">connect</span><span style="font-family: 宋体;">指针指向</span><span style="font-family: 'Times New Roman';">unix_stream_connect()</span><span style="font-family: 宋体;">函数，这个函数定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72210"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+</pre></td> 
+              <td class="code" id="p722code10"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> unix_stream_connect<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span>uaddr<span style="color: #339933;">,</span>
+			       <span style="color: #993333;">int</span> addr_len<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> flags<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span>sunaddr<span style="color: #339933;">=</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span><span style="color: #009900;">)</span>uaddr<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>newsk <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	unix_socket <span style="color: #339933;">*</span>other <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>skb <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> hash<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> st<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+	<span style="color: #993333;">long</span> timeo<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> unix_mkname<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">,</span> addr_len<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>hash<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//检查处理地址</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+	addr_len <span style="color: #339933;">=</span> err<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *passcred表示需要将自己的身份告诉对方，在插口创建之初
+　　 *这个标志为0，所以如果这里插口没有地址却又必须把身份
+　　 *告诉对方，就必须自动生成一个地址
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>passcred <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span> <span style="color: #339933;">&amp;&amp;</span>
+	    <span style="color: #009900;">(</span>err <span style="color: #339933;">=</span> unix_autobind<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *函数sock_sndtimeo()返回等待时间，当server方不能接受请求的
+　　 *时候本进程需要进行睡眠等待，这个等待时间就是在此确定，但是
+　　 *如果flags中的O_NONBLOCK是1的话就不睡眠等待
+　　 *函数定义如下（include/net/sock.h）：
+　　 *	static inline long sock_sndtimeo(struct sock *sk, int noblock)
+　　 *	{
+　　 *		return noblock ? 0 : sk-&gt;sndtimeo;
+　　 *	}
+　　 */</span>
+	timeo <span style="color: #339933;">=</span> sock_sndtimeo<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> flags <span style="color: #339933;">&amp;</span> O_NONBLOCK<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* First of all allocate resources.
+	   If we will make it after state is locked,
+	   we will have to recheck all again in any case.
+	 */</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ENOMEM<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* create new sock for complete connection */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *创建新的sock，这个结构是在server一方在调用accept()时
+　　 *创建新的插口而准备的，对于UNIX域而言，这个sock是在
+　　 *client方建立，然后地址newsk通过请求报文传递到server一方
+　　 */</span>
+	newsk <span style="color: #339933;">=</span> unix_create1<span style="color: #009900;">(</span>NULL<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>newsk <span style="color: #339933;">==</span> NULL<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Allocate skb for sending to listening sock */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *sock_wmalloc()函数分配并初始化代表连接请求的sk_buff结构
+　　 *在初始化的过程中已经将sk和skb挂钩了
+　　 */</span>
+	skb <span style="color: #339933;">=</span> sock_wmalloc<span style="color: #009900;">(</span>newsk<span style="color: #339933;">,</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> GFP_KERNEL<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>skb <span style="color: #339933;">==</span> NULL<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+restart<span style="color: #339933;">:</span>
+	<span style="color: #808080; font-style: italic;">/*  Find listening sock. */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *根据给定地址来找到目标插口
+　　 */</span>
+	other<span style="color: #339933;">=</span>unix_find_other<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">,</span> addr_len<span style="color: #339933;">,</span> sk<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">,</span> hash<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>other<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Latch state of peer */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *当我们找到目标的socket以后，我们需要检测目标节点是否已经撤销
+　　 *或者不处于正在撤销状态。在多处理情况下会出现这种情况，一个进程
+　　 *通过unix_find_other()找到了目标插口结构，但是另外一个在另一个
+　　 *处理器上运行的进程正在撤销sock结构，这样的话可能会产生严重
+　　 *后果，内核中通过以下措施来避免这种问题：
+　　 *（1）在sock结构中设置了一个访问计数器refcnt，每当某一进程卷入到这个结构
+　　 *		的使用，或者当所属的插口建立一个连接时就通过sock_hold()将这个
+　　 *		结构中的访问计数加1，每当一个进程结束了对一个插口的使用或者拆除
+　　 *		一个连接时，都要通过函数sock_put()将相应的sock结构中的计数器减1
+　　 *		只有在计数器达到了0时才把这个sock结构释放
+　　 *（2）当关闭、撤销一个插口时，其sock结构中的计数refcnt有可能还是大于1，
+　　 *		表示还有用户，所以不能将这个结构马上释放，而只能将其refcnt减1，
+　　 *		并且将sock中的dead表示设置成1，表示该插口实际上不存在了，
+　　 *		实际撤销sock的任务在最后一个将其计数减到0的进程进行
+　　 *（3）为了防止对sock结构的使用和释放在时间上相重叠，设置了两对加锁/解锁
+　　 *		操作
+　　 */</span>
+	unix_state_rlock<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Apparently VFS overslept socket death. Retry. */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>dead<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		unix_state_runlock<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sock_put<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">goto</span> restart<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ECONNREFUSED<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">!=</span> TCP_LISTEN<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*已经达到最大连接数*/</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>skb_queue_len<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>other<span style="color: #339933;">-&gt;</span>receive_queue<span style="color: #009900;">)</span> <span style="color: #339933;">&gt;</span> other<span style="color: #339933;">-&gt;</span>max_ack_backlog<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EAGAIN<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>timeo<span style="color: #009900;">)</span>	<span style="color: #666666; font-style: italic;">//无需等待</span>
+			<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span>
+&nbsp;
+		timeo <span style="color: #339933;">=</span> unix_wait_for_peer<span style="color: #009900;">(</span>other<span style="color: #339933;">,</span> timeo<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//睡眠等待</span>
+　　
+　　<span style="color: #808080; font-style: italic;">/*下面的是进程睡眠等待后被唤醒的部分*/</span>
+		err <span style="color: #339933;">=</span> sock_intr_errno<span style="color: #009900;">(</span>timeo<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>signal_pending<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #009900;">)</span>	<span style="color: #666666; font-style: italic;">//若是因为接收到了信号而唤醒则退出</span>
+			<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+		sock_put<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//释放结构</span>
+		<span style="color: #b1b100;">goto</span> restart<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//重新申请</span>
+        <span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Latch our state.
+&nbsp;
+	   It is tricky place. We need to grab write lock and cannot
+	   drop lock on peer. It is dangerous because deadlock is
+	   possible. Connect to self case and simultaneous
+	   attempt to connect are eliminated by checking socket
+	   state. other is TCP_LISTEN, if sk is TCP_LISTEN we
+	   check this before attempt to grab lock.
+&nbsp;
+	   Well, and we have to recheck the state after socket locked.
+	 */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *到此，server方已经没问题了，以下为检查client方的代码
+　　 */</span>
+	st <span style="color: #339933;">=</span> sk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *检查client方插口状态，只有当状态为TCP_CLOSE状态才符合要求
+　　 *注意自旋锁的应用
+　　 */</span>
+	<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span>st<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">case</span> TCP_CLOSE<span style="color: #339933;">:</span>
+		<span style="color: #808080; font-style: italic;">/* This is ok... continue with connect */</span>
+		<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">case</span> TCP_ESTABLISHED<span style="color: #339933;">:</span>
+		<span style="color: #808080; font-style: italic;">/* Socket is already connected */</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EISCONN<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">default</span><span style="color: #339933;">:</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	unix_state_wlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">!=</span> st<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		unix_state_wunlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		unix_state_runlock<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sock_put<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">goto</span> restart<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* The way is open! Fastly set all the necessary fields... */</span>
+&nbsp;
+	sock_hold<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//计数加1</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *这里进行数据结构的设置，跟毛老先生的书上一致，我们先来理清一下数据结构：
+　　 *指针sock指向client插口的socket结构
+　　 *指针sk指向client插口的sock结构
+　　 *指针other指向server插口的socket结构
+　　 *指针newsk指向新创建的sock结构，这个结构准备传给server进程，以供在server
+　　 *的accept()中新创建的插口配对使用
+　　 *unix_peer()定义如下：
+　　 *#define unix_peer(sk) ((sk)-&gt;pair)
+　　 */</span>
+	unix_peer<span style="color: #009900;">(</span>newsk<span style="color: #009900;">)</span><span style="color: #339933;">=</span>sk<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">=</span>TCP_ESTABLISHED<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">=</span>SOCK_STREAM<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>peercred.<span style="color: #202020;">pid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>pid<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>peercred.<span style="color: #202020;">uid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>euid<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>peercred.<span style="color: #202020;">gid</span> <span style="color: #339933;">=</span> current<span style="color: #339933;">-&gt;</span>egid<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>sleep <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>newsk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">peer_wait</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* copy address information from listening to new sock*/</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span><span style="color: #009900;">)</span>
+	<span style="color: #009900;">{</span>
+		atomic_inc<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span><span style="color: #339933;">-&gt;</span>refcnt<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		newsk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span><span style="color: #339933;">=</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">dentry</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		newsk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">dentry</span><span style="color: #339933;">=</span>dget<span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">dentry</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		newsk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">mnt</span><span style="color: #339933;">=</span>mntget<span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">mnt</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Set credentials */</span>
+	sk<span style="color: #339933;">-&gt;</span>peercred <span style="color: #339933;">=</span> other<span style="color: #339933;">-&gt;</span>peercred<span style="color: #339933;">;</span>
+&nbsp;
+	sock_hold<span style="color: #009900;">(</span>newsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	unix_peer<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">=</span>newsk<span style="color: #339933;">;</span>
+	sock<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">=</span>SS_CONNECTED<span style="color: #339933;">;</span>
+	sk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">=</span>TCP_ESTABLISHED<span style="color: #339933;">;</span>
+&nbsp;
+	unix_state_wunlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *以上程序执行后newsk-&gt;pair=sk，sk-&gt;pair=newsk，这样建立起了连接
+　　 *当server执行accept()的建立server与newsk的连接
+　　 */</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* take ten and and send info to listening sock */</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *将sk_buff结构挂入server方的sock结构中的receive_queue队列中
+　　 */</span>
+	skb_queue_tail<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>other<span style="color: #339933;">-&gt;</span>receive_queue<span style="color: #339933;">,</span>skb<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	unix_state_runlock<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	other<span style="color: #339933;">-&gt;</span>data_ready<span style="color: #009900;">(</span>other<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sock_put<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+out_unlock<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other<span style="color: #009900;">)</span>
+		unix_state_runlock<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>skb<span style="color: #009900;">)</span>
+		kfree_skb<span style="color: #009900;">(</span>skb<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>newsk<span style="color: #009900;">)</span>
+		unix_release_sock<span style="color: #009900;">(</span>newsk<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other<span style="color: #009900;">)</span>
+		sock_put<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>分配并且初始化<span style="font-family: 'Times New Roman';">sk_buff</span><span style="font-family: 宋体;">的函数</span><span style="font-family: 'Times New Roman';">sock_wmalloc()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/core/sock.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72211"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td> 
+              <td class="code" id="p722code11"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>sock_wmalloc<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> size<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> force<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> priority<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *sk-&gt;wmem_alloc是sock结构中的一个计数器，用来累计为本插口分配的
+　　 *sk_buff存储空间，一般不超过sk-&gt;sndbuf，但是可以设置force为1来打破
+　　 *这个限制
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>force <span style="color: #339933;">||</span> atomic_read<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>wmem_alloc<span style="color: #009900;">)</span> <span style="color: #339933;">&lt;</span> sk<span style="color: #339933;">-&gt;</span>sndbuf<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span> skb <span style="color: #339933;">=</span> alloc_skb<span style="color: #009900;">(</span>size<span style="color: #339933;">,</span> priority<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>skb<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			skb_set_owner_w<span style="color: #009900;">(</span>skb<span style="color: #339933;">,</span> sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">return</span> skb<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">skb_set_owner_w()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/sock.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72212"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td> 
+              <td class="code" id="p722code12"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> skb_set_owner_w<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>skb<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	sock_hold<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	skb<span style="color: #339933;">-&gt;</span>sk <span style="color: #339933;">=</span> sk<span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//进行与sock关联</span>
+	skb<span style="color: #339933;">-&gt;</span>destructor <span style="color: #339933;">=</span> sock_wfree<span style="color: #339933;">;</span>
+	atomic_add<span style="color: #009900;">(</span>skb<span style="color: #339933;">-&gt;</span>truesize<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>wmem_alloc<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">unix_find_other()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72213"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre></td> 
+              <td class="code" id="p722code13"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> unix_socket <span style="color: #339933;">*</span>unix_find_other<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span>sunname<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> len<span style="color: #339933;">,</span>
+				    <span style="color: #993333;">int</span> type<span style="color: #339933;">,</span> <span style="color: #993333;">unsigned</span> hash<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span>error<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	unix_socket <span style="color: #339933;">*</span>u<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> nameidata nd<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err <span style="color: #339933;">=</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sunname<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #009900;">[</span><span style="color: #0000dd;">0</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *常规路径名，通过path_walk()和path_init()来进行寻找节点
+　　 *并在内存中建立dentry和inode结构
+　　 */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>path_init<span style="color: #009900;">(</span>sunname<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #339933;">,</span> 
+			      LOOKUP_POSITIVE<span style="color: #339933;">|</span>LOOKUP_FOLLOW<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			err <span style="color: #339933;">=</span> path_walk<span style="color: #009900;">(</span>sunname<span style="color: #339933;">-&gt;</span>sun_path<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> fail<span style="color: #339933;">;</span>
+		err <span style="color: #339933;">=</span> permission<span style="color: #009900;">(</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">,</span>MAY_WRITE<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> put_fail<span style="color: #339933;">;</span>
+&nbsp;
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ECONNREFUSED<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>S_ISSOCK<span style="color: #009900;">(</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #339933;">-&gt;</span>i_mode<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> put_fail<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *通过unix_find_socket_byinode()来在杂凑表unix_socket_table
+　　 *中找到相应的队列和sock结构
+　　 */</span>
+		u<span style="color: #339933;">=</span>unix_find_socket_byinode<span style="color: #009900;">(</span>nd.<span style="color: #202020;">dentry</span><span style="color: #339933;">-&gt;</span>d_inode<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>u<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> put_fail<span style="color: #339933;">;</span>
+&nbsp;
+		path_release<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		err<span style="color: #339933;">=-</span>EPROTOTYPE<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>u<span style="color: #339933;">-&gt;</span>type <span style="color: #339933;">!=</span> type<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			sock_put<span style="color: #009900;">(</span>u<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">goto</span> fail<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *若不是常规路径名，则通过计算杂凑值来进行计算和寻找
+　　 */</span>
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ECONNREFUSED<span style="color: #339933;">;</span>
+		u<span style="color: #339933;">=</span>unix_find_socket_byname<span style="color: #009900;">(</span>sunname<span style="color: #339933;">,</span> len<span style="color: #339933;">,</span> type<span style="color: #339933;">,</span> hash<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>u<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> fail<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> u<span style="color: #339933;">;</span>
+&nbsp;
+put_fail<span style="color: #339933;">:</span>
+	path_release<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>nd<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+fail<span style="color: #339933;">:</span>
+	<span style="color: #339933;">*</span>error<span style="color: #339933;">=</span>err<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> NULL<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">sock_put()</span><span style="font-family: 宋体;">（</span><span style="font-family: 'Times New Roman';">net/sock.h</span><span style="font-family: 宋体;">）和</span><span style="font-family: 'Times New Roman';">sk_free()</span><span style="font-family: 宋体;">（</span><span style="font-family: 'Times New Roman';">net/core/sock.h</span><span style="font-family: 宋体;">）定义如下：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72214"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td> 
+              <td class="code" id="p722code14"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> sock_put<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *若减1后为0则进行sk_free()释放sock
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>atomic_dec_and_test<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>refcnt<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		sk_free<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">void</span> sk_free<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+<span style="color: #339933;">#ifdef CONFIG_FILTER</span>
+	<span style="color: #993333;">struct</span> sk_filter <span style="color: #339933;">*</span>filter<span style="color: #339933;">;</span>
+<span style="color: #339933;">#endif</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>destruct<span style="color: #009900;">)</span>
+		sk<span style="color: #339933;">-&gt;</span>destruct<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #339933;">#ifdef CONFIG_FILTER</span>
+	filter <span style="color: #339933;">=</span> sk<span style="color: #339933;">-&gt;</span>filter<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>filter<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		sk_filter_release<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> filter<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sk<span style="color: #339933;">-&gt;</span>filter <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #339933;">#endif</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>atomic_read<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>omem_alloc<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		printk<span style="color: #009900;">(</span>KERN_DEBUG <span style="color: #ff0000;">"sk_free: optmem leakage (%d bytes) detected.<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #339933;">,</span> atomic_read<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>omem_alloc<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	kmem_cache_free<span style="color: #009900;">(</span>sk_cachep<span style="color: #339933;">,</span> sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">unix_wait_for_peer()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72215"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td> 
+              <td class="code" id="p722code15"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">long</span> unix_wait_for_peer<span style="color: #009900;">(</span>unix_socket <span style="color: #339933;">*</span>other<span style="color: #339933;">,</span> <span style="color: #993333;">long</span> timeo<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> sched<span style="color: #339933;">;</span>
+	DECLARE_WAITQUEUE<span style="color: #009900;">(</span>wait<span style="color: #339933;">,</span> current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	__set_current_state<span style="color: #009900;">(</span>TASK_INTERRUPTIBLE<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	add_wait_queue_exclusive<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">peer_wait</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	sched <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>other<span style="color: #339933;">-&gt;</span>dead <span style="color: #339933;">&amp;&amp;</span>
+		 <span style="color: #339933;">!</span><span style="color: #009900;">(</span>other<span style="color: #339933;">-&gt;</span>shutdown<span style="color: #339933;">&amp;</span>RCV_SHUTDOWN<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span>
+		 skb_queue_len<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>other<span style="color: #339933;">-&gt;</span>receive_queue<span style="color: #009900;">)</span> <span style="color: #339933;">&gt;</span> other<span style="color: #339933;">-&gt;</span>max_ack_backlog<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	unix_state_runlock<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sched<span style="color: #009900;">)</span>
+		timeo <span style="color: #339933;">=</span> schedule_timeout<span style="color: #009900;">(</span>timeo<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	__set_current_state<span style="color: #009900;">(</span>TASK_RUNNING<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	remove_wait_queue<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>other<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">peer_wait</span><span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> timeo<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">skb_queue_tail()</span><span style="font-family: 宋体;">的代码在</span><span style="font-family: 'Times New Roman';">include/linux/skbbuff.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72216"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td> 
+              <td class="code" id="p722code16"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> __skb_queue_tail<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff_head <span style="color: #339933;">*</span>list<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>newsk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>prev<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>next<span style="color: #339933;">;</span>
+&nbsp;
+	newsk<span style="color: #339933;">-&gt;</span>list <span style="color: #339933;">=</span> list<span style="color: #339933;">;</span>
+	list<span style="color: #339933;">-&gt;</span>qlen<span style="color: #339933;">++;</span>
+	next <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span><span style="color: #009900;">)</span>list<span style="color: #339933;">;</span>
+	prev <span style="color: #339933;">=</span> next<span style="color: #339933;">-&gt;</span>prev<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>next <span style="color: #339933;">=</span> next<span style="color: #339933;">;</span>
+	newsk<span style="color: #339933;">-&gt;</span>prev <span style="color: #339933;">=</span> prev<span style="color: #339933;">;</span>
+	next<span style="color: #339933;">-&gt;</span>prev <span style="color: #339933;">=</span> newsk<span style="color: #339933;">;</span>
+	prev<span style="color: #339933;">-&gt;</span>next <span style="color: #339933;">=</span> newsk<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> skb_queue_tail<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff_head <span style="color: #339933;">*</span>list<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>newsk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">unsigned</span> <span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span>
+&nbsp;
+	spin_lock_irqsave<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>list<span style="color: #339933;">-&gt;</span>lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	__skb_queue_tail<span style="color: #009900;">(</span>list<span style="color: #339933;">,</span> newsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	spin_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>list<span style="color: #339933;">-&gt;</span>lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>在最后，有一个<span style="font-family: 'Times New Roman';">other-&gt;data_ready()</span><span style="font-family: 宋体;">操作，这个操作非常重要，但是这个操作是和</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">方</span><span style="font-family: 'Times New Roman';">accept()</span><span style="font-family: 宋体;">操作密切挂钩的，所以等下面说</span><span style="font-family: 'Times New Roman';">accept()</span><span style="font-family: 宋体;">时再说。</span></p> 
+          <h3>无连接模式：</h3> 
+          <p>当插口处于无连接模式的时候，相应的<span style="font-family: 'Times New Roman';">connect()</span><span style="font-family: 宋体;">函数中调用的是函数</span><span style="font-family: 'Times New Roman';">unix_dgram_connect()</span><span style="font-family: 宋体;">，之所以无连接模式也有个</span><span style="font-family: 'Times New Roman';">connect()</span><span style="font-family: 宋体;">操作，就是要把每次发送报文时的重复操作集中在一起，以避免浪费，这些操作有：</span></p> 
+          <p>（1）每次都要从用户空间把对方的插口地址拷贝到系统空间中。</p> 
+          <p>（2）在网络环境下，通常需要根据对方的地址从路径表中查得应该使用的网络接口，以及可能需要的在网络层和<span style="font-family: 'Times New Roman';">/</span><span style="font-family: 宋体;">或者链路层上使用的地址，并且常常还要进行从符号地址到网络地址数值的转换。</span></p> 
+          <p>（3）在<span style="font-family: 'Times New Roman';">UNIX</span><span style="font-family: 宋体;">域中，则通常需要根据对方的插口地址从文件系统中打开相应的文件（节点），然后用索引节点的号码在杂凑表某个队列中找到对方的</span><span style="font-family: 'Times New Roman';">sock</span><span style="font-family: 宋体;">数据结构。</span></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">unix_dgram_connect()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72217"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+</pre></td> 
+              <td class="code" id="p722code17"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> unix_dgram_connect<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span>addr<span style="color: #339933;">,</span>
+			      <span style="color: #993333;">int</span> alen<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> flags<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sockaddr_un <span style="color: #339933;">*</span>sunaddr<span style="color: #339933;">=</span><span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr_un<span style="color: #339933;">*</span><span style="color: #009900;">)</span>addr<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>other<span style="color: #339933;">;</span>
+	<span style="color: #993333;">unsigned</span> hash<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>addr<span style="color: #339933;">-&gt;</span>sa_family <span style="color: #339933;">!=</span> AF_UNSPEC<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		err <span style="color: #339933;">=</span> unix_mkname<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">,</span> alen<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>hash<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+		alen <span style="color: #339933;">=</span> err<span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>passcred <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">addr</span> <span style="color: #339933;">&amp;&amp;</span>
+		    <span style="color: #009900;">(</span>err <span style="color: #339933;">=</span> unix_autobind<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">!=</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+		other<span style="color: #339933;">=</span>unix_find_other<span style="color: #009900;">(</span>sunaddr<span style="color: #339933;">,</span> alen<span style="color: #339933;">,</span> sock<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">,</span> hash<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>other<span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+		unix_state_wlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EPERM<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>unix_may_send<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> other<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_unlock<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+		<span style="color: #808080; font-style: italic;">/*
+		 *	1003.1g breaking connected state with AF_UNSPEC
+		 */</span>
+		other <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+		unix_state_wlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/*
+	 * If it was connected, reconnect.
+	 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>unix_peer<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>old_peer <span style="color: #339933;">=</span> unix_peer<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		unix_peer<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">=</span>other<span style="color: #339933;">;</span>
+		unix_state_wunlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>other <span style="color: #339933;">!=</span> old_peer<span style="color: #009900;">)</span>
+			unix_dgram_disconnected<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> old_peer<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		sock_put<span style="color: #009900;">(</span>old_peer<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span> <span style="color: #b1b100;">else</span> <span style="color: #009900;">{</span>
+		unix_peer<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">=</span>other<span style="color: #339933;">;</span>
+		unix_state_wunlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+ 	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+out_unlock<span style="color: #339933;">:</span>
+	unix_state_wunlock<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sock_put<span style="color: #009900;">(</span>other<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数比较简单，这里只提到函数<span style="font-family: 'Times New Roman';">unix_may_send()</span><span style="font-family: 宋体;">函数，定义在</span><span style="font-family: 'Times New Roman';">af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72218"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td> 
+              <td class="code" id="p722code18"><pre class="c" style="font-family:monospace;"><span style="color: #339933;">#define unix_peer(sk) ((sk)-&gt;pair)</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">extern</span> __inline__ <span style="color: #993333;">int</span> unix_our_peer<span style="color: #009900;">(</span>unix_socket <span style="color: #339933;">*</span>sk<span style="color: #339933;">,</span> unix_socket <span style="color: #339933;">*</span>osk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">return</span> unix_peer<span style="color: #009900;">(</span>osk<span style="color: #009900;">)</span> <span style="color: #339933;">==</span> sk<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">extern</span> __inline__ <span style="color: #993333;">int</span> unix_may_send<span style="color: #009900;">(</span>unix_socket <span style="color: #339933;">*</span>sk<span style="color: #339933;">,</span> unix_socket <span style="color: #339933;">*</span>osk<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #009900;">(</span>unix_peer<span style="color: #009900;">(</span>osk<span style="color: #009900;">)</span> <span style="color: #339933;">==</span> NULL <span style="color: #339933;">||</span> unix_our_peer<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> osk<span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <h2>4、接受请求</h2> 
+          <p>有连接模式的插口一旦经过<span style="font-family: 'Times New Roman';">listen()</span><span style="font-family: 宋体;">设置成</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">插口以后，就只能被动地接受请求，接受请求的过程是阻塞性的，也就是说调用了</span><span style="font-family: 'Times New Roman';">accept()</span><span style="font-family: 宋体;">如果没有连接请求，那么进程就会进入睡眠，等待请求的到来。</span></p> 
+          <p>在内核中，接受请求的函数入口为<span style="font-family: 'Times New Roman';">sys_accept()</span><span style="font-family: 宋体;">，在具体讲这些函数之前我们先来看看函数的调用关系图：</span></p> 
+          <p><a href="uploads/2012/11/41.jpg"><img class="aligncenter size-full wp-image-726" title="4" src="uploads/2012/11/41.jpg" alt="" width="606" height="399"></a></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">sys_connect()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/socket.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72219"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+</pre></td> 
+              <td class="code" id="p722code19"><pre class="c" style="font-family:monospace;">asmlinkage <span style="color: #993333;">long</span> sys_accept<span style="color: #009900;">(</span><span style="color: #993333;">int</span> fd<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span>upeer_sockaddr<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span>upeer_addrlen<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>newsock<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">,</span> len<span style="color: #339933;">;</span>
+	<span style="color: #993333;">char</span> address<span style="color: #009900;">[</span>MAX_SOCK_ADDR<span style="color: #009900;">]</span><span style="color: #339933;">;</span>
+&nbsp;
+	sock <span style="color: #339933;">=</span> sockfd_lookup<span style="color: #009900;">(</span>fd<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//寻找socket结构</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sock<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EMFILE<span style="color: #339933;">;</span>
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *当server一旦接受一个请求的时候就新创建一个插口，使新创建的
+　　 *插口与请求连接的插口之间进行连接，而原来的server插口则不会改变
+　　 *也不会与其他插口连接
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span><span style="color: #009900;">(</span>newsock <span style="color: #339933;">=</span> sock_alloc<span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_put<span style="color: #339933;">;</span>
+&nbsp;
+	newsock<span style="color: #339933;">-&gt;</span>type <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">;</span>
+	newsock<span style="color: #339933;">-&gt;</span>ops <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">-&gt;</span>accept<span style="color: #009900;">(</span>sock<span style="color: #339933;">,</span> newsock<span style="color: #339933;">,</span> sock<span style="color: #339933;">-&gt;</span>file<span style="color: #339933;">-&gt;</span>f_flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//调用连接主函数</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_release<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #808080; font-style: italic;">/*
+　　 *如果用户进程提供了用来返回对方地址的数据结构指针upeer_sockaddr
+　　 *就要通过相应proto_ops中的getname函数指针来获取对方插口地址
+　　 */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>upeer_sockaddr<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>newsock<span style="color: #339933;">-&gt;</span>ops<span style="color: #339933;">-&gt;</span>getname<span style="color: #009900;">(</span>newsock<span style="color: #339933;">,</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sockaddr <span style="color: #339933;">*</span><span style="color: #009900;">)</span>address<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>len<span style="color: #339933;">,</span> <span style="color: #0000dd;">2</span><span style="color: #009900;">)</span><span style="color: #339933;">&lt;</span><span style="color: #0000dd;">0</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ECONNABORTED<span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">goto</span> out_release<span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+		err <span style="color: #339933;">=</span> move_addr_to_user<span style="color: #009900;">(</span>address<span style="color: #339933;">,</span> len<span style="color: #339933;">,</span> upeer_sockaddr<span style="color: #339933;">,</span> upeer_addrlen<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>err <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+			<span style="color: #b1b100;">goto</span> out_release<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* File flags are not inherited via accept() unlike another OSes. */</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #009900;">(</span>err <span style="color: #339933;">=</span> sock_map_fd<span style="color: #009900;">(</span>newsock<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #339933;">&lt;</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out_release<span style="color: #339933;">;</span>
+&nbsp;
+out_put<span style="color: #339933;">:</span>
+	sockfd_put<span style="color: #009900;">(</span>sock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+&nbsp;
+out_release<span style="color: #339933;">:</span>
+	sock_release<span style="color: #009900;">(</span>newsock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">goto</span> out_put<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>ops<span style="font-family: 宋体;">中的</span><span style="font-family: 'Times New Roman';">accept</span><span style="font-family: 宋体;">指针指向</span><span style="font-family: 'Times New Roman';">unix_accept()</span><span style="font-family: 宋体;">函数，这个函数定义在</span><span style="font-family: 'Times New Roman';">net/unix/af_unix.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72220"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+</pre></td> 
+              <td class="code" id="p722code20"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> unix_accept<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>newsock<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> flags<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	unix_socket <span style="color: #339933;">*</span>sk <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+	unix_socket <span style="color: #339933;">*</span>tsk<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>skb<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EOPNOTSUPP<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">!=</span>SOCK_STREAM<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">!=</span>TCP_LISTEN<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* If socket state is TCP_LISTEN it cannot change (for now...),
+	 * so that no locks are necessary.
+	 */</span>
+&nbsp;
+	skb <span style="color: #339933;">=</span> skb_recv_datagram<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> flags<span style="color: #339933;">&amp;</span>O_NONBLOCK<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//接收控制报文</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>skb<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	tsk <span style="color: #339933;">=</span> skb<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+	skb_free_datagram<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> skb<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//丢弃控制报文</span>
+	wake_up_interruptible<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">peer_wait</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//唤醒</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* attach accepted sock to socket */</span>
+	unix_state_wlock<span style="color: #009900;">(</span>tsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	newsock<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> SS_CONNECTED<span style="color: #339933;">;</span>
+	sock_graft<span style="color: #009900;">(</span>tsk<span style="color: #339933;">,</span> newsock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//将client提供的sock与server的socket挂钩</span>
+	unix_state_wunlock<span style="color: #009900;">(</span>tsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>需要注意的是，在这个函数里面并不接收数据报文，而是接收控制报文，控制报文的传递是无连接的这个函数首先使用<span style="font-family: 'Times New Roman';">skb_recv_datagram()</span><span style="font-family: 宋体;">进行控制报文的接收，在</span><span style="font-family: 'Times New Roman';">skb_recv_datagram()</span><span style="font-family: 宋体;">中如果无控制报文则睡眠等待，如果设置了</span><span style="font-family: 'Times New Roman';">O_NONBLOCK</span><span style="font-family: 宋体;">位则不等待，直接退出。接收到控制报文后就使用</span><span style="font-family: 'Times New Roman';">wake_up_interruptible()</span><span style="font-family: 宋体;">唤醒等待队列中的进程等操作。然后使用</span><span style="font-family: 'Times New Roman';">sock_graft()</span><span style="font-family: 宋体;">来使在</span><span style="font-family: 'Times New Roman';">client</span><span style="font-family: 宋体;">中提供的</span><span style="font-family: 'Times New Roman';">sock</span><span style="font-family: 宋体;">与</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">方</span><span style="font-family: 'Times New Roman';">socket</span><span style="font-family: 宋体;">挂钩（还记得在讲</span><span style="font-family: 'Times New Roman';">connect()</span><span style="font-family: 宋体;">时的</span><span style="font-family: 'Times New Roman';">newsk</span><span style="font-family: 宋体;">吗？）。</span></p> 
+          <p>函数<span style="font-family: 'Times New Roman';">skb_recv_datagram()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">net/core/datagram.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72221"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+</pre></td> 
+              <td class="code" id="p722code21"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> unix_accept<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>newsock<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> flags<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	unix_socket <span style="color: #339933;">*</span>sk <span style="color: #339933;">=</span> sock<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+	unix_socket <span style="color: #339933;">*</span>tsk<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>skb<span style="color: #339933;">;</span>
+	<span style="color: #993333;">int</span> err<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EOPNOTSUPP<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>type<span style="color: #339933;">!=</span>SOCK_STREAM<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	err <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>EINVAL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">!=</span>TCP_LISTEN<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* If socket state is TCP_LISTEN it cannot change (for now...),
+	 * so that no locks are necessary.
+	 */</span>
+&nbsp;
+	skb <span style="color: #339933;">=</span> skb_recv_datagram<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">,</span> flags<span style="color: #339933;">&amp;</span>O_NONBLOCK<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>err<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//接收控制报文</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>skb<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	tsk <span style="color: #339933;">=</span> skb<span style="color: #339933;">-&gt;</span>sk<span style="color: #339933;">;</span>
+	skb_free_datagram<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span> skb<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//丢弃控制报文</span>
+	wake_up_interruptible<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>protinfo.<span style="color: #202020;">af_unix</span>.<span style="color: #202020;">peer_wait</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//唤醒</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* attach accepted sock to socket */</span>
+	unix_state_wlock<span style="color: #009900;">(</span>tsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	newsock<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> SS_CONNECTED<span style="color: #339933;">;</span>
+	sock_graft<span style="color: #009900;">(</span>tsk<span style="color: #339933;">,</span> newsock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//将client提供的sock与server的socket挂钩</span>
+	unix_state_wunlock<span style="color: #009900;">(</span>tsk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+out<span style="color: #339933;">:</span>
+	<span style="color: #b1b100;">return</span> err<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>函数<span style="font-family: 'Times New Roman';">skb_dequeue()</span><span style="font-family: 宋体;">用于从队列中取出一个报文，定义于</span><span style="font-family: 'Times New Roman';">include/linux/skbbuff.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72222"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td> 
+              <td class="code" id="p722code22"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>__skb_dequeue<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff_head <span style="color: #339933;">*</span>list<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>next<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>prev<span style="color: #339933;">,</span> <span style="color: #339933;">*</span>result<span style="color: #339933;">;</span>
+&nbsp;
+	prev <span style="color: #339933;">=</span> <span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span><span style="color: #009900;">)</span> list<span style="color: #339933;">;</span>
+	next <span style="color: #339933;">=</span> prev<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+	result <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>next <span style="color: #339933;">!=</span> prev<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		result <span style="color: #339933;">=</span> next<span style="color: #339933;">;</span>
+		next <span style="color: #339933;">=</span> next<span style="color: #339933;">-&gt;</span>next<span style="color: #339933;">;</span>
+		list<span style="color: #339933;">-&gt;</span>qlen<span style="color: #339933;">--;</span>
+		next<span style="color: #339933;">-&gt;</span>prev <span style="color: #339933;">=</span> prev<span style="color: #339933;">;</span>
+		prev<span style="color: #339933;">-&gt;</span>next <span style="color: #339933;">=</span> next<span style="color: #339933;">;</span>
+		result<span style="color: #339933;">-&gt;</span>next <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+		result<span style="color: #339933;">-&gt;</span>prev <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+		result<span style="color: #339933;">-&gt;</span>list <span style="color: #339933;">=</span> NULL<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> result<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+&nbsp;
+<span style="color: #808080; font-style: italic;">/**
+ *	skb_dequeue - remove from the head of the queue
+ *	@list: list to dequeue from
+ *
+ *	Remove the head of the list. The list lock is taken so the function
+ *	may be used safely with other locking list functions. The head item is
+ *	returned or %NULL if the list is empty.
+ */</span>
+&nbsp;
+<span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>skb_dequeue<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sk_buff_head <span style="color: #339933;">*</span>list<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">long</span> flags<span style="color: #339933;">;</span>
+	<span style="color: #993333;">struct</span> sk_buff <span style="color: #339933;">*</span>result<span style="color: #339933;">;</span>
+&nbsp;
+	spin_lock_irqsave<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>list<span style="color: #339933;">-&gt;</span>lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	result <span style="color: #339933;">=</span> __skb_dequeue<span style="color: #009900;">(</span>list<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	spin_unlock_irqrestore<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>list<span style="color: #339933;">-&gt;</span>lock<span style="color: #339933;">,</span> flags<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> result<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>可见，若无报文则返回<span style="font-family: 'Times New Roman';">NULL</span><span style="font-family: 宋体;">。</span></p> 
+          <p>当无报文的话就执行函数<span style="font-family: 'Times New Roman';">wait_for_packet()</span><span style="font-family: 宋体;">，这个函数定义在</span><span style="font-family: 'Times New Roman';">net/core/datagram.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72223"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre></td> 
+              <td class="code" id="p722code23"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #993333;">int</span> wait_for_packet<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span> sk<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> <span style="color: #339933;">*</span>err<span style="color: #339933;">,</span> <span style="color: #993333;">long</span> <span style="color: #339933;">*</span>timeo_p<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #993333;">int</span> error<span style="color: #339933;">;</span>
+&nbsp;
+　　<span style="color: #666666; font-style: italic;">//初始化wait数据结构等</span>
+	DECLARE_WAITQUEUE<span style="color: #009900;">(</span>wait<span style="color: #339933;">,</span> current<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+&nbsp;
+	__set_current_state<span style="color: #009900;">(</span>TASK_INTERRUPTIBLE<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//设置当前进程状态</span>
+	add_wait_queue_exclusive<span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>sleep<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//将wait挂入socket的sleep队列</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Socket errors? */</span>
+	error <span style="color: #339933;">=</span> sock_error<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>error<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>skb_queue_empty<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>receive_queue<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> ready<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Socket shut down? */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>shutdown <span style="color: #339933;">&amp;</span> RCV_SHUTDOWN<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* Sequenced packets can come disconnected. If so we report the problem */</span>
+	error <span style="color: #339933;">=</span> <span style="color: #339933;">-</span>ENOTCONN<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span><span style="color: #009900;">(</span>connection_based<span style="color: #009900;">(</span>sk<span style="color: #009900;">)</span> <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span><span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">==</span>TCP_ESTABLISHED <span style="color: #339933;">||</span> sk<span style="color: #339933;">-&gt;</span>state<span style="color: #339933;">==</span>TCP_LISTEN<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> out<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #808080; font-style: italic;">/* handle signals */</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>signal_pending<span style="color: #009900;">(</span>current<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">goto</span> interrupted<span style="color: #339933;">;</span>
+&nbsp;
+	<span style="color: #339933;">*</span>timeo_p <span style="color: #339933;">=</span> schedule_timeout<span style="color: #009900;">(</span><span style="color: #339933;">*</span>timeo_p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>	<span style="color: #666666; font-style: italic;">//进行调度，使进程睡眠</span>
+&nbsp;
+ready<span style="color: #339933;">:</span>
+	current<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_RUNNING<span style="color: #339933;">;</span>
+	remove_wait_queue<span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>sleep<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+&nbsp;
+interrupted<span style="color: #339933;">:</span>
+	error <span style="color: #339933;">=</span> sock_intr_errno<span style="color: #009900;">(</span><span style="color: #339933;">*</span>timeo_p<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+out<span style="color: #339933;">:</span>
+	current<span style="color: #339933;">-&gt;</span>state <span style="color: #339933;">=</span> TASK_RUNNING<span style="color: #339933;">;</span>
+	remove_wait_queue<span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>sleep<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>wait<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #339933;">*</span>err <span style="color: #339933;">=</span> error<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">return</span> error<span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>当从这个函数正常返回的时候返回值为<span style="font-family: 'Times New Roman';">0</span><span style="font-family: 宋体;">，前面说过有三种情况：</span></p> 
+          <p>1、有连接请求到达</p> 
+          <p>2、接收到了信号</p> 
+          <p>3、到达了预定的等待时间</p> 
+          <p>当这三种情况下返回的时候会在执行一次<span style="font-family: 'Times New Roman';">do-while</span><span style="font-family: 宋体;">循环，若是正常情况下的返回，则按照正常流程退出循环继续进行下面的处理，若时间到达了的话就会在</span><span style="font-family: 'Times New Roman';">do-while</span><span style="font-family: 宋体;">循环中正常退出。若为信号到达则会在</span><span style="font-family: 'Times New Roman';">wait_for_packet()</span><span style="font-family: 宋体;">函数中转入</span><span style="font-family: 'Times New Roman';">interrupt</span><span style="font-family: 宋体;">处执行，进而退出</span><span style="font-family: 'Times New Roman';">do-while</span><span style="font-family: 宋体;">循环，从系统调用返回处会进行信号处理。</span></p> 
+          <p>在进程接收到了控制报文以后表明<span style="font-family: 'Times New Roman';">client</span><span style="font-family: 宋体;">请求连接，进程不关心控制报文的数据，直接将其丢弃。</span></p> 
+          <p>关于唤醒进程我们需要多说点，在前面讲<span style="font-family: 'Times New Roman';">connect()</span><span style="font-family: 宋体;">的时候最后留了一个函数调用：</span></p> 
+          <p>other-&gt;data_ready(other,0);</p> 
+          <p>data_ready<span style="font-family: 宋体;">其实是个函数指针，每当将一个报文链入到一个</span><span style="font-family: 'Times New Roman';">sock</span><span style="font-family: 宋体;">结构的</span><span style="font-family: 'Times New Roman';">receive_queue</span><span style="font-family: 宋体;">中以后，都要通过这个函数指针调用来调用一个预先设置好的函数，这种情况成为“</span><span style="font-family: 'Times New Roman';">call&nbsp;back</span><span style="font-family: 宋体;">”，在创建插口的函数</span><span style="font-family: 'Times New Roman';">sock_init_data()</span><span style="font-family: 宋体;">里，这个指针被设置成指向</span><span style="font-family: 'Times New Roman';">sock_def_reachable()</span><span style="font-family: 宋体;">函数，定义于</span><span style="font-family: 'Times New Roman';">net/core/sock.c</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72224"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td> 
+              <td class="code" id="p722code24"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">void</span> sock_def_readable<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> len<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	read_lock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>callback_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>sleep <span style="color: #339933;">&amp;&amp;</span> waitqueue_active<span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>sleep<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+		wake_up_interruptible<span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>sleep<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sk_wake_async<span style="color: #009900;">(</span>sk<span style="color: #339933;">,</span><span style="color: #0000dd;">1</span><span style="color: #339933;">,</span>POLL_IN<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	read_unlock<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>callback_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>很明显，函数的目的就是唤醒可能正在等待连接的<span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">进程。</span></p> 
+          <p>另外还有一种办法就是用来进行异步地等待连接，，也就是在<span style="font-family: 'Times New Roman';">client</span><span style="font-family: 宋体;">请求连接的时候</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">才调用</span><span style="font-family: 'Times New Roman';">accept()</span><span style="font-family: 宋体;">来接收请求，其他时间</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">可以干别的事。这个就是使用的信号机制，当</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">方要想进行异步连接的时候可以调用</span><span style="font-family: 'Times New Roman';">ioctl()</span><span style="font-family: 宋体;">来将一个</span><span style="font-family: 'Times New Roman';">fasync_struct</span><span style="font-family: 宋体;">结构挂入一个</span><span style="font-family: 'Times New Roman';">fasync_list</span><span style="font-family: 宋体;">队列中，通过</span><span style="font-family: 'Times New Roman';">file-&gt;f_op-&gt;fasync()</span><span style="font-family: 宋体;">，这个指针指向函数</span><span style="font-family: 'Times New Roman';">sock_fasync()</span><span style="font-family: 宋体;">，当</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">方执行</span><span style="font-family: 'Times New Roman';">ioctl()</span><span style="font-family: 宋体;">发出</span><span style="font-family: 'Times New Roman';">FIOASYNC</span><span style="font-family: 宋体;">命令来挂入队列。</span></p> 
+          <p>所以在此处通过<span style="font-family: 'Times New Roman';">sk_wake_async()</span><span style="font-family: 宋体;">来给可能已经在队列</span><span style="font-family: 'Times New Roman';">fasync_list</span><span style="font-family: 宋体;">中挂上号的进程发送信号。</span></p> 
+          <p>函数定义如下（<span style="font-family: 'Times New Roman';">include/net/sock.h</span><span style="font-family: 宋体;">）：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72225"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+</pre></td> 
+              <td class="code" id="p722code25"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> sk_wake_async<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> how<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> band<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>socket <span style="color: #339933;">&amp;&amp;</span> sk<span style="color: #339933;">-&gt;</span>socket<span style="color: #339933;">-&gt;</span>fasync_list<span style="color: #009900;">)</span>
+		sock_wake_async<span style="color: #009900;">(</span>sk<span style="color: #339933;">-&gt;</span>socket<span style="color: #339933;">,</span> how<span style="color: #339933;">,</span> band<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">int</span> sock_wake_async<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>sock<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> how<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> band<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>sock <span style="color: #339933;">||</span> <span style="color: #339933;">!</span>sock<span style="color: #339933;">-&gt;</span>fasync_list<span style="color: #009900;">)</span>
+		<span style="color: #b1b100;">return</span> <span style="color: #339933;">-</span><span style="color: #0000dd;">1</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">switch</span> <span style="color: #009900;">(</span>how<span style="color: #009900;">)</span>
+	<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">case</span> <span style="color: #0000dd;">1</span><span style="color: #339933;">:</span>
+&nbsp;
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>test_bit<span style="color: #009900;">(</span>SOCK_ASYNC_WAITDATA<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sock<span style="color: #339933;">-&gt;</span>flags<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">goto</span> call_kill<span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">case</span> <span style="color: #0000dd;">2</span><span style="color: #339933;">:</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span><span style="color: #339933;">!</span>test_and_clear_bit<span style="color: #009900;">(</span>SOCK_ASYNC_NOSPACE<span style="color: #339933;">,</span> <span style="color: #339933;">&amp;</span>sock<span style="color: #339933;">-&gt;</span>flags<span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/* fall through */</span>
+	<span style="color: #b1b100;">case</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">:</span>
+	call_kill<span style="color: #339933;">:</span>
+		__kill_fasync<span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>fasync_list<span style="color: #339933;">,</span> SIGIO<span style="color: #339933;">,</span> band<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		<span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+	<span style="color: #b1b100;">case</span> <span style="color: #0000dd;">3</span><span style="color: #339933;">:</span>
+		__kill_fasync<span style="color: #009900;">(</span>sock<span style="color: #339933;">-&gt;</span>fasync_list<span style="color: #339933;">,</span> SIGURG<span style="color: #339933;">,</span> band<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+	<span style="color: #b1b100;">return</span> <span style="color: #0000dd;">0</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span>
+<span style="color: #993333;">void</span> __kill_fasync<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> fasync_struct <span style="color: #339933;">*</span>fa<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> sig<span style="color: #339933;">,</span> <span style="color: #993333;">int</span> band<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	<span style="color: #b1b100;">while</span> <span style="color: #009900;">(</span>fa<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+		<span style="color: #993333;">struct</span> fown_struct <span style="color: #339933;">*</span> fown<span style="color: #339933;">;</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>fa<span style="color: #339933;">-&gt;</span>magic <span style="color: #339933;">!=</span> FASYNC_MAGIC<span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+			printk<span style="color: #009900;">(</span>KERN_ERR <span style="color: #ff0000;">"kill_fasync: bad magic number in "</span>
+			       <span style="color: #ff0000;">"fasync_struct!<span style="color: #000099; font-weight: bold;">\n</span>"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+			<span style="color: #b1b100;">return</span><span style="color: #339933;">;</span>
+		<span style="color: #009900;">}</span>
+		fown <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>fa<span style="color: #339933;">-&gt;</span>fa_file<span style="color: #339933;">-&gt;</span>f_owner<span style="color: #339933;">;</span>
+		<span style="color: #808080; font-style: italic;">/* Don't send SIGURG to processes which have not set a
+		   queued signum: SIGURG has its own default signalling
+		   mechanism. */</span>
+		<span style="color: #b1b100;">if</span> <span style="color: #009900;">(</span>fown<span style="color: #339933;">-&gt;</span>pid <span style="color: #339933;">&amp;&amp;</span> <span style="color: #339933;">!</span><span style="color: #009900;">(</span>sig <span style="color: #339933;">==</span> SIGURG <span style="color: #339933;">&amp;&amp;</span> fown<span style="color: #339933;">-&gt;</span>signum <span style="color: #339933;">==</span> <span style="color: #0000dd;">0</span><span style="color: #009900;">)</span><span style="color: #009900;">)</span>
+			send_sigio<span style="color: #009900;">(</span>fown<span style="color: #339933;">,</span> fa<span style="color: #339933;">-&gt;</span>fa_fd<span style="color: #339933;">,</span> band<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+		fa <span style="color: #339933;">=</span> fa<span style="color: #339933;">-&gt;</span>fa_next<span style="color: #339933;">;</span>
+	<span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>继续回到<span style="font-family: 'Times New Roman';">unix_accept()</span><span style="font-family: 宋体;">函数中，最后一步是将</span><span style="font-family: 'Times New Roman';">client</span><span style="font-family: 宋体;">提供的</span><span style="font-family: 'Times New Roman';">sock</span><span style="font-family: 宋体;">结构与</span><span style="font-family: 'Times New Roman';">server</span><span style="font-family: 宋体;">挂钩，函数</span><span style="font-family: 'Times New Roman';">sock_graft()</span><span style="font-family: 宋体;">定义在</span><span style="font-family: 'Times New Roman';">include/net/sock.h</span><span style="font-family: 宋体;">中：</span></p> 
+          <div class="wp_codebox_msgheader"> 
+           <span class="right"><sup><a href="http://www.ericbess.com/ericblog/2008/03/03/wp-codebox/#examples" target="_blank" title="WP-CodeBox HowTo?"><span style="color: #99cc00">?</span></a></sup></span> 
+           <span class="left2">Download <a href="http://codelifeliwan.github.io/wp-content/plugins/wp-codebox/wp-codebox.php?p=722&amp;download=download.c">download.c</a></span> 
+           <div class="codebox_clear"></div> 
+          </div> 
+          <div class="wp_codebox"> 
+           <table> 
+            <tbody> 
+             <tr id="p72226"> 
+              <td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td> 
+              <td class="code" id="p722code26"><pre class="c" style="font-family:monospace;"><span style="color: #993333;">static</span> <span style="color: #000000; font-weight: bold;">inline</span> <span style="color: #993333;">void</span> sock_graft<span style="color: #009900;">(</span><span style="color: #993333;">struct</span> sock <span style="color: #339933;">*</span>sk<span style="color: #339933;">,</span> <span style="color: #993333;">struct</span> socket <span style="color: #339933;">*</span>parent<span style="color: #009900;">)</span>
+<span style="color: #009900;">{</span>
+	write_lock_bh<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>callback_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+	sk<span style="color: #339933;">-&gt;</span>sleep <span style="color: #339933;">=</span> <span style="color: #339933;">&amp;</span>parent<span style="color: #339933;">-&gt;</span>wait<span style="color: #339933;">;</span>
+	parent<span style="color: #339933;">-&gt;</span>sk <span style="color: #339933;">=</span> sk<span style="color: #339933;">;</span>
+	sk<span style="color: #339933;">-&gt;</span>socket <span style="color: #339933;">=</span> parent<span style="color: #339933;">;</span>
+	write_unlock_bh<span style="color: #009900;">(</span><span style="color: #339933;">&amp;</span>sk<span style="color: #339933;">-&gt;</span>callback_lock<span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">}</span></pre></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div> 
+          <p>这样就完成了。</p> 
+          <p>剩下的都比较简单，就不说了。</p> 
+          <p>&nbsp;</p> 
+          <p>The&nbsp;End.</p> 
+         </div> 
+        </div>
+       </div>
+       <!-- .entry-content --> 
+       <!-- .entry-meta --> 
+      </article>
+      <!-- #post-722 --> 
+      <!-- #comments --> 
+     </div>
+     <!-- #content --> 
+    </div>
+    <!-- #primary --> 
+    <!-- #secondary .widget-area --> 
+   </div>
+   <!-- #main --> 
+   <!-- #colophon --> 
+  </div>
+  <!-- #page -->   
+  <!-- JiaThis Button BEGIN -->  
+  <!-- JiaThis Button END -->   
+ </body>
+</html>
