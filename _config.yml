@@ -8,8 +8,8 @@
 # Site settings
 title: Code_Life_LiWan
 email: qdtecwanli@sina.com
-description: My headt will go on and on ...
-baseurl: "/" # the subpath of your site, e.g. /blog
+description: My heart will go on and on ...
+baseurl: "http://codelifeliwan.github.io" # the subpath of your site, e.g. /blog
 url: "http://codelifeliwan.github.io" # the base hostname & protocol for your site
 twitter_username: LiWan 
 github_username:  codelifeliwan 
