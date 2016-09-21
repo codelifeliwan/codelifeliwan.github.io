@@ -14,7 +14,7 @@ title: "关于：About"
 <p class="contact">
  <a href="http://weibo.com/wanosli" title="微博联系我"><img src="http://www.sinaimg.cn/blog/developer/wiki/LOGO_32x32.png" width="24" height="24" style="display:inline-block;vertical-align:middle"></a><br/>
         <a href="https://www.zhihu.com/people/codelifeliwan" title="知乎联系我"><img src="http://www.zhihu.com/favicon.ico" width="24" height="24" style="display:inline-block;vertical-align:middle"></a><br/>
-邮箱: ouyanglip@gmail.com 
+邮箱: qdtecwanli@sina.com
 </p>
 
 ### 关于本站：
