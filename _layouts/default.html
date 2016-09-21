@@ -1,29 +1,20 @@
-{% strip %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-  <head>
-    {% include head.html %}
+  {% include head.html %}
+  <body>
+    <div class="page-content">
+      <div class="container">
+        <div class="three columns">
+          {% include header.html %}
+        </div>
 
-    <meta name="robots" content="noindex"> <!--=====  Please remove it ! ! !  ======-->
-    <meta name="googlebot" content="noindex"> <!--=====  Please remove it ! ! !  ======-->
-  </head>
-  <body class="{% if page.bodyclass %}{{ page.bodyclass }}{% endif %}">
-
-    <main class="main-container">
-
-        {% include header.html %}
-
-        <section class="main-content">
-          {{ content }}
-        </section>
-
-        {% include footer.html %}
-
-    </main>
-
-    {% include github-corner.html %}
-
-    <script src="{{ '/js/jquery.min.js' | prepend: site.baseurl }}"></script>
-    <script src="{{ '/js/jekyll-search.min.js' | prepend: site.baseurl }}"></script>
-    <script src="{{ '/js/main.js' | prepend: site.baseurl }}"></script>
+        <div class="nine columns" style="z-index:100;">
+          <div class="wrapper">
+            {{ content }}
+          </div>
+        </div>
+      </div>
+      {% include footer.html %} 
+    </div>
   </body>
-</html>{% endstrip %}
+</html>
